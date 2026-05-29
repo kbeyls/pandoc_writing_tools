@@ -1,0 +1,3 @@
+[submodule "theme/logging"]
+	path = theme/logging
+	url = https://github.com/pandoc-ext/logging/

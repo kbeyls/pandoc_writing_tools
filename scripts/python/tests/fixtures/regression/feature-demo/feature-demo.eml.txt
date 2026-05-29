@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>pandoc_writing_tools Feature Demo</title>
+  <link data-external="1"
+
+
+
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+    crossorigin="anonymous">
+  <link data-external="1" rel="stylesheet"
+     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+</head>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for citations */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+      margin-bottom: 0em;
+    }
+    .hanging-indent div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }  </style>
+  <link rel="stylesheet" href="/src/examples/feature-demo/build/default.css" />
+
+</head>
+
+<body>
+<nav id="top-bar"
+     class="navbar navbar-light bg-light">
+  <div class="container-fluid">
+    <div>
+    <a role="button"
+      id="toggle-toc-button"
+      class="btn btn-sm btn-outline-primary"
+      data-bs-toggle="tooltip" data-bs-title="Toggle table-of-contents"
+      data-bs-placement="bottom">
+      <span class="navbar-toggler-icon"></span>
+    </a>
+    <!--
+    <span class="dropdown" id="download-dropdown">
+      <button
+        class="btn btn-outline-primary btn-sm dropdown-toggle"
+        id="download-button"
+        type="button" id="downloadDropdownMenuButton"
+        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+        >
+        <i class="bi bi-download"></i></button>
+      <div class="dropdown-menu" aria-labelledby="downloadDropdownMenuButton">
+        <a id="html-download-link" class="dropdown-item" href=".html" target="_blank">HTML</a>
+        <a id="pdf-download-link" class="dropdown-item" href=".pdf" target="_blank">PDF</a>
+      </div>
+    </span>
+    -->
+    <a id="slack-button"
+      class="btn btn-sm btn-outline-primary" role="button"
+      data-bs-placement="bottom"
+      data-bs-toggle="tooltip" data-bs-title="Chat on Slack"
+      href="">
+      <i class="bi bi-slack"></i></a>
+    <a class="navbar-brand" href="#"></a>
+  </div>
+</nav>
+
+<div id="all-below-top-bar">
+  <div class="container-fluid h-100">
+    <div class="row h-100 d-flex justify-content-around">
+
+
+
+  <div id="toc-sidebar" class="h-100 d-none d-xl-block overflow-auto">
+    <ul>
+    <li><a href="#sec:overview" id="toc-sec:overview"><span
+    class="toc-section-number">1</span> Overview<span
+    class="feedback-button"> [give feedback]</span></a>
+    <ul>
+    <li><a href="#sec:citations-and-refs"
+    id="toc-sec:citations-and-refs"><span
+    class="toc-section-number">1.1</span> Citations and section
+    references<span class="feedback-button"> [give
+    feedback]</span></a></li>
+    <li><a href="#table-of-contents" id="toc-table-of-contents"><span
+    class="toc-section-number">1.2</span> Table of contents<span
+    class="feedback-button"> [give feedback]</span></a></li>
+    <li><a href="#sec:figures" id="toc-sec:figures"><span
+    class="toc-section-number">1.3</span> Figures and references<span
+    class="feedback-button"> [give feedback]</span></a></li>
+    <li><a href="#sec:examples" id="toc-sec:examples"><span
+    class="toc-section-number">1.4</span> Examples and definitions<span
+    class="feedback-button"> [give feedback]</span></a></li>
+    <li><a href="#sec:index-entries" id="toc-sec:index-entries"><span
+    class="toc-section-number">1.5</span> Index entries<span
+    class="feedback-button"> [give feedback]</span></a></li>
+    <li><a href="#sec:sidenotes" id="toc-sec:sidenotes"><span
+    class="toc-section-number">1.6</span> Sidenotes<span
+    class="feedback-button"> [give feedback]</span></a></li>
+    <li><a href="#sec:todos" id="toc-sec:todos"><span
+    class="toc-section-number">1.7</span> TODOs<span
+    class="feedback-button"> [give feedback]</span></a></li>
+    <li><a href="#sec:github-links" id="toc-sec:github-links"><span
+    class="toc-section-number">1.8</span> Linking to github issues and
+    edit links<span class="feedback-button"> [give
+    feedback]</span></a></li>
+    </ul></li>
+    <li><a href="#index-header" id="toc-index-header">Index</a></li>
+    </ul>
+  </div>
+
+<div id="main-content-col" class="h-100  d-flex justify-content-center overflow-auto">
+  <div id="main-content-with-sidenotes" class="h-100">
+
+  <div id="main-content-max-width" class="h-100">
+<header id="title-block-header">
+  <h1 class="title">pandoc_writing_tools Feature Demo</h1>
+        <p>
+    </p>
+  <p>Last updated: Fri Mar 6 16:08:39 2026 +0100</p>
+  <p>Version: 4-with-local-changes</p>
+</header>
+
+<main id="content">
+<h1 data-number="1" data-section-number="1" id="sec:overview"><span
+class="header-section-number">1</span> Overview<a href="#sec:overview"
+class="selflink"></a><span class="feedback-button"> <a
+href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>-with-local-changes%20-%20Section%3A%20Overview&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Overview%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v4-with-local-changes.%0D%0A%0D%0A">[give
+feedback]</a></span></h1>
+<p>This document demonstrates the functionality of the Lua filters in
+pandoc_writing_tools.</p>
+<h2 data-number="1.1" data-section-number="1.1"
+id="sec:citations-and-refs"><span
+class="header-section-number">1.1</span> Citations and section
+references<a href="#sec:citations-and-refs" class="selflink"></a><span
+class="feedback-button"> <a
+href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>-with-local-changes%20-%20Section%3A%20Citations%20and%20section%20references&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Citations%20and%20section%20references%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v4-with-local-changes.%0D%0A%0D%0A">[give
+feedback]</a></span></h2>
+<p>This is what a citation looks like: <span class="citation"
+data-cites="doe2020">(Doe 2020)</span>. The list of all cited references
+appears in the bibliography section at the end of the document.</p>
+<p>The pandoc_writing_tools lua filters enable referring to a section by
+number, for example, this references section <a
+href="#sec:overview">1</a>.</p>
+<h2 data-number="1.2" data-section-number="1.2"
+id="table-of-contents"><span class="header-section-number">1.2</span>
+Table of contents<a href="#table-of-contents" class="selflink"></a><span
+class="feedback-button"> <a
+href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>-with-local-changes%20-%20Section%3A%20Table%20of%20contents&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Table%20of%20contents%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v4-with-local-changes.%0D%0A%0D%0A">[give
+feedback]</a></span></h2>
+<p>The table of contents is generated from the section headers. The
+<code>toc-list-top-level</code> and <code>toc-list-entry-levels</code>
+attributes control which headers are included and how they are nested.
+For example, the mini-TOC below includes level 2 and level 3 headers
+under the “Overview” section:</p>
+<div class="toc-list">
+<a href="#sec:citations-and-refs">1.1 Citations and section references
+[give feedback]</a><br />
+
+<a href="#table-of-contents">1.2 Table of contents [give
+feedback]</a><br />
+
+<a href="#sec:figures">1.3 Figures and references [give
+feedback]</a><br />
+
+<a href="#sec:examples">1.4 Examples and definitions [give
+feedback]</a><br />
+
+<a href="#sec:index-entries">1.5 Index entries [give feedback]</a><br />
+
+<a href="#sec:sidenotes">1.6 Sidenotes [give feedback]</a><br />
+
+<a href="#sec:todos">1.7 TODOs [give feedback]</a><br />
+
+<a href="#sec:github-links">1.8 Linking to github issues and edit links
+[give feedback]</a><br />
+
+</div>
+<h2 data-number="1.3" data-section-number="1.3" id="sec:figures"><span
+class="header-section-number">1.3</span> Figures and references<a
+href="#sec:figures" class="selflink"></a><span class="feedback-button">
+<a
+href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>-with-local-changes%20-%20Section%3A%20Figures%20and%20references&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Figures%20and%20references%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v4-with-local-changes.%0D%0A%0D%0A">[give
+feedback]</a></span></h2>
+<figure id="fig:demo" data-count="1">
+<img src="cid:IMG" alt="A demo figure" />
+<figcaption>Figure 1: A demo figure</figcaption>
+</figure>
+<p>See Figure <a href="#fig:demo">1</a> for the numbered figure
+reference.</p>
+<h2 data-number="1.4" data-section-number="1.4" id="sec:examples"><span
+class="header-section-number">1.4</span> Examples and definitions<a
+href="#sec:examples" class="selflink"></a><span class="feedback-button">
+<a
+href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>-with-local-changes%20-%20Section%3A%20Examples%20and%20definitions&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Examples%20and%20definitions%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v4-with-local-changes.%0D%0A%0D%0A">[give
+feedback]</a></span></h2>
+<p>We have custom environments for examples and definitions, which are
+numbered and can be referenced from the text:</p>
+<div id="ex:demo" class="example" data-caption="Example 1: Demo example"
+data-count="1">
+<span class="caption">Example 1: Demo example</span>
+<p>This block is tagged as an example.</p>
+</div>
+<div id="def:demo" class="definition"
+data-caption="Definition 1: Demo definition" data-count="1">
+<span class="caption">Definition 1: Demo definition</span>
+<p>This block is tagged as a definition.</p>
+</div>
+<p>Refer back to Example <a href="#ex:demo">1</a> and Definition <a
+href="#def:demo">1</a>.</p>
+<h2 data-number="1.5" data-section-number="1.5"
+id="sec:index-entries"><span class="header-section-number">1.5</span>
+Index entries<a href="#sec:index-entries" class="selflink"></a><span
+class="feedback-button"> <a
+href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>-with-local-changes%20-%20Section%3A%20Index%20entries&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Index%20entries%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v4-with-local-changes.%0D%0A%0D%0A">[give
+feedback]</a></span></h2>
+<p>The index filter allows you to mark index entries in the text, which
+are then collected and emitted in an index div, see at the end of this
+document. The simplest usage is to just add <code>.index</code> spans
+around the relevant text and add an index div somewhere in the document.
+The filter will collect all <code>.index</code> spans and emit them as
+entries in the index div. You can also specify an <code>entry</code>
+attribute on the span to customize the index entry text, and use
+<code>!</code> to create nested entries.</p>
+<p>For example, in this sentence the word <span id="__index_entry_1"
+class="index">color</span> is indexed, and a we index the word “<span
+id="__index_entry_2" class="index" data-entry="idea">concept</span>” as
+“idea”. We can also create nested entries like <span
+id="__index_entry_3" class="index">color!blue</span>, and multiple
+entries like <span id="__index_entry_4"
+class="index">alpha;beta</span>.</p>
+<h2 data-number="1.6" data-section-number="1.6" id="sec:sidenotes"><span
+class="header-section-number">1.6</span> Sidenotes<a
+href="#sec:sidenotes" class="selflink"></a><span
+class="feedback-button"> <a
+href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>-with-local-changes%20-%20Section%3A%20Sidenotes&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Sidenotes%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v4-with-local-changes.%0D%0A%0D%0A">[give
+feedback]</a></span></h2>
+<p>This sentence has a footnote.<span class="sidenote_ref"
+href="#sidenote_1"><sup>1</sup></span><span id="sidenote_1"
+class="sidenote">1. Footnote content that becomes a sidenote in
+HTML.</span></p>
+<h2 data-number="1.7" data-section-number="1.7" id="sec:todos"><span
+class="header-section-number">1.7</span> TODOs<a href="#sec:todos"
+class="selflink"></a><span class="feedback-button"> <a
+href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>-with-local-changes%20-%20Section%3A%20TODOs&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27TODOs%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v4-with-local-changes.%0D%0A%0D%0A">[give
+feedback]</a></span></h2>
+<p>It is often useful to be able to mark TODO items in the text. It
+helps you to avoid writer’s block on something you can’t quite put into
+words just yet. The <code>markup_todo.lua</code> filter allows you to do
+this with a <code>.todo</code> class. You can use this class on inline
+spans for inline TODOs, or on divs for block TODOs. For example, please
+<span class="todo_ref" href="#todo_1"><sup>todo</sup></span><span
+id="todo_1" class="todo">fix this</span> inline.</p>
+<span class="todo_ref" href="#todo_2"><sup>todo</sup></span>
+<span id="todo_2" class="todo">Block TODO content.</span>
+<h2 data-number="1.8" data-section-number="1.8"
+id="sec:github-links"><span class="header-section-number">1.8</span>
+Linking to github issues and edit links<a href="#sec:github-links"
+class="selflink"></a><span class="feedback-button"> <a
+href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>-with-local-changes%20-%20Section%3A%20Linking%20to%20github%20issues%20and%20edit%20links&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Linking%20to%20github%20issues%20and%20edit%20links%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v4-with-local-changes.%0D%0A%0D%0A">[give
+feedback]</a></span></h2>
+<p>Github issue link when enabled: Github issue <span
+class="issue">1</span>.</p>
+<p>Edit links appear as little pencil icons at the end of headers when
+<code>add_edit_to_headers.lua</code> is enabled.</p>
+<h1 class="unnumbered" id="index-header">Index</h1>
+<div class="index-entry-list">
+<span class="index-entry"><span class="index-entry-text">alpha</span>
+<span class="index-entry-locator"> <a
+href="#__index_entry_4">1.5</a></span></span>
+<p></p>
+<span class="index-entry"><span class="index-entry-text">beta</span>
+<span class="index-entry-locator"> <a
+href="#__index_entry_4">1.5</a></span></span>
+<p></p>
+<span class="index-entry"><span class="index-entry-text">color</span>
+<span class="index-entry-locator"> <a
+href="#__index_entry_1">1.5</a></span></span>
+<span class="index-entry"><span
+class="index-entry-indentation"></span><span
+class="index-entry-text">blue</span> <span class="index-entry-locator">
+<a href="#__index_entry_3">1.5</a></span></span>
+<p></p>
+<span class="index-entry"><span class="index-entry-text">idea</span>
+<span class="index-entry-locator"> <a
+href="#__index_entry_2">1.5</a></span></span>
+</div>
+<div id="refs" class="references csl-bib-body hanging-indent"
+data-entry-spacing="0" role="list">
+<div id="ref-doe2020" class="csl-entry" role="listitem">
+Doe, Jane. 2020. <span>“Demo Reference.”</span> <em>Demo Journal</em>.
+</div>
+</div>
+</main>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script
+  data-external="1"
+  src="https://code.jquery.com/jquery-3.6.3.min.js"
+  integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+  crossorigin="anonymous"></script>
+<script
+  data-external="1"
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+  crossorigin="anonymous"></script>
+<script
+  data-external="1"
+  src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"/>
+
+<script>
+  function isXL() {
+    var width = jQuery(window).width();
+    return width>=1200;
+  }
+
+  // Make sure that on reload, the scroll position of the main content
+  // is restored to the current position. The next few lines store the
+  // current scroll position before the page is unloaded.
+  // The actual restoring happens in the document.ready function.
+  jQuery(window).on('beforeunload', function () {
+    sessionStorage.setItem('mainScrollTop',
+                           jQuery('#main-content-col').scrollTop());
+  });
+
+  jQuery(document).ready(function() {
+    let toc_sidebar = jQuery('#toc-sidebar');
+    let main_content_col = jQuery('#main-content-col');
+
+    // Restore scroll position of the main content column.
+    var savedScroll = sessionStorage.getItem('mainScrollTop');
+    if (savedScroll !== null) {
+      main_content_col.scrollTop(parseInt(savedScroll, 10));
+    }
+
+    function setTocVisibility(visible) {
+      if (visible) {
+        toc_sidebar.removeClass("d-none");
+        main_content_col.removeClass("without-tocsidebar");
+        if (!isXL()) {
+          // on a small screen, make the main content invisible
+          // when the TOC is visible.
+          main_content_col.addClass("d-none");
+        }
+      } else {
+        toc_sidebar.addClass("d-none");
+        // when the TOC is not visible, make the main container span the full
+        // width of the screen. This makes sure that the scrollbar appears on
+        // the far right hand side.
+        main_content_col.removeClass("d-none");
+        main_content_col.addClass("without-tocsidebar");
+      }
+    }
+
+    // Toggle sidebar-toc visibility when the toggle button is clicked.
+    jQuery('#toggle-toc-button').click(function() {
+      if (toc_sidebar.hasClass("d-xl-block")) {
+        // This is the first time the TOC toggler was clicked.
+        toc_sidebar.removeClass("d-xl-block");
+        // The screensize is smaller than xl -> make the TOC visible.
+        // Otherwise, leave the d-none class to make the TOC invisible.
+        setTocVisibility(!isXL());
+      } else {
+        let isVisibleNow = !toc_sidebar.hasClass("d-none");
+        setTocVisibility(!isVisibleNow);
+      }
+    });
+
+    // When the window resizes across the XL boundary, reset TOC
+    // visibility to the default, i.e. adding classes d-none and d-xl-block.
+    function reset_default_toc_visibility() {
+      toc_sidebar.addClass("d-none");
+      toc_sidebar.addClass("d-xl-block");
+      main_content_col.removeClass("d-none");
+      main_content_col.removeClass("without-tocsidebar");
+    }
+
+    let previousWindowSizeWasXL = isXL();
+    jQuery(window).resize(function() {
+      let is_XL = isXL();
+      if (is_XL != previousWindowSizeWasXL) {
+        previousWindowSizeWasXL = is_XL;
+        reset_default_toc_visibility();
+      }
+    });
+
+    // Also make the TOC sidebar invisible after clicking a link in it
+    // when !iXL();
+    jQuery('#toc-sidebar a').click(function(){
+      if (!isXL()) {
+        reset_default_toc_visibility();
+      }
+    });
+
+    // Make links in the TOC be "secondary links". The result is that
+    // they will be coloured grey, so will be less distracting.
+    jQuery("#toc-sidebar a").addClass("link-secondary");
+
+    // Make the share button work:
+    // Use the web Share API where it is supported, on mobile devices,
+    // where it hopefully allows the user to pick any suitable app they
+    // have installed to share.
+    let isTouchScreen = "ontouchstart" in document.documentElement;
+    let useNativeShare = isTouchScreen && navigator.share;
+    let shared_title = "pandoc_writing_tools Feature Demo";
+    let shared_url = "https://pandoc_writing_tools.github.io/pandoc_writing_tools";
+    if (useNativeShare) {
+      let share_button = jQuery('#share-button');
+      share_button.click(function(){
+        navigator.share({ title: shared_title, url: shared_url});
+      });
+      // Disable drop-down functionality of the share button.
+      jQuery('#share-dropdown').removeClass('dropdown');
+      share_button.removeClass('dropdown-toggle');
+      share_button.removeAttr('data-bs-toggle');
+      // and add tooltip to the button now that it's not a drop-down.
+      share_button.attr("data-bs-placement", "bottom");
+      share_button.attr("data-bs-toggle", "tooltip");
+      share_button.attr("data-bs-title", "Share");
+    };
+    let twitter_params = { text: shared_title, url: shared_url,
+                           hashtags: "pandoc_writing_tools" };
+    jQuery("#twitter-share-link").attr("href",
+      "https://twitter.com/intent/tweet?" + jQuery.param(twitter_params));
+    jQuery("#linkedin-share-link").attr("href",
+      "https://www.linkedin.com/sharing/share-offsite/?"
+      + jQuery.param({url: shared_url}));
+    jQuery("#mastodon-share-link").attr("href",
+      "https://tootpick.org/#"
+      + jQuery.param({text: shared_title + ' ' + shared_url
+                            + ' #pandoc_writing_tools'}));
+    jQuery("#bluesky-share-link").attr("href",
+      "https://bsky.app/intent/compose/?"
+      + jQuery.param({text: shared_title + ' ' + shared_url
+      + ' #pandoc_writing_tools'}));
+
+
+    // Needed to enable the bootstrap tooltips:
+    if (!isTouchScreen) {
+      let tooltipTriggerList =
+        document.querySelectorAll('[data-bs-toggle="tooltip"]');
+      let tooltipList = [...tooltipTriggerList].map(
+        tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl,
+                                                  {trigger : 'hover'}));
+    }
+
+    // Make sidenotes toggleable:
+    jQuery('.sidenote_ref').click(function(){
+      let sidenote_id = jQuery(this).attr("href");
+      let sidenote = jQuery(sidenote_id);
+      if (sidenote.css("display") == "none") {
+        sidenote.css("display", "block");
+      } else {
+        sidenote.css("display", "none");
+      }
+    });
+  });
+</script>
+
+</body>
+
+</html>
