@@ -278,7 +278,7 @@ Outputs are written under `build/` in the content repo:
 ## Contributing
 
 Developer notes, regression testing, and golden update guidance live in
-`CONTRIBUTING.md`.
+[`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## AI-assisted contribution policy
 
