@@ -1,0 +1,17 @@
+pandoc_writing_tools Feature Demo
+
+---
+
+Table of Contents 1 Overview 1.1 Citations and section references 1.2 Table of contents 1.3 Figures and references 1.4 Examples and definitions 1.5 Index entries 1.6 Sidenotes 1.7 TODOs 1.8 Linking to github issues and edit links Index 2 Notes
+
+---
+
+Overview This document demonstrates the functionality of the Lua filters in pandoc_writing_tools. Citations and section references This is what a citation looks like: (Doe 2020). The list of all cited references appears in the bibliography section at the end of the document. The pandoc_writing_tools lua filters enable referring to a section by number, for example, this references section  1 . Table of contents The table of contents is generated from the section headers. The  toc-list-top-level  and  toc-list-entry-levels  attributes control which headers are included and how they are nested. For example, the mini-TOC below includes level 2 and level 3 headers under the “Overview” section: 1.1 Citations and section references 1.2 Table of contents 1.3 Figures and references 1.4 Examples and definitions 1.5 Index entries 1.6 Sidenotes 1.7 TODOs 1.8 Linking to github issues and edit links Figures and references A demo figure See Figure 1 for the numbered figure reference. Examples and definitions We have custom environments for examples and definitions, which are numbered and can be referenced from the text: This block is tagged as an example. This block is tagged as a definition. Refer back to Example 1 and Definition 1. Index entries The index filter allows you to mark index entries in the text, which are then collected and emitted in an index div, see at the end of this document. The simplest usage is to just add  .index  spans around the relevant text and add an index div somewhere in the document. The filter will collect all  .index  spans and emit them as entries in the index div. You can also specify an  entry  attribute on the span to customize the index entry text, and use  !  to create nested entries. For example, in this sentence the word color is indexed, and a we index the word “concept” as “idea”. We can also create nested entries like color!blue, and multiple entries like alpha;beta. Sidenotes This sentence has a footnote. 1 TODOs It is often useful to be able to mark TODO items in the text. It helps you to avoid writer’s block on something you can’t quite put into words just yet. The  markup_todo.lua  filter allows you to do this with a  .todo  class. You can use this class on inline spans for inline TODOs, or on divs for block TODOs. For example, please fix this inline. Block TODO content. Linking to github issues and edit links Github issue link when enabled: Github issue 1. Edit links appear as little pencil icons at the end of headers when  add_edit_to_headers.lua  is enabled.
+
+---
+
+Index alpha  1.5 beta  1.5 color  1.5 blue  1.5 idea  1.5 Doe, Jane. 2020. “Demo Reference.”  Demo Journal .
+
+---
+
+Notes 1. Footnote content that becomes a sidenote in HTML.

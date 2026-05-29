@@ -1,0 +1,348 @@
+/* Do not show bullet points for TOC entries: */
+#toc-sidebar ::marker
+{ content: none; }
+/* Use a sans-serif font: */
+body {
+  font-family: sans-serif;
+}
+/* Don't show <span>s in TOC by default
+   except if it's a section number. */
+#toc-sidebar a span
+{
+  display: none;
+}
+#toc-sidebar a span.toc-section-number
+{
+  display: inline;
+}
+
+/* toc-sidebar needs some top-padding, otherwise the TOC starts too close to
+   the top bar. */
+#toc-sidebar
+{
+  padding-top: 2em;
+}
+
+/* No padding is needed on TOC top-level ul. Remove it so that we don't loose
+   too much screen real-estate. */
+#toc-sidebar > ul {
+  padding: 0;
+}
+
+/* only show TOC 2 levels deep: */
+#toc-sidebar ul ul ul
+{
+  display: none;
+}
+
+/* Remove underline from links in TOC.
+   Also make font size a bit smaller than the default content size. */
+#toc-sidebar a
+{
+  text-decoration: none;
+  font-size: 0.875em;
+}
+
+.selflink {
+  text-decoration: none;
+}
+.selflink::after {
+  content: ' 🔗';
+  font-size: 14pt;
+  vertical-align: middle;
+  opacity: 0.5;
+}
+h1:hover > .selflink::after,
+h2:hover > .selflink::after,
+h3:hover > .selflink::after,
+h4:hover > .selflink::after,
+h5:hover > .selflink::after,
+h6:hover > .selflink::after {
+  opacity: 1;
+}
+.suggestedit {
+  text-decoration: none;
+}
+.suggestedit::after {
+  content: ' ✎';
+  font-size: 14pt;
+  vertical-align: middle;
+  opacity: 0.5;
+}
+h1:hover > .suggestedit::after,
+h2:hover > .suggestedit::after,
+h3:hover > .suggestedit::after,
+h4:hover > .suggestedit::after,
+h5:hover > .suggestedit::after,
+h6:hover > .suggestedit::after {
+  opacity: 1;
+}
+
+/* Set layout and size for top-level divs:
+  +-------------------------------------------------------+
+  | body                                                  |
+  |+-----------------------------------------------------+|
+  ||   #top-bar                                          ||
+  |+-----------------------------------------------------+|
+  ||   #all-below-top-bar                                ||
+  ||+------------+--------------------------------------+||
+  |||#toc-sidebar|+------------------+-----------------+|||
+  |||            ||#main-content-col | sidenotescol    ||||
+  |||            ||                  |                 ||||
+  |||            |+------------------+-----------------+|||
+  ||+------------+--------------------------------------+||
+  |+-------------+---------------------------------------+|
+  +-------------------------------------------------------+
+
+   We're not using bootstrap for this top-level
+   layout (body, all-below-top-bar) because
+   it seems it does not support the necessary
+   "calc" height functionality needed for
+   #all-below-top-bar.
+
+   Within those containers, we do use bootstrap.
+*/
+
+/* bootstrap breakpoints:
+   xs < 576px <= sm < 768px <= md < 992px <= lg < 1200px <= xl < 1400px <= xxl
+
+   On the different screen sizes we make the different content columns visible
+   by default as follows:
+
+   * xs and sm: only the main content column. sidenotes are shown inline.
+   * md and lg: only the main content column and the sidenotes column are shown
+     max-width(main)=min(75% width, md); max-width(sidenotes)=min(25% width, xs?)
+   * xl, xxl: toc, main content and the sidenotes are shown.
+     max-width(main)=min(50% width, md);
+     max-width(sidenotes) and max-width(toc)=min(25% width, xs?)
+*/
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+#all-below-top-bar {
+  height: calc(100vh - 56px);
+}
+
+/* Set maximum width so that lines do not get too long.
+   Lines of text that are too long are harder to read... */
+
+:root {
+  /* Limit the width of sidenotes on really large display to 376px. Otherwise
+     allow up to 23% of the screen width to be used by the sidenotes. */
+  --sidenote-width: calc(min(23%, 376px));
+  --sidenote-col-width: calc(min(25%, 400px)); /* including padding to main content. */
+}
+
+.sidenote, .todo, .missingcontent {
+    float: right;    /* Show side notes on right hand side margin. */
+    clear: right;    /* if multiple notes would overlap, push them below each
+                        other. */
+    margin-bottom: 1em; /* leave a bit of margin between sidenotes. */
+    width: var(--sidenote-width);
+    /* pull the side note, next to the text, not in the main text. */
+    margin-right: calc(0px - var(--sidenote-col-width));
+    font-size: 80%;  /* Make the font size of side notes somewhat smaller. */
+}
+
+.todo, .missingcontent {
+  color: gray;
+  font-style: italic;
+}
+
+.todo::before {
+  font-weight: bold;
+  color: navy;
+  content: "Todo ";
+}
+
+.missingcontent::before {
+  font-weight: bold;
+  color: navy;
+  content: "Missing content ";
+}
+
+.todo_ref, .missingcontent_ref {
+  display: none;
+}
+
+
+/* xs and sm breakpoints: */
+@media (max-width: 767px) {
+  :root {
+     /* on sizes where it only is visible as an overlay */
+    --toc-sidebar-max-width: 100%;
+    --main-content-max-width: calc(min(100%, 576px)); /* = bootstrap md */
+    /* sidenotes are shown inline on smalls screens. */
+    --sidenote-col-width: 0px;
+  }
+  /* show side bar content inline on small screens. */
+  .sidenote, .todo, .missingcontent {
+    display: none; 	/* don't show sidenotes by default on small
+                       screens where they appear inline. */
+    float: none; 	/* stops content from floating */
+    margin: 5% 10% 5% 10%;
+    width: 80%;
+    font-size: 80%;
+  }
+}
+
+/* md and lg breakpoints: */
+@media (min-width: 768px) {
+  :root {
+    /* on sizes where it only is visible as an overlay */
+    --toc-sidebar-max-width: 100%;
+    --main-content-max-width: calc(min(100%, 576px)); /* = bootstrap md */
+  }
+}
+
+/* xl and xxl breakpoints: */
+@media (min-width: 1200px) {
+  :root {
+    /* on large displays, show TOC sidebar next to main text.
+       Make it 25% of screen width, but no more than 576px wide. */
+    --toc-sidebar-max-width: calc(min(25%, 576px));
+    /* Make main content at most 75% of screen width to leave room for
+       the TOC sidebar, which is 25% width at most, see above.
+       576px limits the width to at most the bootstrap md breakpoint. */
+    --main-content-max-width: calc(min(75%, 576px));
+  }
+  #main-content-col:not(.without-tocsidebar) {
+    max-width: calc(100% - var(--toc-sidebar-max-width));
+  }
+  #main-content-col .without-tocsidebar {
+    max-width: 100%;
+  }
+}
+
+#toc-sidebar {
+  max-width: var(--toc-sidebar-max-width);
+}
+#main-content-max-width {
+  max-width: var(--main-content-max-width);
+}
+#main-content-with-sidenotes {
+  width: calc(var(--main-content-max-width) + var(--sidenote-col-width));
+}
+
+.sidenote_ref {
+  cursor: pointer;
+}
+
+figure {
+ display: block;
+}
+
+figure img {
+  margin: 0px auto;
+  display: block;
+}
+
+figure img + figcaption {
+  margin: 0px auto;
+  display: block;
+  text-align: center;
+}
+
+.definition {
+  border-left: 4px solid #5B8FF9;
+  padding: 0.5em 1em;
+  margin: 1em 0;
+  background-color: #f7faff;
+}
+.definition > .caption {
+  display: block;
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 0.4em;
+}
+
+.example {
+  border-left: 4px solid #f7db5e;
+  padding: 0.5em 1em;
+  margin: 1em 0;
+  background-color: #f7faff;
+}
+.example > .caption {
+  font-style: italic;
+}
+/*.example > .caption::before {
+  content: ": ";
+}*/
+
+.index-entry-list {
+  background-color:rgb(239, 239, 239);
+  column-count: 2;
+  column-gap: 1.5rem;
+}
+
+.index-entry {
+  display: block;
+}
+
+.index-entry-indentation {
+  display: inline-block;
+  width: 1em;
+}
+
+.index-entry-locator {
+  margin-left: auto;
+}
+
+.index-entry-locator a {
+  text-decoration: none;
+  color: #5B8FF9;
+}
+
+blockquote{
+  /*font-size: 1.4em;*/
+  width:90%;
+  margin:20px auto;
+  font-family:Open Sans;
+  font-style:italic;
+  color: #555555;
+  padding: 3.2em 20px 1.2em 25px;
+  border-left:8px solid #78C0A8 ;
+  /*line-height:1.6;*/
+  position: relative;
+  background:#EDEDED;
+}
+
+blockquote::before{
+  font-family:Arial;
+  content: "\201C";
+  color:#78C0A8;
+  font-size:4em;
+  position: absolute;
+  left: 10px;
+  top:-10px;
+}
+
+blockquote::after{
+  content: '';
+}
+
+.smaller {
+  font-size: 80%;
+}
+
+.feedback-button {
+  font-size: 10pt;
+}
+
+.csl-entry {
+  background-color:rgb(239, 239, 239);
+  padding: 0.5em 1em;
+  margin: 1em 0;
+}
+/*.index-entry-text::after {
+  content: ", "
+}*/
+
+div.toc-list {
+  /*list-style-type: none;*/
+  margin-left: 40px;
+  /*line-height: 1.1;*/
+}
