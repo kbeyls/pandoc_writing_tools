@@ -9,6 +9,32 @@ This repository evolved from the tools that were built to create
 [llsoftsecbook](https://llsoftsec.github.io/llsoftsecbook/), but is designed to
 be reusable for other content projects.
 
+<!--TOC-->
+
+- [pandoc_writing_tools](#pandoc_writing_tools)
+  - [Quick start](#quick-start)
+  - [Features, implemented as Lua filters](#features-implemented-as-lua-filters)
+    - [Figures, examples, definitions, and section references (fignos.lua)](#figures-examples-definitions-and-section-references-fignoslua)
+    - [Index entries (index.lua)](#index-entries-indexlua)
+    - [Mini table of contents (toc.lua)](#mini-table-of-contents-toclua)
+    - [Feedback buttons (add_feedback_buttons.lua)](#feedback-buttons-add_feedback_buttonslua)
+    - [Markup TODOs (markup_todo.lua)](#markup-todos-markup_todolua)
+    - [Features only for HTML output](#features-only-for-html-output)
+      - [Clickable headers (clickable_headers.lua)](#clickable-headers-clickable_headerslua)
+      - [Convert to sidenote (convert_to_sidenote.lua)](#convert-to-sidenote-convert_to_sidenotelua)
+      - [Optional: markup_issue.lua](#optional-markup_issuelua)
+      - [Optional: add_edit_to_headers.lua](#optional-add_edit_to_headerslua)
+    - [Generate Confluence content (confluence.lua)](#generate-confluence-content-confluencelua)
+    - [Confluence uploads (upload_to_confluence.py)](#confluence-uploads-upload_to_confluencepy)
+  - [Using this repository for your own content projects](#using-this-repository-for-your-own-content-projects)
+    - [Use it as a submodule inside your content repository](#use-it-as-a-submodule-inside-your-content-repository)
+    - [Preferred build workflow (Docker)](#preferred-build-workflow-docker)
+    - [Output formats](#output-formats)
+  - [Contributing](#contributing)
+  - [AI-assisted contribution policy](#ai-assisted-contribution-policy)
+
+<!--TOC-->
+
 ## Quick start
 
 0. Make sure you have Docker installed and running.
@@ -145,7 +171,7 @@ Block TODO content.
 
 Adds a self-link anchor to headers in HTML. No extra syntax required.
 
-### Convert to sidenote (convert_to_sidenote.lua)
+#### Convert to sidenote (convert_to_sidenote.lua)
 
 Footnotes become HTML sidenotes:
 
