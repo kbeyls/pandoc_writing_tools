@@ -7,7 +7,7 @@ edit-url-base: https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples
 bibliography: src/feature-demo.bib
 ---
 
-<--
+<!--
 SPDX-FileCopyrightText: <text>Copyright 2026 Arm Limited and/or its affiliates <open-source-office@arm.com></text>
 SPDX-License-Identifier: MIT
 -->

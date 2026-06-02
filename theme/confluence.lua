@@ -139,6 +139,13 @@ Writer.Inline.LineBreak = function()
     return "<br/>"
 end
 
+Writer.Inline.RawInline = function(raw)
+    if raw.format:match 'html' then
+        return raw.text
+    end
+    return ""
+end
+
 Writer.Inline.Emph = function(emph)
     local content = Writer.Inlines(emph.content)
     return { "<em>", content, "</em>" }

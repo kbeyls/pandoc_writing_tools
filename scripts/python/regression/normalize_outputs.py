@@ -16,7 +16,10 @@ from xml.etree import ElementTree
 
 HTML_BASE64_RE = re.compile(r"data:image/[^;]+;base64,[A-Za-z0-9+/=]+")
 CID_RE = re.compile(r"cid:img-\d+@[^\"'>]+")
-FEATURE_VERSION_RE = re.compile(r"(Feature(?:%20|\s)Demo(?:%20|\s)v)\d+")
+FEATURE_VERSION_RE = re.compile(r"(Feature(?:%20|\s)Demo(?:%20|\s)v)\d+(?:-with-local-changes)?")
+VERSION_TOKEN_RE = re.compile(r"\bv\d+(?:-with-local-changes)?(?=(?:[.%&]|%0D|%20|$))")
+LAST_UPDATED_DISPLAY_RE = re.compile(r"(Last updated:\s*)[^<\n]+")
+VERSION_DISPLAY_RE = re.compile(r"(Version:\s*)\d+(?:-with-local-changes)?")
 LAST_UPDATED_INLINE_RE = re.compile(r'LAST_UPDATED[:=]\s*("[^"]+"|[^\s\n"]+)')
 VERSION_INLINE_RE = re.compile(r'VERSION[:=]\s*("[^"]+"|[^\s\n"]+)')
 LAST_UPDATED_META_RE = re.compile(r'(LAST_UPDATED"\s*,\s*MetaString\s*")[^"]+(")')
@@ -41,6 +44,9 @@ def _strip_trailing_whitespace(text: str) -> str:
 def _normalize_common(text: str) -> str:
     text = text.replace("\r\n", "\n")
     text = FEATURE_VERSION_RE.sub(r"\1<VER>", text)
+    text = VERSION_TOKEN_RE.sub("v<VER>", text)
+    text = LAST_UPDATED_DISPLAY_RE.sub(r"\1<DATE>", text)
+    text = VERSION_DISPLAY_RE.sub(r"\1<VER>", text)
     text = VERSION_INLINE_RE.sub("VERSION:<VER>", text)
     text = LAST_UPDATED_INLINE_RE.sub("LAST_UPDATED:<DATE>", text)
     text = VERSION_META_RE.sub(r"\1<VER>\2", text)
