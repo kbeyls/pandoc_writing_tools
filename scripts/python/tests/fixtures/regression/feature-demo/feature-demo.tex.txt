@@ -132,7 +132,7 @@
 
 Last updated: <DATE>
 
-Version 1-with-local-changes
+Version <VER>
 %\clearpage
 % end of pandoc_writing_tools-specific template part
 
@@ -141,13 +141,13 @@ Version 1-with-local-changes
 \tableofcontents
 }
 \section{\texorpdfstring{Overview{
-\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v1-with-local-changes\%20-\%20Section\%3A\%20Overview\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Overview\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v1-with-local-changes.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Overview }}\label{sec:overview}
+\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v<VER>\%20-\%20Section\%3A\%20Overview\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Overview\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v<VER>.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Overview }}\label{sec:overview}
 
 This document demonstrates the functionality of the Lua filters in
 pandoc\_writing\_tools.
 
 \subsection{\texorpdfstring{Citations and section references{
-\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v1-with-local-changes\%20-\%20Section\%3A\%20Citations\%20and\%20section\%20references\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Citations\%20and\%20section\%20references\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v1-with-local-changes.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Citations and section references }}\label{sec:citations-and-refs}
+\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v<VER>\%20-\%20Section\%3A\%20Citations\%20and\%20section\%20references\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Citations\%20and\%20section\%20references\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v<VER>.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Citations and section references }}\label{sec:citations-and-refs}
 
 This is what a citation looks like: (Doe 2020). The list of all cited
 references appears in the bibliography section at the end of the
@@ -157,7 +157,7 @@ The pandoc\_writing\_tools lua filters enable referring to a section by
 number, for example, this references section \hyperref[sec:overview]{1}.
 
 \subsection{\texorpdfstring{Table of contents{
-\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v1-with-local-changes\%20-\%20Section\%3A\%20Table\%20of\%20contents\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Table\%20of\%20contents\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v1-with-local-changes.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Table of contents }}\label{table-of-contents}
+\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v<VER>\%20-\%20Section\%3A\%20Table\%20of\%20contents\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Table\%20of\%20contents\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v<VER>.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Table of contents }}\label{table-of-contents}
 
 The table of contents is generated from the section headers. The
 \texttt{toc-list-top-level} and \texttt{toc-list-entry-levels}
@@ -183,7 +183,7 @@ under the ``Overview'' section:
 }
 
 \subsection{\texorpdfstring{Figures and references{
-\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v1-with-local-changes\%20-\%20Section\%3A\%20Figures\%20and\%20references\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Figures\%20and\%20references\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v1-with-local-changes.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Figures and references }}\label{sec:figures}
+\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v<VER>\%20-\%20Section\%3A\%20Figures\%20and\%20references\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Figures\%20and\%20references\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v<VER>.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Figures and references }}\label{sec:figures}
 
 \begin{figure}
 \centering
@@ -194,7 +194,7 @@ under the ``Overview'' section:
 See Figure \hyperref[fig:demo]{1} for the numbered figure reference.
 
 \subsection{\texorpdfstring{Examples and definitions{
-\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v1-with-local-changes\%20-\%20Section\%3A\%20Examples\%20and\%20definitions\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Examples\%20and\%20definitions\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v1-with-local-changes.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Examples and definitions }}\label{sec:examples}
+\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v<VER>\%20-\%20Section\%3A\%20Examples\%20and\%20definitions\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Examples\%20and\%20definitions\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v<VER>.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Examples and definitions }}\label{sec:examples}
 
 We have custom environments for examples and definitions, which are
 numbered and can be referenced from the text:
@@ -225,7 +225,7 @@ Refer back to Example \hyperref[ex:demo]{1} and Definition
 \hyperref[def:demo]{1}.
 
 \subsection{\texorpdfstring{Index entries{
-\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v1-with-local-changes\%20-\%20Section\%3A\%20Index\%20entries\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Index\%20entries\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v1-with-local-changes.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Index entries }}\label{sec:index-entries}
+\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v<VER>\%20-\%20Section\%3A\%20Index\%20entries\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Index\%20entries\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v<VER>.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Index entries }}\label{sec:index-entries}
 
 The index filter allows you to mark index entries in the text, which are
 then collected and emitted in an index div, see at the end of this
@@ -246,13 +246,13 @@ and multiple entries like
 \protect\phantomsection\label{__index_entry_4}{alpha;beta}\index{alpha}\index{beta}.
 
 \subsection{\texorpdfstring{Sidenotes{
-\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v1-with-local-changes\%20-\%20Section\%3A\%20Sidenotes\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Sidenotes\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v1-with-local-changes.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Sidenotes }}\label{sec:sidenotes}
+\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v<VER>\%20-\%20Section\%3A\%20Sidenotes\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Sidenotes\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v<VER>.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Sidenotes }}\label{sec:sidenotes}
 
 This sentence has a footnote.\footnote{Footnote content that becomes a
   sidenote in HTML.}
 
 \subsection{\texorpdfstring{TODOs{
-\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v1-with-local-changes\%20-\%20Section\%3A\%20TODOs\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27TODOs\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v1-with-local-changes.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{TODOs }}\label{sec:todos}
+\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v<VER>\%20-\%20Section\%3A\%20TODOs\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27TODOs\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v<VER>.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{TODOs }}\label{sec:todos}
 
 It is often useful to be able to mark TODO items in the text. It helps
 you to avoid writer's block on something you can't quite put into words
@@ -264,7 +264,7 @@ inline TODOs, or on divs for block TODOs. For example, please
 \tododiv{Block TODO content.}
 
 \subsection{\texorpdfstring{Linking to github issues and edit links{
-\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v1-with-local-changes\%20-\%20Section\%3A\%20Linking\%20to\%20github\%20issues\%20and\%20edit\%20links\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Linking\%20to\%20github\%20issues\%20and\%20edit\%20links\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v1-with-local-changes.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Linking to github issues and edit links }}\label{sec:github-links}
+\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v<VER>\%20-\%20Section\%3A\%20Linking\%20to\%20github\%20issues\%20and\%20edit\%20links\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Linking\%20to\%20github\%20issues\%20and\%20edit\%20links\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v<VER>.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Linking to github issues and edit links }}\label{sec:github-links}
 
 Github issue link when enabled: Github issue {1}.
 
