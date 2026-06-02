@@ -39,7 +39,7 @@ GIT_HEAD_DEP := $(if $(strip $(GIT_HEAD_PATH)),$(GIT_HEAD_PATH),)
 last_updated = $(shell $(GIT) log --format=%ad HEAD -- $(1) $(2) | head -1)
 
 is_dirty = $(shell test -n "`$(GIT) status --porcelain -- $(1) $(2)`" && echo "-with-local-changes")
-compute_version = $(shell $(GIT) log --oneline --follow -- $(1) $(2) | wc -l)$(call is_dirty,$(1),$(2))
+compute_version = $(strip $(shell $(GIT) log --oneline --follow -- $(1) $(2) | wc -l))$(call is_dirty,$(1),$(2))
 short_commit_log = $(shell $(GIT) log --oneline --follow -- $(1) $(2))
 
 # --self-contained ensures images are embedded in the generated HTML.
@@ -91,6 +91,9 @@ HTML_EXTRA_DEPS += $(TOOLS_ROOT)/theme/html/add_edit_to_headers.lua
 endif
 
 DOCS = $(filter-out AGENTS,$(patsubst $(SRC_DIR)/%.md,%,$(wildcard $(SRC_DIR)/*.md)))
+# Bibliography files are content-specific; default to the source .bib files
+# instead of requiring every content repo to provide a file named thinking.bib.
+BIB_DEPS ?= $(wildcard $(SRC_DIR)/*.bib)
 PDFTARGETS = $(patsubst %,$(BUILD_DIR)/%.pdf,$(DOCS))
 TEXTARGETS = $(patsubst %,$(BUILD_DIR)/%.tex,$(DOCS))
 HTMLTARGETS = $(patsubst %,$(BUILD_DIR)/%.html,$(DOCS))
@@ -166,7 +169,7 @@ $(BUILD_DIR)/default.css: $(TOOLS_ROOT)/theme/html/default.css $(TOOLS_ROOT)/Mak
 	mkdir -p $(dir $@)
 	cp $(TOOLS_ROOT)/theme/html/default.css $(BUILD_DIR)/default.css
 
-$(BUILD_DIR)/%.html: $(SRC_DIR)/%.md $(SRC_DIR)/thinking.bib $(TOOLS_ROOT)/Makefile $(TOOLS_ROOT)/theme/html/pandoc_template.html \
+$(BUILD_DIR)/%.html: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile $(TOOLS_ROOT)/theme/html/pandoc_template.html \
                  $(TOOLS_ROOT)/theme/html/clickable_headers.lua \
 				 $(TOOLS_ROOT)/theme/html/convert_to_sidenote.lua \
 				 $(TOOLS_ROOT)/theme/markup_todo.lua \
@@ -185,7 +188,7 @@ $(BUILD_DIR)/%.html: $(SRC_DIR)/%.md $(SRC_DIR)/thinking.bib $(TOOLS_ROOT)/Makef
 		--default-image-extension=svg \
 		-o $@ $(PANDOCFLAGS) $(COMMONFILTERS)
 
-$(BUILD_DIR)/%.email.html: $(SRC_DIR)/%.md $(SRC_DIR)/thinking.bib $(TOOLS_ROOT)/Makefile $(TOOLS_ROOT)/theme/html/pandoc_template.html \
+$(BUILD_DIR)/%.email.html: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile $(TOOLS_ROOT)/theme/html/pandoc_template.html \
                  $(TOOLS_ROOT)/theme/html/clickable_headers.lua \
 				 $(TOOLS_ROOT)/theme/html/convert_to_sidenote.lua \
 				 $(TOOLS_ROOT)/theme/markup_todo.lua \
@@ -202,17 +205,17 @@ $(BUILD_DIR)/%.email.html: $(SRC_DIR)/%.md $(SRC_DIR)/thinking.bib $(TOOLS_ROOT)
 		--default-image-extension=png \
 		-o $@ $(EMAILPANDOCFLAGS) $(COMMONFILTERS)
 
-$(BUILD_DIR)/%.native: $(SRC_DIR)/%.md $(SRC_DIR)/thinking.bib $(TOOLS_ROOT)/Makefile $(BUILD_DIR)/.version-%.stamp
+$(BUILD_DIR)/%.native: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile $(BUILD_DIR)/.version-%.stamp
 	mkdir -p $(dir $@)
 	pandoc $< -t native -o $@ $(PANDOCFLAGS)
 
-$(BUILD_DIR)/%.transformed.native: $(SRC_DIR)/%.md $(SRC_DIR)/thinking.bib $(TOOLS_ROOT)/Makefile \
+$(BUILD_DIR)/%.transformed.native: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile \
 				 $(commonfilters)
 $(BUILD_DIR)/%.transformed.native: $(BUILD_DIR)/.version-%.stamp
 	mkdir -p $(dir $@)
 	pandoc $< -t native -o $@ $(PANDOCFLAGS) $(COMMONFILTERS)
 
-$(BUILD_DIR)/%.tex: $(SRC_DIR)/%.md $(SRC_DIR)/thinking.bib $(TOOLS_ROOT)/Makefile $(TOOLS_ROOT)/theme/tex/pandoc_template.tex \
+$(BUILD_DIR)/%.tex: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile $(TOOLS_ROOT)/theme/tex/pandoc_template.tex \
 				$(TOOLS_ROOT)/theme/markup_todo.lua \
 				$(commonfilters) \
 				$(bldimages) $(BUILD_DIR)/.version-%.stamp
@@ -225,7 +228,7 @@ $(BUILD_DIR)/%.tex: $(SRC_DIR)/%.md $(SRC_DIR)/thinking.bib $(TOOLS_ROOT)/Makefi
 		--lua-filter $(TOOLS_ROOT)/theme/add_feedback_buttons.lua \
 		-o $@ $(PANDOCFLAGS) $(COMMONFILTERS)
 
-$(BUILD_DIR)/%.xhtml: $(SRC_DIR)/%.md $(SRC_DIR)/thinking.bib $(TOOLS_ROOT)/Makefile \
+$(BUILD_DIR)/%.xhtml: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile \
 				$(TOOLS_ROOT)/theme/markup_todo.lua \
 				$(commonfilters) \
 				$(bldimages) \
@@ -235,7 +238,7 @@ $(BUILD_DIR)/%.xhtml: $(SRC_DIR)/%.md $(SRC_DIR)/thinking.bib $(TOOLS_ROOT)/Make
 	    --default-image-extension=png \
 		-o $@ $(PANDOCFLAGS) $(COMMONFILTERS)
 
-$(BUILD_DIR)/%.docx: $(SRC_DIR)/%.md $(SRC_DIR)/thinking.bib $(TOOLS_ROOT)/Makefile \
+$(BUILD_DIR)/%.docx: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile \
 				$(TOOLS_ROOT)/theme/markup_todo.lua \
 				$(commonfilters) \
 				$(bldimages) \
@@ -245,7 +248,7 @@ $(BUILD_DIR)/%.docx: $(SRC_DIR)/%.md $(SRC_DIR)/thinking.bib $(TOOLS_ROOT)/Makef
 	    --default-image-extension=png \
 		-o $@ $(PANDOCFLAGS) $(COMMONFILTERS)
 
-$(BUILD_DIR)/%.pptx: $(SRC_DIR)/%.md $(SRC_DIR)/thinking.bib $(TOOLS_ROOT)/Makefile \
+$(BUILD_DIR)/%.pptx: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile \
 				$(TOOLS_ROOT)/theme/markup_todo.lua \
 				$(commonfilters) \
 				$(bldimages) \
