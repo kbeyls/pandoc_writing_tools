@@ -4,25 +4,91 @@
 # SPDX-License-Identifier: MIT
 FROM fedora:43
 
-# 1. install pandoc and texlive dependencies
-#    Also install git as we need that for computing version numbers.
-#    Also install librsvg2-bin and inkscape to enable pandoc to convert SVG images to PDF.
-#    Also install python as the pandoc-fignos filter depends on it.
-RUN dnf -y update && \
-    dnf -y install \
-        wget \
-        perl \
+# Install a focused Pandoc/TeX toolchain.
+# Keep git for version metadata, Inkscape for SVG conversion, Python for helper
+# scripts, and uv so container builds follow the developer-oriented Makefile
+# path without installing the full TeX Live scheme.
+RUN dnf -y --setopt=install_weak_deps=False update && \
+    dnf -y --setopt=install_weak_deps=False install \
         pandoc \
         make \
-        git \
-        librsvg2-tools \
-        python3-pip \
+        git-core \
+        python3 \
+        uv \
         inkscape \
         libxcrypt-compat \
-        texlive-scheme-full xindy \
+        latexmk \
+        texlive-xetex \
+        texlive-makeindex \
+        texlive-amsfonts \
+        texlive-amsmath \
+        texlive-atbegshi \
+        texlive-atveryend \
+        texlive-auxhook \
+        texlive-bclogo \
+        texlive-bigintcalc \
+        texlive-bitset \
+        texlive-bookmark \
+        texlive-caption \
+        texlive-changepage \
+        texlive-etexcmds \
+        texlive-etoolbox \
+        texlive-fontname \
+        texlive-fontspec \
+        texlive-gettitlestring \
+        texlive-graphics \
+        texlive-graphics-cfg \
+        texlive-graphics-def \
+        texlive-hycolor \
+        texlive-hyperref \
+        texlive-iftex \
+        texlive-infwarerr \
+        texlive-intcalc \
+        texlive-kpathsea \
+        texlive-kvdefinekeys \
+        texlive-kvoptions \
+        texlive-kvsetkeys \
+        texlive-l3backend \
+        texlive-l3kernel \
+        texlive-l3packages \
+        texlive-latex \
+        texlive-letltxmacro \
+        texlive-lm \
+        texlive-ltxcmds \
+        texlive-mdframed \
+        texlive-microtype \
+        texlive-needspace \
+        texlive-parskip \
+        texlive-pdfescape \
+        texlive-pdftexcmds \
+        texlive-pgf \
+        texlive-pst-coil \
+        texlive-pst-grad \
+        texlive-pst-node \
+        texlive-pstricks \
+        texlive-refcount \
+        texlive-rerunfilecheck \
+        texlive-stringenc \
+        texlive-todonotes \
+        texlive-tools \
+        texlive-unicode-math \
+        texlive-uniquecounter \
+        texlive-upquote \
+        texlive-url \
+        texlive-xcolor \
+        texlive-xetex-pstricks \
+        texlive-xkeyval \
+        texlive-xurl \
+        texlive-zapfding \
+        texlive-zref \
     && dnf clean all
 
-RUN python3 -m pip install --no-cache-dir uv
+# The repo is bind-mounted at /src during Docker-backed builds. Keep uv's
+# project environment in /tmp so `uv run` does not replace a developer's host
+# .venv with a Linux virtualenv through the bind mount.
+ENV UV_PROJECT_ENVIRONMENT=/tmp/pandoc_writing_tools_venv \
+    UV_CACHE_DIR=/tmp/uv-cache \
+    UV_LINK_MODE=copy
 
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
