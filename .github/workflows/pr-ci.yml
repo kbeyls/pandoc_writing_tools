@@ -1,0 +1,73 @@
+name: PR CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  python-tests:
+    name: python-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      UV_CACHE_DIR: .uv-cache
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Run fast Python tests
+        run: uv run --project . -m pytest -q -k "not regression"
+
+  regression-tests:
+    name: regression-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      DOCKER_BUILDKIT: "1"
+      UV_CACHE_DIR: .uv-cache
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Run regression tests
+        run: uv run --project . -m pytest -q -k regression --basetemp=.pytest-tmp
+
+      - name: Upload regression artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-artifacts
+          path: |
+            examples/feature-demo/build
+            .pytest-tmp
+          if-no-files-found: ignore

@@ -19,13 +19,25 @@ git submodule update --init --recursive
 
 The build scripts use Docker by default to keep the Pandoc toolchain pinned.
 
+## Pull request CI
+
+Pull requests run two GitHub Actions checks:
+
+- `python-tests`: fast Python tests that exclude the regression suite.
+- `regression-tests`: the Docker-backed feature-demo regression suite.
+
+The regression check rebuilds the feature demo and compares normalized outputs
+against the checked-in golden files. If a change intentionally affects generated
+HTML, XHTML, TeX, PDF, native, DOCX, PPTX, or EML output, update the golden files
+in the same PR.
+
 ## Regression tests
 
 Regression tests rebuild the feature demo and compare normalized outputs against
 checked-in golden files:
 
 ```shell
-uv run --project pandoc_writing_tools -m pytest -k regression
+uv run --project . -m pytest -k regression
 ```
 
 The tests build via Docker unless you set `PANDOC_REGRESSION_USE_DOCKER=0`.
@@ -35,7 +47,7 @@ The tests build via Docker unless you set `PANDOC_REGRESSION_USE_DOCKER=0`.
 After intentional output changes, update the golden files:
 
 ```shell
-uv run --project pandoc_writing_tools scripts/python/update_regression_goldens.py --accept
+uv run --project . scripts/python/update_regression_goldens.py --accept
 ```
 
 Useful options:
