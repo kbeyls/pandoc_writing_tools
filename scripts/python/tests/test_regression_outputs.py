@@ -14,7 +14,7 @@ import pytest
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from regression.build_outputs import build_outputs
-from regression.normalize_outputs import OUTPUT_SPECS, normalize_outputs
+from regression.normalize_outputs import OUTPUT_SPECS, normalize_outputs, normalize_tex
 
 
 def _env_flag(name: str, default: str = "0") -> bool:
@@ -31,6 +31,24 @@ def _docker_available() -> bool:
 
 def _read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
+
+
+def test_normalize_tex_replaces_escaped_feedback_versions(tmp_path):
+    source = (
+        "Version 12-with-local-changes\n"
+        r"\href{mailto:docs@example.com?subject=Feature\%20Demo\%20v12-with-local-changes\%20-&body=Feature\%20Demo\%27\%20v12-with-local-changes.\%0D}{feedback}"
+        "\n"
+        "abcv12.\n"
+    )
+    path = tmp_path / "sample.tex"
+    path.write_text(source, encoding="utf-8")
+
+    assert normalize_tex(path) == (
+        "Version <VER>\n"
+        r"\href{mailto:docs@example.com?subject=Feature\%20Demo\%20v<VER>\%20-&body=Feature\%20Demo\%27\%20v<VER>.\%0D}{feedback}"
+        "\n"
+        "abcv12.\n"
+    )
 
 
 def test_regression_outputs(tmp_path):
