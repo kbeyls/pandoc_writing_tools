@@ -146,15 +146,19 @@
   <h1 class="title">pandoc_writing_tools Feature Demo</h1>
         <p>
     </p>
-  <p>Last updated: Fri Mar 6 16:08:39 2026 +0100</p>
-  <p>Version: 4-with-local-changes</p>
+  <p>Last updated: <DATE></p>
+  <p>Version: <VER></p>
 </header>
 
 <main id="content">
+<!--
+SPDX-FileCopyrightText: <text>Copyright 2026 Arm Limited and/or its affiliates <open-source-office@arm.com></text>
+SPDX-License-Identifier: MIT
+-->
 <h1 data-number="1" data-section-number="1" id="sec:overview"><span
 class="header-section-number">1</span> Overview<a href="#sec:overview"
 class="selflink"></a><span class="feedback-button"> <a
-href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>-with-local-changes%20-%20Section%3A%20Overview&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Overview%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v4-with-local-changes.%0D%0A%0D%0A">[give
+href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Overview&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Overview%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v1-with-local-changes.%0D%0A%0D%0A">[give
 feedback]</a></span></h1>
 <p>This document demonstrates the functionality of the Lua filters in
 pandoc_writing_tools.</p>
@@ -163,7 +167,7 @@ id="sec:citations-and-refs"><span
 class="header-section-number">1.1</span> Citations and section
 references<a href="#sec:citations-and-refs" class="selflink"></a><span
 class="feedback-button"> <a
-href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>-with-local-changes%20-%20Section%3A%20Citations%20and%20section%20references&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Citations%20and%20section%20references%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v4-with-local-changes.%0D%0A%0D%0A">[give
+href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Citations%20and%20section%20references&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Citations%20and%20section%20references%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v1-with-local-changes.%0D%0A%0D%0A">[give
 feedback]</a></span></h2>
 <p>This is what a citation looks like: <span class="citation"
 data-cites="doe2020">(Doe 2020)</span>. The list of all cited references
@@ -175,7 +179,7 @@ href="#sec:overview">1</a>.</p>
 id="table-of-contents"><span class="header-section-number">1.2</span>
 Table of contents<a href="#table-of-contents" class="selflink"></a><span
 class="feedback-button"> <a
-href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>-with-local-changes%20-%20Section%3A%20Table%20of%20contents&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Table%20of%20contents%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v4-with-local-changes.%0D%0A%0D%0A">[give
+href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Table%20of%20contents&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Table%20of%20contents%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v1-with-local-changes.%0D%0A%0D%0A">[give
 feedback]</a></span></h2>
 <p>The table of contents is generated from the section headers. The
 <code>toc-list-top-level</code> and <code>toc-list-entry-levels</code>
@@ -209,10 +213,10 @@ feedback]</a><br />
 class="header-section-number">1.3</span> Figures and references<a
 href="#sec:figures" class="selflink"></a><span class="feedback-button">
 <a
-href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>-with-local-changes%20-%20Section%3A%20Figures%20and%20references&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Figures%20and%20references%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v4-with-local-changes.%0D%0A%0D%0A">[give
+href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Figures%20and%20references&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Figures%20and%20references%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v1-with-local-changes.%0D%0A%0D%0A">[give
 feedback]</a></span></h2>
 <figure id="fig:demo" data-count="1">
-<img src="cid:IMG" alt="A demo figure" />
+<img src="cid:img-1@" alt="A demo figure" />
 <figcaption>Figure 1: A demo figure</figcaption>
 </figure>
 <p>See Figure <a href="#fig:demo">1</a> for the numbered figure
@@ -221,7 +225,7 @@ reference.</p>
 class="header-section-number">1.4</span> Examples and definitions<a
 href="#sec:examples" class="selflink"></a><span class="feedback-button">
 <a
-href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>-with-local-changes%20-%20Section%3A%20Examples%20and%20definitions&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Examples%20and%20definitions%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v4-with-local-changes.%0D%0A%0D%0A">[give
+href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Examples%20and%20definitions&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Examples%20and%20definitions%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v1-with-local-changes.%0D%0A%0D%0A">[give
 feedback]</a></span></h2>
 <p>We have custom environments for examples and definitions, which are
 numbered and can be referenced from the text:</p>
@@ -241,7 +245,7 @@ href="#def:demo">1</a>.</p>
 id="sec:index-entries"><span class="header-section-number">1.5</span>
 Index entries<a href="#sec:index-entries" class="selflink"></a><span
 class="feedback-button"> <a
-href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>-with-local-changes%20-%20Section%3A%20Index%20entries&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Index%20entries%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v4-with-local-changes.%0D%0A%0D%0A">[give
+href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Index%20entries&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Index%20entries%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v1-with-local-changes.%0D%0A%0D%0A">[give
 feedback]</a></span></h2>
 <p>The index filter allows you to mark index entries in the text, which
 are then collected and emitted in an index div, see at the end of this
@@ -262,7 +266,7 @@ class="index">alpha;beta</span>.</p>
 class="header-section-number">1.6</span> Sidenotes<a
 href="#sec:sidenotes" class="selflink"></a><span
 class="feedback-button"> <a
-href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>-with-local-changes%20-%20Section%3A%20Sidenotes&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Sidenotes%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v4-with-local-changes.%0D%0A%0D%0A">[give
+href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Sidenotes&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Sidenotes%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v1-with-local-changes.%0D%0A%0D%0A">[give
 feedback]</a></span></h2>
 <p>This sentence has a footnote.<span class="sidenote_ref"
 href="#sidenote_1"><sup>1</sup></span><span id="sidenote_1"
@@ -271,7 +275,7 @@ HTML.</span></p>
 <h2 data-number="1.7" data-section-number="1.7" id="sec:todos"><span
 class="header-section-number">1.7</span> TODOs<a href="#sec:todos"
 class="selflink"></a><span class="feedback-button"> <a
-href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>-with-local-changes%20-%20Section%3A%20TODOs&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27TODOs%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v4-with-local-changes.%0D%0A%0D%0A">[give
+href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20TODOs&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27TODOs%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v1-with-local-changes.%0D%0A%0D%0A">[give
 feedback]</a></span></h2>
 <p>It is often useful to be able to mark TODO items in the text. It
 helps you to avoid writer’s block on something you can’t quite put into
@@ -286,7 +290,7 @@ id="todo_1" class="todo">fix this</span> inline.</p>
 id="sec:github-links"><span class="header-section-number">1.8</span>
 Linking to github issues and edit links<a href="#sec:github-links"
 class="selflink"></a><span class="feedback-button"> <a
-href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>-with-local-changes%20-%20Section%3A%20Linking%20to%20github%20issues%20and%20edit%20links&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Linking%20to%20github%20issues%20and%20edit%20links%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v4-with-local-changes.%0D%0A%0D%0A">[give
+href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Linking%20to%20github%20issues%20and%20edit%20links&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Linking%20to%20github%20issues%20and%20edit%20links%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v1-with-local-changes.%0D%0A%0D%0A">[give
 feedback]</a></span></h2>
 <p>Github issue link when enabled: Github issue <span
 class="issue">1</span>.</p>

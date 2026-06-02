@@ -4,9 +4,14 @@
 <ac:layout-section ac:type="single">
 <ac:layout-cell>
 <p>Author:  (<ac:link><ri:user ri:userkey="8a81eaf24e3f2407014e3f3972f403f9" /></ac:link>)<br />
-Last updated: Fri Mar 6 16:08:39 2026 +0100<br />
+Last updated: <DATE><br />
 Source: <br />
-Version: 4-with-local-changes</p>
+Version: <VER></p>
+<!--
+SPDX-FileCopyrightText: <text>Copyright 2026 Arm Limited and/or its affiliates <open-source-office@arm.com></text>
+SPDX-License-Identifier: MIT
+-->
+
 <ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">sec:overview</ac:parameter></ac:structured-macro><h1 id="sec:overview">1 Overview</h1>
 
 <p>This document demonstrates the functionality of the Lua filters in pandoc_writing_tools.</p>
