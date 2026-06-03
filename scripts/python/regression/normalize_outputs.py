@@ -22,17 +22,24 @@ VERSION_TOKEN_RE = re.compile(
     r"v\d+(?:-with-local-changes)?"
     r"(?=(?:[.%&]|\\?%0D|\\?%20|$))"
 )
-LAST_UPDATED_DISPLAY_RE = re.compile(r"(Last updated:\s*)[^<\n]+")
+LAST_UPDATED_DISPLAY_RE = re.compile(r"Last updated:\s*[^<\n]*")
 VERSION_DISPLAY_RE = re.compile(
     r"(Version:?[ \t]*)\d+(?:-with-local-changes)?(?=(?:[ \t]*</p>|[ \t]*$))",
     re.MULTILINE,
 )
-LAST_UPDATED_INLINE_RE = re.compile(r'LAST_UPDATED[:=]\s*("[^"]+"|[^\s\n"]+)')
+LAST_UPDATED_INLINE_RE = re.compile(r'LAST_UPDATED[:=][^\n"]*')
 VERSION_INLINE_RE = re.compile(r'VERSION[:=]\s*("[^"]+"|[^\s\n"]+)')
-LAST_UPDATED_META_RE = re.compile(r'(LAST_UPDATED"\s*,\s*MetaString\s*")[^"]+(")')
+LAST_UPDATED_META_RE = re.compile(r'(LAST_UPDATED"\s*,\s*MetaString\s*")[^"]*(")')
 VERSION_META_RE = re.compile(r'(VERSION"\s*,\s*MetaString\s*")[^"]+(")')
 LAST_UPDATED_NATIVE_BLOCK_RE = re.compile(
     r'Str "LAST_UPDATED:<DATE>"(?:\n\s*,\s*Space\n\s*,\s*Str "[^"]+")+'
+)
+LAST_UPDATED_NATIVE_META_BLOCK_RE = re.compile(
+    r'\(\s*"LAST_UPDATED"\s*,\s*MetaString\s*"<DATE>"\s*\)'
+)
+LAST_UPDATED_NATIVE_VERSION_PARA_RE = re.compile(
+    r'\[\s*Para\s*\[\s*Str "VERSION:<VER>"\s*,\s*SoftBreak\s*,'
+    r'\s*Str "LAST_UPDATED:<DATE>"\s*\]\s*\]'
 )
 
 
@@ -52,7 +59,7 @@ def _normalize_common(text: str) -> str:
     text = text.replace("\r\n", "\n")
     text = FEATURE_VERSION_RE.sub(r"\1<VER>", text)
     text = VERSION_TOKEN_RE.sub(r"\1v<VER>", text)
-    text = LAST_UPDATED_DISPLAY_RE.sub(r"\1<DATE>", text)
+    text = LAST_UPDATED_DISPLAY_RE.sub("Last updated: <DATE>", text)
     text = VERSION_DISPLAY_RE.sub(r"\1<VER>", text)
     text = VERSION_INLINE_RE.sub("VERSION:<VER>", text)
     text = LAST_UPDATED_INLINE_RE.sub("LAST_UPDATED:<DATE>", text)
@@ -81,6 +88,14 @@ def normalize_native(path: Path) -> str:
     text = path.read_text(encoding="utf-8")
     text = _normalize_common(text)
     text = LAST_UPDATED_NATIVE_BLOCK_RE.sub('Str "LAST_UPDATED:<DATE>"', text)
+    text = LAST_UPDATED_NATIVE_META_BLOCK_RE.sub(
+        '( "LAST_UPDATED" , MetaString "<DATE>" )',
+        text,
+    )
+    text = LAST_UPDATED_NATIVE_VERSION_PARA_RE.sub(
+        '[ Para [ Str "VERSION:<VER>" , SoftBreak , Str "LAST_UPDATED:<DATE>" ]\n  ]',
+        text,
+    )
     return text
 
 

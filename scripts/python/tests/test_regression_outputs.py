@@ -14,7 +14,13 @@ import pytest
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from regression.build_outputs import build_outputs
-from regression.normalize_outputs import OUTPUT_SPECS, normalize_outputs, normalize_tex
+from regression.normalize_outputs import (
+    OUTPUT_SPECS,
+    normalize_html,
+    normalize_native,
+    normalize_outputs,
+    normalize_tex,
+)
 
 
 def _env_flag(name: str, default: str = "0") -> bool:
@@ -48,6 +54,48 @@ def test_normalize_tex_replaces_escaped_feedback_versions(tmp_path):
         r"\href{mailto:docs@example.com?subject=Feature\%20Demo\%20v<VER>\%20-&body=Feature\%20Demo\%27\%20v<VER>.\%0D}{feedback}"
         "\n"
         "abcv12.\n"
+    )
+
+
+def test_normalize_outputs_canonicalizes_last_updated_metadata(tmp_path):
+    html_path = tmp_path / "sample.html"
+    html_path.write_text(
+        "<p>Last updated: Wed Jun 3 13:58:38 2026 +0100</p>\n"
+        "<p>Last updated: </p>\n",
+        encoding="utf-8",
+    )
+
+    assert normalize_html(html_path) == (
+        "<p>Last updated: <DATE></p>\n"
+        "<p>Last updated: <DATE></p>\n"
+    )
+
+    native_path = tmp_path / "sample.native"
+    native_path.write_text(
+        '( "LAST_UPDATED" , MetaString "" )\n'
+        '( "LAST_UPDATED"\n'
+        '  , MetaString "Wed Jun 3 13:58:38 2026 +0100"\n'
+        '  )\n'
+        'Str "LAST_UPDATED="\n'
+        'Str "LAST_UPDATED:Wed Jun 3 13:58:38 2026 +0100"\n'
+        '[ Para\n'
+        '    [ Str "VERSION=1"\n'
+        '    , SoftBreak\n'
+        '    , Str "LAST_UPDATED=Wed"\n'
+        '    , Space\n'
+        '    , Str "Jun"\n'
+        '    ]\n'
+        ']\n',
+        encoding="utf-8",
+    )
+
+    assert normalize_native(native_path) == (
+        '( "LAST_UPDATED" , MetaString "<DATE>" )\n'
+        '( "LAST_UPDATED" , MetaString "<DATE>" )\n'
+        'Str "LAST_UPDATED:<DATE>"\n'
+        'Str "LAST_UPDATED:<DATE>"\n'
+        '[ Para [ Str "VERSION:<VER>" , SoftBreak , Str "LAST_UPDATED:<DATE>" ]\n'
+        '  ]\n'
     )
 
 

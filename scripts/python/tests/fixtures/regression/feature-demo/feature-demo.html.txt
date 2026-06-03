@@ -375,7 +375,7 @@ margin-left: 40px;
   <h1 class="title">pandoc_writing_tools Feature Demo</h1>
         <p>
     </p>
-  <p>Last updated:<DATE></p>
+  <p>Last updated: <DATE></p>
   <p>Version: <VER></p>
 </header>
 
