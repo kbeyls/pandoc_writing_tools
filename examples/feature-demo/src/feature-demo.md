@@ -98,3 +98,23 @@ Edit links appear as little pencil icons at the end of headers when
 
 ::: {#index}
 :::
+
+# Standard Pandoc Regression Coverage {#sec:standard-pandoc-regression}
+
+The features in this final section are standard Pandoc features. They are not
+features added or enabled by the pandoc_writing_tools Lua filters.
+
+This section exists to regression-test whether selected Pandoc features keep
+working across output formats. In particular, it helps catch accidentally
+missing dependencies that are needed for LaTeX/PDF output when standard Pandoc
+constructs trigger extra TeX packages.
+
+## Tables {#sec:standard-pandoc-tables}
+
+This table exercises Pandoc's standard Markdown table support. For LaTeX/PDF
+output, Pandoc renders this construct through longtable-compatible LaTeX.
+
+| Standard Pandoc feature | Regression coverage |
+| --- | --- |
+| Markdown tables | Longtable-compatible LaTeX/PDF output |
+| LaTeX package selection | Required TeX packages are installed |
