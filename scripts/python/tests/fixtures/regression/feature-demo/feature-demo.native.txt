@@ -2,15 +2,9 @@ Pandoc
   Meta
     { unMeta =
         fromList
-          [ ( "LAST_UPDATED"
-            , MetaString "<DATE>"
-            )
+          [ ( "LAST_UPDATED" , MetaString "" )
           , ( "VERSION" , MetaString "<VER>" )
           ]
     }
-  [ Para
-      [ Str "VERSION:<VER>"
-      , SoftBreak
-      , Str "LAST_UPDATED:<DATE>"
-      ]
+  [ Para [ Str "VERSION:<VER>" , SoftBreak , Str "LAST_UPDATED=" ]
   ]

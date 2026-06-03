@@ -4,7 +4,7 @@
 <ac:layout-section ac:type="single">
 <ac:layout-cell>
 <p>Author:  (<ac:link><ri:user ri:userkey="8a81eaf24e3f2407014e3f3972f403f9" /></ac:link>)<br />
-Last updated: <DATE><br />
+Last updated:<DATE><br />
 Source: <br />
 Version: <VER></p>
 <!--
@@ -138,6 +138,39 @@ Figure 1: A demo figure
 </ac:layout-section>
 <ac:layout-section ac:type="single">
 <ac:layout-cell>
+
+<ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">sec:standard-pandoc-regression</ac:parameter></ac:structured-macro><h1 id="sec:standard-pandoc-regression">2 Standard Pandoc Regression Coverage</h1>
+
+<p>The features in this final section are standard Pandoc features. They are not features added or enabled by the pandoc_writing_tools Lua filters.</p>
+
+<p>This section exists to regression-test whether selected Pandoc features keep working across output formats. In particular, it helps catch accidentally missing dependencies that are needed for LaTeX/PDF output when standard Pandoc constructs trigger extra TeX packages.</p>
+
+<ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">sec:standard-pandoc-tables</ac:parameter></ac:structured-macro><h2 id="sec:standard-pandoc-tables">2.1 Tables</h2>
+
+<p>This table exercises Pandoc’s standard Markdown table support. For LaTeX/PDF output, Pandoc renders this construct through longtable-compatible LaTeX.</p>
+
+<table><thead>
+<tr>
+<th>Standard Pandoc feature
+</th>
+<th>Regression coverage
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Markdown tables
+</td>
+<td>Longtable-compatible LaTeX/PDF output
+</td>
+</tr>
+<tr>
+<td>LaTeX package selection
+</td>
+<td>Required TeX packages are installed
+</td>
+</tr>
+</tbody></table>
 
 <ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">refs</ac:parameter></ac:structured-macro><div id="refs" class="references csl-bib-body hanging-indent">
 <ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">ref-doe2020</ac:parameter></ac:structured-macro><ac:structured-macro ac:name="panel">

@@ -135,6 +135,16 @@
     feedback]</span></a></li>
     </ul></li>
     <li><a href="#index-header" id="toc-index-header">Index</a></li>
+    <li><a href="#sec:standard-pandoc-regression"
+    id="toc-sec:standard-pandoc-regression"><span
+    class="toc-section-number">2</span> Standard Pandoc Regression
+    Coverage<span class="feedback-button"> [give feedback]</span></a>
+    <ul>
+    <li><a href="#sec:standard-pandoc-tables"
+    id="toc-sec:standard-pandoc-tables"><span
+    class="toc-section-number">2.1</span> Tables<span
+    class="feedback-button"> [give feedback]</span></a></li>
+    </ul></li>
     </ul>
   </div>
 
@@ -146,7 +156,7 @@
   <h1 class="title">pandoc_writing_tools Feature Demo</h1>
         <p>
     </p>
-  <p>Last updated: <DATE></p>
+  <p>Last updated:<DATE></p>
   <p>Version: <VER></p>
 </header>
 
@@ -318,6 +328,48 @@ class="index-entry-text">blue</span> <span class="index-entry-locator">
 <span class="index-entry-locator"> <a
 href="#__index_entry_2">1.5</a></span></span>
 </div>
+<h1 data-number="2" data-section-number="2"
+id="sec:standard-pandoc-regression"><span
+class="header-section-number">2</span> Standard Pandoc Regression
+Coverage<a href="#sec:standard-pandoc-regression"
+class="selflink"></a><span class="feedback-button"> <a
+href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Standard%20Pandoc%20Regression%20Coverage&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Standard%20Pandoc%20Regression%20Coverage%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v<VER>.%0D%0A%0D%0A">[give
+feedback]</a></span></h1>
+<p>The features in this final section are standard Pandoc features. They
+are not features added or enabled by the pandoc_writing_tools Lua
+filters.</p>
+<p>This section exists to regression-test whether selected Pandoc
+features keep working across output formats. In particular, it helps
+catch accidentally missing dependencies that are needed for LaTeX/PDF
+output when standard Pandoc constructs trigger extra TeX packages.</p>
+<h2 data-number="2.1" data-section-number="2.1"
+id="sec:standard-pandoc-tables"><span
+class="header-section-number">2.1</span> Tables<a
+href="#sec:standard-pandoc-tables" class="selflink"></a><span
+class="feedback-button"> <a
+href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Tables&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Tables%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v<VER>.%0D%0A%0D%0A">[give
+feedback]</a></span></h2>
+<p>This table exercises Pandoc’s standard Markdown table support. For
+LaTeX/PDF output, Pandoc renders this construct through
+longtable-compatible LaTeX.</p>
+<table>
+<thead>
+<tr>
+<th>Standard Pandoc feature</th>
+<th>Regression coverage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Markdown tables</td>
+<td>Longtable-compatible LaTeX/PDF output</td>
+</tr>
+<tr>
+<td>LaTeX package selection</td>
+<td>Required TeX packages are installed</td>
+</tr>
+</tbody>
+</table>
 <div id="refs" class="references csl-bib-body hanging-indent"
 data-entry-spacing="0" role="list">
 <div id="ref-doe2020" class="csl-entry" role="listitem">

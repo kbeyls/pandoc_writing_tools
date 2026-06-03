@@ -57,6 +57,16 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
 \newsavebox\pandoc@box
@@ -272,6 +282,36 @@ Edit links appear as little pencil icons at the end of headers when
 \texttt{add\_edit\_to\_headers.lua} is enabled.
 
 \printindex
+
+\section{\texorpdfstring{Standard Pandoc Regression Coverage{
+\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v<VER>\%20-\%20Section\%3A\%20Standard\%20Pandoc\%20Regression\%20Coverage\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Standard\%20Pandoc\%20Regression\%20Coverage\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v<VER>.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Standard Pandoc Regression Coverage }}\label{sec:standard-pandoc-regression}
+
+The features in this final section are standard Pandoc features. They
+are not features added or enabled by the pandoc\_writing\_tools Lua
+filters.
+
+This section exists to regression-test whether selected Pandoc features
+keep working across output formats. In particular, it helps catch
+accidentally missing dependencies that are needed for LaTeX/PDF output
+when standard Pandoc constructs trigger extra TeX packages.
+
+\subsection{\texorpdfstring{Tables{
+\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v<VER>\%20-\%20Section\%3A\%20Tables\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Tables\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v<VER>.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Tables }}\label{sec:standard-pandoc-tables}
+
+This table exercises Pandoc's standard Markdown table support. For
+LaTeX/PDF output, Pandoc renders this construct through
+longtable-compatible LaTeX.
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+Standard Pandoc feature & Regression coverage \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Markdown tables & Longtable-compatible LaTeX/PDF output \\
+LaTeX package selection & Required TeX packages are installed \\
+\end{longtable}
 
 \protect\phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}

@@ -53,4 +53,15 @@ color  1.5
 blue  1.5
 
 idea  1.5
+2	Standard Pandoc Regression Coverage
+The features in this final section are standard Pandoc features. They are not features added or enabled by the pandoc_writing_tools Lua filters.
+This section exists to regression-test whether selected Pandoc features keep working across output formats. In particular, it helps catch accidentally missing dependencies that are needed for LaTeX/PDF output when standard Pandoc constructs trigger extra TeX packages.
+2.1	Tables
+This table exercises Pandoc’s standard Markdown table support. For LaTeX/PDF output, Pandoc renders this construct through longtable-compatible LaTeX.
+Standard Pandoc feature
+Regression coverage
+Markdown tables
+Longtable-compatible LaTeX/PDF output
+LaTeX package selection
+Required TeX packages are installed
 Doe, Jane. 2020. “Demo Reference.” Demo Journal.
