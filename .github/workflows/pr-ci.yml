@@ -9,6 +9,32 @@ permissions:
   contents: read
 
 jobs:
+  reuse-lint:
+    name: reuse-lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      UV_CACHE_DIR: .uv-cache
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Check REUSE compliance
+        run: uv run --project . reuse lint
+
   python-tests:
     name: python-tests
     runs-on: ubuntu-latest
