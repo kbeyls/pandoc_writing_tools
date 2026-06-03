@@ -2,7 +2,7 @@ pandoc_writing_tools Feature Demo
 
 ---
 
-Table of Contents 1 Overview 1.1 Citations and section references 1.2 Table of contents 1.3 Figures and references 1.4 Examples and definitions 1.5 Index entries 1.6 Sidenotes 1.7 TODOs 1.8 Linking to github issues and edit links Index 2 Notes
+Table of Contents 1 Overview 1.1 Citations and section references 1.2 Table of contents 1.3 Figures and references 1.4 Examples and definitions 1.5 Index entries 1.6 Sidenotes 1.7 TODOs 1.8 Linking to github issues and edit links Index 2 Standard Pandoc Regression Coverage 2.1 Tables 3 Notes
 
 ---
 
@@ -10,7 +10,15 @@ Overview This document demonstrates the functionality of the Lua filters in pand
 
 ---
 
-Index alpha  1.5 beta  1.5 color  1.5 blue  1.5 idea  1.5 Doe, Jane. 2020. “Demo Reference.”  Demo Journal .
+Index alpha  1.5 beta  1.5 color  1.5 blue  1.5 idea  1.5
+
+---
+
+Standard Pandoc Regression Coverage The features in this final section are standard Pandoc features. They are not features added or enabled by the pandoc_writing_tools Lua filters. This section exists to regression-test whether selected Pandoc features keep working across output formats. In particular, it helps catch accidentally missing dependencies that are needed for LaTeX/PDF output when standard Pandoc constructs trigger extra TeX packages. Tables This table exercises Pandoc’s standard Markdown table support. For LaTeX/PDF output, Pandoc renders this construct through longtable-compatible LaTeX. Standard Pandoc feature Regression coverage Markdown tables Longtable-compatible LaTeX/PDF output LaTeX package selection Required TeX packages are installed
+
+---
+
+Doe, Jane. 2020. “Demo Reference.”  Demo Journal .
 
 ---
 

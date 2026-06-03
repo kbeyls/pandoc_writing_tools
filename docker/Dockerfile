@@ -35,6 +35,7 @@ RUN dnf -y --setopt=install_weak_deps=False update && \
         texlive-etoolbox \
         texlive-fontname \
         texlive-fontspec \
+        texlive-footnotehyper \
         texlive-gettitlestring \
         texlive-graphics \
         texlive-graphics-cfg \
@@ -55,6 +56,7 @@ RUN dnf -y --setopt=install_weak_deps=False update && \
         texlive-letltxmacro \
         texlive-lm \
         texlive-ltxcmds \
+        texlive-mdwtools \
         texlive-mdframed \
         texlive-microtype \
         texlive-needspace \
