@@ -13,6 +13,7 @@ be reusable for other content projects.
 
 - [pandoc_writing_tools](#pandoc_writing_tools)
   - [Quick start](#quick-start)
+  - [Output formats](#output-formats)
   - [Features, implemented as Lua filters](#features-implemented-as-lua-filters)
     - [Figures, examples, definitions, and section references (fignos.lua)](#figures-examples-definitions-and-section-references-fignoslua)
     - [Index entries (index.lua)](#index-entries-indexlua)
@@ -26,10 +27,6 @@ be reusable for other content projects.
       - [Optional: add_edit_to_headers.lua](#optional-add_edit_to_headerslua)
     - [Generate Confluence content (confluence.lua)](#generate-confluence-content-confluencelua)
     - [Confluence uploads (upload_to_confluence.py)](#confluence-uploads-upload_to_confluencepy)
-  - [Using this repository for your own content projects](#using-this-repository-for-your-own-content-projects)
-    - [Use it as a submodule inside your content repository](#use-it-as-a-submodule-inside-your-content-repository)
-    - [Preferred build workflow (Docker)](#preferred-build-workflow-docker)
-    - [Output formats](#output-formats)
   - [Contributing](#contributing)
   - [AI-assisted contribution policy](#ai-assisted-contribution-policy)
 
@@ -53,6 +50,112 @@ be reusable for other content projects.
 
 3. Open the generated HTML, PDF, and other files in
    `examples/feature-demo/build/` to see the various features in action.
+
+4. Choose how you want to start your own writing project.
+
+   You only need one of these paths. Start inside this checkout for quick
+   experimentation; use a standalone content repository for a real writing
+   project that should live in its own git repository.
+
+   **Path A: inside this checkout**
+
+   Use this if you want another example project next to `feature-demo`. Copy
+   the feature demo to a sibling directory under `examples/`:
+
+   ```shell
+   cd ../..
+   cp -R examples/feature-demo examples/my-writing
+   rm -rf examples/my-writing/build
+   ```
+
+   Then edit `examples/my-writing/build_with_docker.sh` so the Docker command
+   passes `-C examples/my-writing "$@"` instead of
+   `-C examples/feature-demo "$@"`. Adapt the files under
+   `examples/my-writing/src/`, especially the metadata at the top of the
+   markdown file:
+
+   - `title`
+   - `contact-email`
+   - `github-repo`
+   - `edit-source-file`
+   - `edit-url-base`
+   - `bibliography`
+
+   You can keep `src/feature-demo.md` while experimenting, or rename the
+   markdown and bibliography files. If you rename them, update matching
+   metadata such as `bibliography`, `edit-source-file`, and `edit-url-base`.
+
+   **Path B: standalone content repository**
+
+   Use this if your writing project should live outside this repository. Copy
+   the feature demo to the location where your content repository should live,
+   initialize that repository, and add `pandoc_writing_tools` as a submodule:
+
+   ```shell
+   cd /path/where/you/want/the/content/repository
+   cp -R /path/to/pandoc_writing_tools/examples/feature-demo my-writing
+   cd my-writing
+   rm -rf build
+   git init
+   git submodule add https://github.com/kbeyls/pandoc_writing_tools.git pandoc_writing_tools
+   git submodule update --init --recursive
+   ```
+
+   In the copied `Makefile`, point `TOOLS_ROOT` at the tools submodule and keep
+   `CONTENT_ROOT` pointed at the content repository that contains your `src/`
+   directory:
+
+   ```make
+   TOOLS_ROOT := $(CURDIR)/pandoc_writing_tools
+   CONTENT_ROOT := $(CURDIR)
+
+   HTML_ISSUE_LINKS = 1
+   HTML_EDIT_LINKS = 1
+
+   include $(TOOLS_ROOT)/Makefile
+   ```
+
+   In the copied `build_with_docker.sh`, set the content root to the directory
+   containing the script:
+
+   ```shell
+   CONTENT_ROOT="$(cd "$(dirname "$0")" && pwd)"
+   TOOLS_ROOT="${CONTENT_ROOT}/pandoc_writing_tools"
+
+   docker build -t pandoc_writing_tools_build "${TOOLS_ROOT}/docker" && \
+     docker run --rm --user="${uid}":"${gid}" \
+       --mount type=bind,source="${CONTENT_ROOT}",target=/src \
+       pandoc_writing_tools_build "$@"
+   ```
+
+   Git-derived metadata such as `VERSION` and `LAST_UPDATED` is computed from
+   the closest `.git` directory when walking up from `CONTENT_ROOT`, so commit
+   your initial content before relying on those fields.
+
+5. After completing either path, build and inspect the generated documentation:
+
+   ```shell
+   ./build_with_docker.sh all
+   ```
+
+   If you kept the `feature-demo.md` filename, verify that the build produced
+   files such as `build/feature-demo.html`, `build/feature-demo.pdf`,
+   `build/feature-demo.xhtml`, `build/feature-demo.docx`,
+   `build/feature-demo.pptx`, and `build/feature-demo.eml`. If you renamed the
+   markdown source, the output files use that new stem instead.
+
+## Output formats
+
+Outputs are written under `build/` in the content repository:
+
+- HTML: `build/*.html`
+- PDF: `build/*.pdf`
+- Confluence XHTML: `build/*.xhtml`
+- DOCX: `build/*.docx`
+- PPTX: `build/*.pptx`
+- EML (HTML email with inline images): `build/*.eml`
+- Pandoc native AST: `build/*.native`
+- LaTeX: `build/*.tex`
 
 ## Features, implemented as Lua filters
 
@@ -245,62 +348,6 @@ Notes:
 - Inline comments are reattached on a best-effort basis (exact match first,
   then a position-based fallback).
 
-## Using this repository for your own content projects
-
-### Use it as a submodule inside your content repository
-
-This repository is designed to be included as a git submodule inside your
-"content repository". The content repository contains the markdown source files.
-This repository is called the "tools repository" and contains the build tooling
-and Lua filters.
-
-Add the tools repo as a submodule and include its Makefile from a thin wrapper
-Makefile in your content repo. The tools Makefile requires `CONTENT_ROOT` to be
-set to the content repo root.
-
-```Makefile
-# In your content repo root
-TOOLS_ROOT ?= $(CURDIR)/pandoc_writing_tools
-CONTENT_ROOT := $(CURDIR)
-
-include $(TOOLS_ROOT)/Makefile
-```
-
-Git-derived metadata (`VERSION`/`LAST_UPDATED`) is computed from the closest
-`.git` directory when walking up from `CONTENT_ROOT`.
-
-### Preferred build workflow (Docker)
-
-Use the `examples/feature-demo/build_with_docker.sh` script whenever possible.
-The Docker image pins Pandoc and all related dependencies, which avoids
-breakage caused by local toolchain drift.
-
-When you set up your own content repo, copy this script as a starting point and
-adjust the content path and targets to match your project.
-
-If you pass no arguments to the script, it runs `all`. From the demo folder,
-run:
-
-```shell
-./build_with_docker.sh all
-./build_with_docker.sh html
-./build_with_docker.sh pdf
-./build_with_docker.sh xhtml
-```
-
-### Output formats
-
-Outputs are written under `build/` in the content repo:
-
-- HTML: `build/*.html`
-- PDF: `build/*.pdf`
-- Confluence XHTML: `build/*.xhtml`
-- DOCX: `build/*.docx`
-- PPTX: `build/*.pptx`
-- EML (HTML email with inline images): `build/*.eml`
-- Pandoc native AST: `build/*.native`
-- LaTeX: `build/*.tex`
-
 ## Contributing
 
 Developer notes, regression testing, and golden update guidance live in
@@ -318,4 +365,3 @@ contributions. Contributors should be sufficiently confident that the
 contribution is high enough quality that asking for a review is a good use of
 scarce maintainer time, and they should be able to answer questions about their
 work during review.
-
