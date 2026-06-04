@@ -28,7 +28,7 @@ be reusable for other content projects.
     - [Generate Confluence content (confluence.lua)](#generate-confluence-content-confluencelua)
     - [Confluence uploads (upload_to_confluence.py)](#confluence-uploads-upload_to_confluencepy)
   - [Contributing](#contributing)
-  - [AI-assisted contribution policy](#ai-assisted-contribution-policy)
+    - [AI-assisted contribution policy](#ai-assisted-contribution-policy)
 
 <!--TOC-->
 
@@ -353,7 +353,7 @@ Notes:
 Developer notes, regression testing, and golden update guidance live in
 [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
-## AI-assisted contribution policy
+### AI-assisted contribution policy
 
 The AI tool use policy for this project is inspired by the [LLVM AI Tool Use
 Policy](https://llvm.org/docs/AIToolPolicy.html). Basically: contributors can
