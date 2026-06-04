@@ -99,6 +99,20 @@ def test_normalize_outputs_canonicalizes_last_updated_metadata(tmp_path):
     )
 
 
+def test_normalize_html_replaces_parameterized_base64_images(tmp_path):
+    html_path = tmp_path / "sample.html"
+    html_path.write_text(
+        '<img src="data:image/png;base64,AAAA==" />\n'
+        '<img src="data:image/svg+xml;charset=utf-8;base64,BBBB==" />\n',
+        encoding="utf-8",
+    )
+
+    assert normalize_html(html_path) == (
+        '<img src="data:image/<BASE64>" />\n'
+        '<img src="data:image/<BASE64>" />\n'
+    )
+
+
 def test_regression_outputs(tmp_path):
     use_docker = _env_flag("PANDOC_REGRESSION_USE_DOCKER", "1")
     skip_build = _env_flag("PANDOC_REGRESSION_SKIP_BUILD", "0")
