@@ -14,7 +14,9 @@ from typing import Callable
 from xml.etree import ElementTree
 
 
-HTML_BASE64_RE = re.compile(r"data:image/[^;]+;base64,[A-Za-z0-9+/=]+")
+HTML_BASE64_RE = re.compile(
+    r"data:image/[^;\"'>\s]+(?:;[^;,\"'>\s]+)*;base64,[A-Za-z0-9+/=]+"
+)
 CID_RE = re.compile(r"cid:img-\d+@[^\"'>]+")
 FEATURE_VERSION_RE = re.compile(r"(Feature(?:\\?%20|\s)Demo(?:\\?%20|\s)v)\d+(?:-with-local-changes)?")
 VERSION_TOKEN_RE = re.compile(
