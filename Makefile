@@ -66,7 +66,7 @@ EMAILPANDOCFLAGS = \
 		  --metadata=VERSION:$(call compute_version,$(SRC_DIR)/$*.md) \
 		  --from markdown-example_lists
 
-EMAIL_RUNNER = $(shell command -v uv >/dev/null 2>&1 && echo "uv run --project $(TOOLS_ROOT)" || echo "python3")
+PYTHON_RUNNER = $(shell command -v uv >/dev/null 2>&1 && echo "uv run --project $(TOOLS_ROOT)" || echo "python3")
 
 COMMONFILTERS = \
           --lua-filter $(TOOLS_ROOT)/theme/fignos.lua \
@@ -108,6 +108,7 @@ VERSIONSTAMPS = $(patsubst %,$(BUILD_DIR)/.version-%.stamp,$(DOCS))
 GITHASHSTAMPS = $(patsubst %,$(BUILD_DIR)/.githash-%.stamp,$(DOCS))
 EMLHTMLTARGETS = $(patsubst %,$(BUILD_DIR)/%.email.html,$(DOCS))
 EMLTARGETS = $(patsubst %,$(BUILD_DIR)/%.eml,$(DOCS))
+IMAGE_DEPS_MK := $(BUILD_DIR)/.image-deps.mk
 
 # Version stamps track git-derived metadata so outputs rebuild when VERSION or
 # LAST_UPDATED changes (e.g., after commits) without forcing full rebuilds.
@@ -124,26 +125,33 @@ docx: $(DOCXTARGETS)
 pptx: $(PPTXTARGETS)
 eml: $(EMLTARGETS)
 
+# A pure `make clean` must not remake generated dependency files before
+# removing build artifacts. Combined goals such as `make clean all` still
+# include image dependencies so the build goal has an accurate graph.
+ifneq ($(MAKECMDGOALS),clean)
+-include $(IMAGE_DEPS_MK)
+endif
+
 # The source of images are in SVG, PNG or JPEG format.
 # The below lines define to convert the SVG source images to PDF images such
 # that they can be included in the LaTeX/PDF build.
 # The source images live in src/img, the produced images live in build/img.
 # The pandoc markdown source files need to include the images living in build/img.
-$(BUILD_IMG_DIR)/%.pdf: $(SRC_IMG_DIR)/%.svg $(BUILD_IMG_DIR)
+$(BUILD_IMG_DIR)/%.pdf: $(SRC_IMG_DIR)/%.svg | $(BUILD_IMG_DIR)
 	inkscape $< --export-type="pdf" --export-filename=$@ # --dpi=300 # --export-width=3000
 	# rsvg-convert -f pdf -o $@ $<
-$(BUILD_IMG_DIR)/%.png: $(SRC_IMG_DIR)/%.svg $(BUILD_IMG_DIR)
+$(BUILD_IMG_DIR)/%.png: $(SRC_IMG_DIR)/%.svg | $(BUILD_IMG_DIR)
 	inkscape $< --export-type="png" --export-filename=$@ # --dpi=300 # --export-width=3000
 	# rsvg-convert --keep-aspect-ratio --width=3000 -f png -o $@ $<
-$(BUILD_IMG_DIR)/%.png: $(SRC_IMG_DIR)/%.png $(BUILD_IMG_DIR)
+$(BUILD_IMG_DIR)/%.png: $(SRC_IMG_DIR)/%.png | $(BUILD_IMG_DIR)
 	cp $< $@
-$(BUILD_IMG_DIR)/%.jpg: $(SRC_IMG_DIR)/%.jpg $(BUILD_IMG_DIR)
+$(BUILD_IMG_DIR)/%.jpg: $(SRC_IMG_DIR)/%.jpg | $(BUILD_IMG_DIR)
 	cp $< $@
-$(BUILD_IMG_DIR)/%.jpeg: $(SRC_IMG_DIR)/%.jpeg $(BUILD_IMG_DIR)
+$(BUILD_IMG_DIR)/%.jpeg: $(SRC_IMG_DIR)/%.jpeg | $(BUILD_IMG_DIR)
 	cp $< $@
-$(BUILD_IMG_DIR)/%.svg: $(SRC_IMG_DIR)/%.svg $(BUILD_IMG_DIR)
+$(BUILD_IMG_DIR)/%.svg: $(SRC_IMG_DIR)/%.svg | $(BUILD_IMG_DIR)
 	cp $< $@
-$(BUILD_IMG_DIR):
+$(BUILD_IMG_DIR): | $(BUILD_DIR)
 	mkdir -p $(BUILD_IMG_DIR)
 srcsvgimages := $(wildcard $(SRC_IMG_DIR)/*.svg)
 srcpngimages := $(wildcard $(SRC_IMG_DIR)/*.png)
@@ -162,10 +170,13 @@ commonfilters := $(TOOLS_ROOT)/theme/fignos.lua $(TOOLS_ROOT)/theme/index.lua $(
 clean:
 	rm -rf $(BUILD_DIR) $(bldimages)
 
-build:
+$(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
-$(BUILD_DIR)/default.css: $(TOOLS_ROOT)/theme/html/default.css $(TOOLS_ROOT)/Makefile
+$(IMAGE_DEPS_MK): $(wildcard $(SRC_DIR)/*.md) $(TOOLS_ROOT)/scripts/python/generate_image_deps.py $(TOOLS_ROOT)/Makefile | $(BUILD_DIR)
+	$(PYTHON_RUNNER) $(TOOLS_ROOT)/scripts/python/generate_image_deps.py --content-root $(CONTENT_ROOT) --output $@
+
+$(BUILD_DIR)/default.css: $(TOOLS_ROOT)/theme/html/default.css $(TOOLS_ROOT)/Makefile | $(BUILD_DIR)
 	mkdir -p $(dir $@)
 	cp $(TOOLS_ROOT)/theme/html/default.css $(BUILD_DIR)/default.css
 
@@ -175,7 +186,7 @@ $(BUILD_DIR)/%.html: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile $(TOOLS_
 				 $(TOOLS_ROOT)/theme/markup_todo.lua \
 				 $(HTML_EXTRA_DEPS) \
 				 $(commonfilters) \
-				 $(BUILD_DIR)/default.css $(svgimages) $(BUILD_DIR)/.version-%.stamp
+				 $(BUILD_DIR)/default.css $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
 	mkdir -p $(dir $@)
 	pandoc $< -t html \
 		--template $(TOOLS_ROOT)/theme/html/pandoc_template.html \
@@ -193,7 +204,7 @@ $(BUILD_DIR)/%.email.html: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile $(
 				 $(TOOLS_ROOT)/theme/html/convert_to_sidenote.lua \
 				 $(TOOLS_ROOT)/theme/markup_todo.lua \
 				 $(commonfilters) \
-				 $(BUILD_DIR)/default.css $(svgimages) $(BUILD_DIR)/.version-%.stamp
+				 $(BUILD_DIR)/default.css $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
 	mkdir -p $(dir $@)
 	pandoc $< -t html \
 		--template $(TOOLS_ROOT)/theme/html/pandoc_template.html \
@@ -205,20 +216,20 @@ $(BUILD_DIR)/%.email.html: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile $(
 		--default-image-extension=png \
 		-o $@ $(EMAILPANDOCFLAGS) $(COMMONFILTERS)
 
-$(BUILD_DIR)/%.native: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile $(BUILD_DIR)/.version-%.stamp
+$(BUILD_DIR)/%.native: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
 	mkdir -p $(dir $@)
 	pandoc $< -t native -o $@ $(PANDOCFLAGS)
 
 $(BUILD_DIR)/%.transformed.native: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile \
 				 $(commonfilters)
-$(BUILD_DIR)/%.transformed.native: $(BUILD_DIR)/.version-%.stamp
+$(BUILD_DIR)/%.transformed.native: $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
 	mkdir -p $(dir $@)
 	pandoc $< -t native -o $@ $(PANDOCFLAGS) $(COMMONFILTERS)
 
 $(BUILD_DIR)/%.tex: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile $(TOOLS_ROOT)/theme/tex/pandoc_template.tex \
 				$(TOOLS_ROOT)/theme/markup_todo.lua \
 				$(commonfilters) \
-				$(bldimages) $(BUILD_DIR)/.version-%.stamp
+				$(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
 	mkdir -p $(dir $@)
 	pandoc $< -t latex \
 		--template $(TOOLS_ROOT)/theme/tex/pandoc_template.tex \
@@ -231,8 +242,7 @@ $(BUILD_DIR)/%.tex: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile $(TOOLS_R
 $(BUILD_DIR)/%.xhtml: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile \
 				$(TOOLS_ROOT)/theme/markup_todo.lua \
 				$(commonfilters) \
-				$(bldimages) \
-				$(TOOLS_ROOT)/theme/confluence.lua $(BUILD_DIR)/.version-%.stamp
+				$(TOOLS_ROOT)/theme/confluence.lua $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
 	mkdir -p $(dir $@)
 	pandoc $< -t $(TOOLS_ROOT)/theme/confluence.lua \
 	    --default-image-extension=png \
@@ -241,8 +251,7 @@ $(BUILD_DIR)/%.xhtml: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile \
 $(BUILD_DIR)/%.docx: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile \
 				$(TOOLS_ROOT)/theme/markup_todo.lua \
 				$(commonfilters) \
-				$(bldimages) \
-				$(TOOLS_ROOT)/theme/confluence.lua $(BUILD_DIR)/.version-%.stamp
+				$(TOOLS_ROOT)/theme/confluence.lua $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
 	mkdir -p $(dir $@)
 	pandoc $< -t docx \
 	    --default-image-extension=png \
@@ -251,23 +260,22 @@ $(BUILD_DIR)/%.docx: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile \
 $(BUILD_DIR)/%.pptx: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile \
 				$(TOOLS_ROOT)/theme/markup_todo.lua \
 				$(commonfilters) \
-				$(bldimages) \
-				$(BUILD_DIR)/.version-%.stamp
+				$(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
 	mkdir -p $(dir $@)
 	pandoc $< -t pptx \
 	    --default-image-extension=png \
 		-o $@ $(PANDOCFLAGS) $(COMMONFILTERS)
 
-$(BUILD_DIR)/%.eml: $(BUILD_DIR)/%.email.html $(TOOLS_ROOT)/scripts/python/render_email.py
-	$(EMAIL_RUNNER) $(TOOLS_ROOT)/scripts/python/render_email.py --html $< --output $@
+$(BUILD_DIR)/%.eml: $(BUILD_DIR)/%.email.html $(TOOLS_ROOT)/scripts/python/render_email.py | $(BUILD_DIR)
+	$(PYTHON_RUNNER) $(TOOLS_ROOT)/scripts/python/render_email.py --html $< --output $@
 
 
-$(BUILD_DIR)/%.pdf: $(BUILD_DIR)/%.tex $(TOOLS_ROOT)/Makefile
+$(BUILD_DIR)/%.pdf: $(BUILD_DIR)/%.tex $(TOOLS_ROOT)/Makefile | $(BUILD_DIR)
 	mkdir -p $(dir $@)
 	latexmk -xelatex $< -output-directory=$(BUILD_DIR)
 	touch $@
 
-$(BUILD_DIR)/.version-%.stamp: $(SRC_DIR)/%.md $(TOOLS_ROOT)/Makefile $(BUILD_DIR)/.githash-%.stamp
+$(BUILD_DIR)/.version-%.stamp: $(SRC_DIR)/%.md $(TOOLS_ROOT)/Makefile $(BUILD_DIR)/.githash-%.stamp | $(BUILD_DIR)
 	# Update the stamp only if metadata changes to keep incremental builds fast.
 	mkdir -p $(dir $@)
 	@tmpfile="$@.tmp"; \
@@ -278,7 +286,7 @@ $(BUILD_DIR)/.version-%.stamp: $(SRC_DIR)/%.md $(TOOLS_ROOT)/Makefile $(BUILD_DI
 	if [ -f $@ ] && cmp -s $$tmpfile $@; then rm $$tmpfile; else mv $$tmpfile $@; fi
 
 # Per-document git hashes prevent unrelated commits from triggering rebuilds.
-$(BUILD_DIR)/.githash-%.stamp: $(SRC_DIR)/%.md $(TOOLS_ROOT)/Makefile | $(GIT_HEAD_DEP)
+$(BUILD_DIR)/.githash-%.stamp: $(SRC_DIR)/%.md $(TOOLS_ROOT)/Makefile | $(GIT_HEAD_DEP) $(BUILD_DIR)
 	mkdir -p $(dir $@)
 	@tmpfile="$@.tmp"; \
 	last_commit="$$( $(GIT) log -1 --format=%H -- $(SRC_DIR)/$*.md )"; \
