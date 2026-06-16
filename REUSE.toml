@@ -13,8 +13,7 @@ SPDX-License-Identifier = "MIT"
 [[annotations]]
 path = [
     ".github/workflows/pr-ci.yml",
-    "agent/tasks/github-pr-ci-option-2.execplan.md",
-    "agent/tasks/per-document-image-deps.execplan.md",
+    "agent/tasks/*.execplan.md",
     "uv.lock",
 ]
 SPDX-FileCopyrightText = "Copyright 2026 Arm Limited and/or its affiliates <open-source-office@arm.com>"

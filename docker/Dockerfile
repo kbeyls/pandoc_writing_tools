@@ -12,6 +12,7 @@ RUN dnf -y --setopt=install_weak_deps=False update && \
     dnf -y --setopt=install_weak_deps=False install \
         pandoc \
         make \
+        diffutils \
         git-core \
         python3 \
         uv \

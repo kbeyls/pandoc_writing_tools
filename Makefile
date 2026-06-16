@@ -109,11 +109,19 @@ GITHASHSTAMPS = $(patsubst %,$(BUILD_DIR)/.githash-%.stamp,$(DOCS))
 EMLHTMLTARGETS = $(patsubst %,$(BUILD_DIR)/%.email.html,$(DOCS))
 EMLTARGETS = $(patsubst %,$(BUILD_DIR)/%.eml,$(DOCS))
 IMAGE_DEPS_MK := $(BUILD_DIR)/.image-deps.mk
+BUILD_BIB_DEPS_DIR := $(BUILD_DIR)/bib-deps
+BIB_REF_TARGETS = $(patsubst %,$(BUILD_BIB_DEPS_DIR)/%.refs.json,$(DOCS))
+BIB_FILE_ARGS = $(foreach bib,$(BIB_DEPS),--bib-file $(bib))
 
 # Version stamps track git-derived metadata so outputs rebuild when VERSION or
 # LAST_UPDATED changes (e.g., after commits) without forcing full rebuilds.
 
 .PHONY: all clean pdf html eml pptx
+# These generated prerequisites carry incremental state in their mtimes. If
+# Make deletes them as intermediate files, the next invocation must recreate
+# them and cannot distinguish unchanged metadata or bibliography fingerprints
+# from real changes. Preserve them after use so rebuild checks stay precise.
+.SECONDARY: $(VERSIONSTAMPS) $(GITHASHSTAMPS) $(BIB_REF_TARGETS)
 all: pdf html native downloads xhtml tex docx pptx eml
 pdf: $(PDFTARGETS)
 html: $(HTMLTARGETS) $(BUILD_DIR)/default.css
@@ -173,14 +181,20 @@ clean:
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
+$(BUILD_BIB_DEPS_DIR): | $(BUILD_DIR)
+	mkdir -p $(BUILD_BIB_DEPS_DIR)
+
 $(IMAGE_DEPS_MK): $(wildcard $(SRC_DIR)/*.md) $(TOOLS_ROOT)/scripts/python/generate_image_deps.py $(TOOLS_ROOT)/Makefile | $(BUILD_DIR)
 	$(PYTHON_RUNNER) $(TOOLS_ROOT)/scripts/python/generate_image_deps.py --content-root $(CONTENT_ROOT) --output $@
+
+$(BUILD_BIB_DEPS_DIR)/%.refs.json: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/scripts/python/generate_bib_deps.py $(TOOLS_ROOT)/Makefile | $(BUILD_BIB_DEPS_DIR)
+	$(PYTHON_RUNNER) $(TOOLS_ROOT)/scripts/python/generate_bib_deps.py --content-root $(CONTENT_ROOT) --document $< --output $@ $(BIB_FILE_ARGS)
 
 $(BUILD_DIR)/default.css: $(TOOLS_ROOT)/theme/html/default.css $(TOOLS_ROOT)/Makefile | $(BUILD_DIR)
 	mkdir -p $(dir $@)
 	cp $(TOOLS_ROOT)/theme/html/default.css $(BUILD_DIR)/default.css
 
-$(BUILD_DIR)/%.html: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile $(TOOLS_ROOT)/theme/html/pandoc_template.html \
+$(BUILD_DIR)/%.html: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS_ROOT)/Makefile $(TOOLS_ROOT)/theme/html/pandoc_template.html \
                  $(TOOLS_ROOT)/theme/html/clickable_headers.lua \
 				 $(TOOLS_ROOT)/theme/html/convert_to_sidenote.lua \
 				 $(TOOLS_ROOT)/theme/markup_todo.lua \
@@ -199,7 +213,7 @@ $(BUILD_DIR)/%.html: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile $(TOOLS_
 		--default-image-extension=svg \
 		-o $@ $(PANDOCFLAGS) $(COMMONFILTERS)
 
-$(BUILD_DIR)/%.email.html: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile $(TOOLS_ROOT)/theme/html/pandoc_template.html \
+$(BUILD_DIR)/%.email.html: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS_ROOT)/Makefile $(TOOLS_ROOT)/theme/html/pandoc_template.html \
                  $(TOOLS_ROOT)/theme/html/clickable_headers.lua \
 				 $(TOOLS_ROOT)/theme/html/convert_to_sidenote.lua \
 				 $(TOOLS_ROOT)/theme/markup_todo.lua \
@@ -216,17 +230,17 @@ $(BUILD_DIR)/%.email.html: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile $(
 		--default-image-extension=png \
 		-o $@ $(EMAILPANDOCFLAGS) $(COMMONFILTERS)
 
-$(BUILD_DIR)/%.native: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
+$(BUILD_DIR)/%.native: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS_ROOT)/Makefile $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
 	mkdir -p $(dir $@)
 	pandoc $< -t native -o $@ $(PANDOCFLAGS)
 
-$(BUILD_DIR)/%.transformed.native: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile \
+$(BUILD_DIR)/%.transformed.native: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS_ROOT)/Makefile \
 				 $(commonfilters)
 $(BUILD_DIR)/%.transformed.native: $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
 	mkdir -p $(dir $@)
 	pandoc $< -t native -o $@ $(PANDOCFLAGS) $(COMMONFILTERS)
 
-$(BUILD_DIR)/%.tex: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile $(TOOLS_ROOT)/theme/tex/pandoc_template.tex \
+$(BUILD_DIR)/%.tex: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS_ROOT)/Makefile $(TOOLS_ROOT)/theme/tex/pandoc_template.tex \
 				$(TOOLS_ROOT)/theme/markup_todo.lua \
 				$(commonfilters) \
 				$(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
@@ -239,7 +253,7 @@ $(BUILD_DIR)/%.tex: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile $(TOOLS_R
 		--lua-filter $(TOOLS_ROOT)/theme/add_feedback_buttons.lua \
 		-o $@ $(PANDOCFLAGS) $(COMMONFILTERS)
 
-$(BUILD_DIR)/%.xhtml: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile \
+$(BUILD_DIR)/%.xhtml: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS_ROOT)/Makefile \
 				$(TOOLS_ROOT)/theme/markup_todo.lua \
 				$(commonfilters) \
 				$(TOOLS_ROOT)/theme/confluence.lua $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
@@ -248,7 +262,7 @@ $(BUILD_DIR)/%.xhtml: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile \
 	    --default-image-extension=png \
 		-o $@ $(PANDOCFLAGS) $(COMMONFILTERS)
 
-$(BUILD_DIR)/%.docx: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile \
+$(BUILD_DIR)/%.docx: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS_ROOT)/Makefile \
 				$(TOOLS_ROOT)/theme/markup_todo.lua \
 				$(commonfilters) \
 				$(TOOLS_ROOT)/theme/confluence.lua $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
@@ -257,7 +271,7 @@ $(BUILD_DIR)/%.docx: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile \
 	    --default-image-extension=png \
 		-o $@ $(PANDOCFLAGS) $(COMMONFILTERS)
 
-$(BUILD_DIR)/%.pptx: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/Makefile \
+$(BUILD_DIR)/%.pptx: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS_ROOT)/Makefile \
 				$(TOOLS_ROOT)/theme/markup_todo.lua \
 				$(commonfilters) \
 				$(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
