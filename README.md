@@ -17,15 +17,16 @@ be reusable for other content projects.
   - [Figures, examples, definitions, and section references (fignos.lua)](#figures-examples-definitions-and-section-references-fignoslua)
   - [Index entries (index.lua)](#index-entries-indexlua)
   - [Mini table of contents (toc.lua)](#mini-table-of-contents-toclua)
-  - [Feedback buttons (add_feedback_buttons.lua)](#feedback-buttons-add_feedback_buttonslua)
-  - [Markup TODOs (markup_todo.lua)](#markup-todos-markup_todolua)
+  - [Feedback buttons (add\_feedback\_buttons.lua)](#feedback-buttons-add_feedback_buttonslua)
+  - [Markup TODOs (markup\_todo.lua)](#markup-todos-markup_todolua)
   - [Features only for HTML output](#features-only-for-html-output)
-    - [Clickable headers (clickable_headers.lua)](#clickable-headers-clickable_headerslua)
-    - [Convert to sidenote (convert_to_sidenote.lua)](#convert-to-sidenote-convert_to_sidenotelua)
-    - [Optional: markup_issue.lua](#optional-markup_issuelua)
-    - [Optional: add_edit_to_headers.lua](#optional-add_edit_to_headerslua)
+    - [Clickable headers (clickable\_headers.lua)](#clickable-headers-clickable_headerslua)
+    - [Convert to sidenote (convert\_to\_sidenote.lua)](#convert-to-sidenote-convert_to_sidenotelua)
+    - [Optional: markup\_issue.lua](#optional-markup_issuelua)
+    - [Optional: add\_edit\_to\_headers.lua](#optional-add_edit_to_headerslua)
   - [Generate Confluence content (confluence.lua)](#generate-confluence-content-confluencelua)
-  - [Confluence uploads (upload_to_confluence.py)](#confluence-uploads-upload_to_confluencepy)
+  - [Confluence uploads (upload\_to\_confluence.py)](#confluence-uploads-upload_to_confluencepy)
+- [Incremental dependency tracking](#incremental-dependency-tracking)
 - [Contributing](#contributing)
   - [AI-assisted contribution policy](#ai-assisted-contribution-policy)
 
@@ -346,6 +347,27 @@ Notes:
   those formats are uploaded as attachments and linked in the page.
 - Inline comments are reattached on a best-effort basis (exact match first,
   then a position-based fallback).
+
+## Incremental dependency tracking
+
+The shared Makefile automatically derives per-document dependencies for inputs
+that are often shared across many documents. Authors can add image references
+and citations in Markdown without manually updating Makefile prerequisites.
+
+`scripts/python/generate_image_deps.py` parses the Markdown documents with
+Pandoc JSON and writes `build/.image-deps.mk`. That generated Make include
+records which local images each document references, including images resolved
+through the configured default image extensions.
+
+`scripts/python/generate_bib_deps.py` writes one bibliography fingerprint per
+document under `build/bib-deps/`. Each fingerprint contains the normalized
+bibliography entries selected by that document's citations. When a shared
+`.bib` file changes, Make reruns the fingerprint generator for affected
+documents, but unchanged fingerprints keep their mtimes so unrelated document
+outputs remain up to date.
+
+These generated dependency files live under `build/` and should not be
+committed. Delete `build/` to regenerate them from scratch.
 
 ## Contributing
 
