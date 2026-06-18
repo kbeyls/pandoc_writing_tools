@@ -21,3 +21,8 @@ dev = [
     "pytest-cov>=7.0.0",
     "reuse>=6.2.0",
 ]
+
+[tool.pytest.ini_options]
+markers = [
+    "regression: tests that require Pandoc or the regression build environment",
+]
