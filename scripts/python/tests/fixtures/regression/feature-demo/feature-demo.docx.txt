@@ -71,4 +71,8 @@ Grid table row span
 First row covered by span
 
 Second row covered by span
+2.2	Math
+This paragraph exercises Pandoc’s standard inline math support, , in ordinary text.
+The display math below exercises Pandoc’s standard display math support.
+
 Doe, Jane. 2020. “Demo Reference.” Demo Journal.

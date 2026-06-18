@@ -2,7 +2,7 @@ pandoc_writing_tools Feature Demo
 
 ---
 
-Table of Contents 1 Overview 1.1 Citations and section references 1.2 Table of contents 1.3 Figures and references 1.4 Examples and definitions 1.5 Index entries 1.6 Sidenotes 1.7 TODOs 1.8 Linking to github issues and edit links Index 2 Standard Pandoc Regression Coverage 2.1 Tables 3 Notes
+Table of Contents 1 Overview 1.1 Citations and section references 1.2 Table of contents 1.3 Figures and references 1.4 Examples and definitions 1.5 Index entries 1.6 Sidenotes 1.7 TODOs 1.8 Linking to github issues and edit links Index 2 Standard Pandoc Regression Coverage 2.1 Tables 2.2 Math 3 Notes
 
 ---
 
@@ -22,7 +22,7 @@ The grid table below includes a row span. For LaTeX/PDF output, Pandoc renders t
 
 ---
 
-Doe, Jane. 2020. “Demo Reference.”  Demo Journal .
+Math This paragraph exercises Pandoc’s standard inline math support,  , in ordinary text. The display math below exercises Pandoc’s standard display math support. Doe, Jane. 2020. “Demo Reference.”  Demo Journal .
 
 ---
 
