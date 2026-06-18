@@ -129,3 +129,14 @@ this standard table construct with the `multirow` package.
 |                         +-------------------------------+
 |                         | Second row covered by span    |
 +-------------------------+-------------------------------+
+
+## Math {#sec:standard-pandoc-math}
+
+This paragraph exercises Pandoc's standard inline math support, $a < b$, in
+ordinary text.
+
+The display math below exercises Pandoc's standard display math support.
+
+$$
+E = mc^2
+$$

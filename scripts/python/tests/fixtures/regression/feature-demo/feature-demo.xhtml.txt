@@ -195,6 +195,16 @@ Figure 1: A demo figure
 </tr>
 </tbody></table>
 
+<ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">sec:standard-pandoc-math</ac:parameter></ac:structured-macro><h2 id="sec:standard-pandoc-math">2.2 Math</h2>
+
+<p>This paragraph exercises Pandoc’s standard inline math support, <span class="math inline">a &lt; b</span>, in ordinary text.</p>
+
+<p>The display math below exercises Pandoc’s standard display math support.</p>
+
+<div class="math display">
+E = mc^2
+</div>
+
 <ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">refs</ac:parameter></ac:structured-macro><div id="refs" class="references csl-bib-body hanging-indent">
 <ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">ref-doe2020</ac:parameter></ac:structured-macro><ac:structured-macro ac:name="panel">
   <ac:parameter ac:name="bgColor">#EFEFEF</ac:parameter>

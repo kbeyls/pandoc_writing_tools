@@ -93,7 +93,16 @@ Writer.Block.Header = function(header)
     return string.format("%s<%s%s%s>%s</%s>\n", anchor, tag, attr, classes, escape_html(content), tag)
 end
 
+local function is_display_math_para(para)
+    return #para.content == 1
+        and para.content[1].t == "Math"
+        and para.content[1].mathtype == "DisplayMath"
+end
+
 Writer.Block.Para = function(para)
+    if is_display_math_para(para) then
+        return { Writer.Inlines(para.content), "\n" }
+    end
     -- iterate over para.content to handle inlines properly
     return { "<p>", Writer.Inlines(para.content), "</p>\n" }
 end
@@ -460,6 +469,15 @@ Writer.Inline.Image = function(image)
         end
     end
     return string.format('<ac:image ac:width="%d"><ri:attachment ri:filename="%s"/></ac:image>', width, src)
+end
+
+Writer.Inline.Math = function(math)
+    local content = escape_html(math.text)
+    if math.mathtype == "InlineMath" then
+        return string.format('<span class="math inline">%s</span>', content)
+    else
+        return string.format('<div class="math display">%s</div>', content)
+    end
 end
 
 Writer.Block.RawBlock = function(raw)

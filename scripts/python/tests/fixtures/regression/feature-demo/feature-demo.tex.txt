@@ -335,6 +335,18 @@ Regression coverage
 & Second row covered by span \\
 \end{longtable}
 
+\subsection{\texorpdfstring{Math{
+\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v<VER>\%20-\%20Section\%3A\%20Math\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Math\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v<VER>.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Math }}\label{sec:standard-pandoc-math}
+
+This paragraph exercises Pandoc's standard inline math support,
+\(a < b\), in ordinary text.
+
+The display math below exercises Pandoc's standard display math support.
+
+\[
+E = mc^2
+\]
+
 \protect\phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}
 \bibitem[\citeproctext]{ref-doe2020}
