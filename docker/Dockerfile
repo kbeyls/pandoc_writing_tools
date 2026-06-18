@@ -60,6 +60,7 @@ RUN dnf -y --setopt=install_weak_deps=False update && \
         texlive-mdwtools \
         texlive-mdframed \
         texlive-microtype \
+        texlive-multirow \
         texlive-needspace \
         texlive-parskip \
         texlive-pdfescape \

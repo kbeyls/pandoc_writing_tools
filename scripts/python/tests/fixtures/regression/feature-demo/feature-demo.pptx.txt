@@ -18,6 +18,10 @@ Standard Pandoc Regression Coverage The features in this final section are stand
 
 ---
 
+The grid table below includes a row span. For LaTeX/PDF output, Pandoc renders this standard table construct with the  multirow  package. Standard Pandoc feature Regression coverage Grid table row span First row covered by span Second row covered by span
+
+---
+
 Doe, Jane. 2020. “Demo Reference.”  Demo Journal .
 
 ---
