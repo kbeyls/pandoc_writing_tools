@@ -3,10 +3,19 @@
 # SPDX-License-Identifier: MIT
 
 import subprocess
+import shutil
 from pathlib import Path
+
+import pytest
+
+
+pytestmark = pytest.mark.regression
 
 
 def render_confluence(markdown: str) -> str:
+    if not shutil.which("pandoc"):
+        pytest.skip("pandoc executable is required for Confluence writer tests")
+
     repo_root = Path(__file__).resolve().parents[3]
     writer = repo_root / "theme" / "confluence.lua"
     result = subprocess.run(
