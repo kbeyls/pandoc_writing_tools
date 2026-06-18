@@ -118,3 +118,14 @@ output, Pandoc renders this construct through longtable-compatible LaTeX.
 | --- | --- |
 | Markdown tables | Longtable-compatible LaTeX/PDF output |
 | LaTeX package selection | Required TeX packages are installed |
+
+The grid table below includes a row span. For LaTeX/PDF output, Pandoc renders
+this standard table construct with the `multirow` package.
+
++-------------------------+-------------------------------+
+| Standard Pandoc feature | Regression coverage           |
++=========================+===============================+
+| Grid table row span     | First row covered by span     |
+|                         +-------------------------------+
+|                         | Second row covered by span    |
++-------------------------+-------------------------------+

@@ -532,6 +532,30 @@ longtable-compatible LaTeX.</p>
 </tr>
 </tbody>
 </table>
+<p>The grid table below includes a row span. For LaTeX/PDF output,
+Pandoc renders this standard table construct with the
+<code>multirow</code> package.</p>
+<table style="width:81%;">
+<colgroup>
+<col style="width: 36%" />
+<col style="width: 44%" />
+</colgroup>
+<thead>
+<tr>
+<th>Standard Pandoc feature</th>
+<th>Regression coverage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td rowspan="2">Grid table row span</td>
+<td>First row covered by span</td>
+</tr>
+<tr>
+<td>Second row covered by span</td>
+</tr>
+</tbody>
+</table>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-doe2020" class="csl-entry" role="listitem">
 Doe, Jane. 2020. <span>“Demo Reference.”</span> <em>Demo Journal</em>.

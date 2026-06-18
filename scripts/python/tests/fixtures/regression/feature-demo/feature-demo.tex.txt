@@ -58,6 +58,7 @@
   \KOMAoptions{parskip=half}}
 \makeatother
 \usepackage{longtable,booktabs,array}
+\usepackage{multirow}
 \usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
@@ -311,6 +312,27 @@ Standard Pandoc feature & Regression coverage \\
 \endlastfoot
 Markdown tables & Longtable-compatible LaTeX/PDF output \\
 LaTeX package selection & Required TeX packages are installed \\
+\end{longtable}
+
+The grid table below includes a row span. For LaTeX/PDF output, Pandoc
+renders this standard table construct with the \texttt{multirow}
+package.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.3611}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.4444}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Standard Pandoc feature
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Regression coverage
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\multirow{2}{=}{Grid table row span} & First row covered by span \\
+& Second row covered by span \\
 \end{longtable}
 
 \protect\phantomsection\label{refs}
