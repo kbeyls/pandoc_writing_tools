@@ -266,6 +266,22 @@ def test_make_rebuilds_only_documents_whose_cited_bib_entries_change(tmp_path):
         stdout=subprocess.PIPE,
         text=True,
     )
+    # Make echoes recipes by default, so stdout shows whether the scanner or
+    # Pandoc recipes ran. An uncited .bib change should rerun the scanner once
+    # to refresh refs.checked, but it should not rebuild either HTML output.
+    assert "generate_bib_deps.py" in result.stdout
+    assert "doc-a.md -t html" not in result.stdout
+    assert "doc-b.md -t html" not in result.stdout
+
+    result = subprocess.run(
+        ["make", "-C", str(content_root), "html"],
+        check=True,
+        stdout=subprocess.PIPE,
+        text=True,
+    )
+    # With no further input changes, the fresh refs.checked stamps should keep
+    # Make from rerunning generate_bib_deps.py.
+    assert "generate_bib_deps.py" not in result.stdout
     assert "doc-a.md -t html" not in result.stdout
     assert "doc-b.md -t html" not in result.stdout
 
