@@ -110,7 +110,14 @@ EMLHTMLTARGETS = $(patsubst %,$(BUILD_DIR)/%.email.html,$(DOCS))
 EMLTARGETS = $(patsubst %,$(BUILD_DIR)/%.eml,$(DOCS))
 IMAGE_DEPS_MK := $(BUILD_DIR)/.image-deps.mk
 BUILD_BIB_DEPS_DIR := $(BUILD_DIR)/bib-deps
+# Bibliography dependency tracking uses two per-document files with different
+# mtime contracts. The JSON fingerprint changes only when the document's
+# selected citation data changes, and document outputs depend on that file so
+# unrelated .bib edits do not rebuild them. The checked stamp records that the
+# scanner has already examined the current Markdown and .bib inputs, even when
+# the JSON did not change, so later no-change builds do not rerun the scanner.
 BIB_REF_TARGETS = $(patsubst %,$(BUILD_BIB_DEPS_DIR)/%.refs.json,$(DOCS))
+BIB_CHECK_TARGETS = $(patsubst %,$(BUILD_BIB_DEPS_DIR)/%.refs.checked,$(DOCS))
 BIB_FILE_ARGS = $(foreach bib,$(BIB_DEPS),--bib-file $(bib))
 
 # Version stamps track git-derived metadata so outputs rebuild when VERSION or
@@ -121,7 +128,7 @@ BIB_FILE_ARGS = $(foreach bib,$(BIB_DEPS),--bib-file $(bib))
 # Make deletes them as intermediate files, the next invocation must recreate
 # them and cannot distinguish unchanged metadata or bibliography fingerprints
 # from real changes. Preserve them after use so rebuild checks stay precise.
-.SECONDARY: $(VERSIONSTAMPS) $(GITHASHSTAMPS) $(BIB_REF_TARGETS)
+.SECONDARY: $(VERSIONSTAMPS) $(GITHASHSTAMPS) $(BIB_REF_TARGETS) $(BIB_CHECK_TARGETS)
 all: pdf html native downloads xhtml tex docx pptx eml
 pdf: $(PDFTARGETS)
 html: $(HTMLTARGETS) $(BUILD_DIR)/default.css
@@ -187,8 +194,19 @@ $(BUILD_BIB_DEPS_DIR): | $(BUILD_DIR)
 $(IMAGE_DEPS_MK): $(wildcard $(SRC_DIR)/*.md) $(TOOLS_ROOT)/scripts/python/generate_image_deps.py $(TOOLS_ROOT)/Makefile | $(BUILD_DIR)
 	$(PYTHON_RUNNER) $(TOOLS_ROOT)/scripts/python/generate_image_deps.py --content-root $(CONTENT_ROOT) --output $@
 
-$(BUILD_BIB_DEPS_DIR)/%.refs.json: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/scripts/python/generate_bib_deps.py $(TOOLS_ROOT)/Makefile | $(BUILD_BIB_DEPS_DIR)
-	$(PYTHON_RUNNER) $(TOOLS_ROOT)/scripts/python/generate_bib_deps.py --content-root $(CONTENT_ROOT) --document $< --output $@ $(BIB_FILE_ARGS)
+# Updating the stamp runs the scanner and validates the fingerprint against
+# current inputs. The scanner itself preserves refs.json's mtime when the
+# selected bibliography data is unchanged; touch the stamp only after that
+# successful check completes.
+$(BUILD_BIB_DEPS_DIR)/%.refs.checked: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/scripts/python/generate_bib_deps.py $(TOOLS_ROOT)/Makefile | $(BUILD_BIB_DEPS_DIR)
+	$(PYTHON_RUNNER) $(TOOLS_ROOT)/scripts/python/generate_bib_deps.py --content-root $(CONTENT_ROOT) --document $< --output $(BUILD_BIB_DEPS_DIR)/$*.refs.json $(BIB_FILE_ARGS)
+	touch $@
+
+# Fingerprints are produced or validated as a side effect of updating the
+# stamp. This no-recipe forwarding rule keeps outputs depending on refs.json
+# rather than the stamp, so touching refs.checked does not rebuild documents
+# whose selected bibliography data did not change.
+$(BUILD_BIB_DEPS_DIR)/%.refs.json: $(BUILD_BIB_DEPS_DIR)/%.refs.checked ;
 
 $(BUILD_DIR)/default.css: $(TOOLS_ROOT)/theme/html/default.css $(TOOLS_ROOT)/Makefile | $(BUILD_DIR)
 	mkdir -p $(dir $@)
