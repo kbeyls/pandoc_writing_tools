@@ -205,6 +205,24 @@ Figure 1: A demo figure
 E = mc^2
 </div>
 
+<ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">sec:standard-pandoc-images</ac:parameter></ac:structured-macro><h2 id="sec:standard-pandoc-images">2.3 Images</h2>
+
+<p>The image below uses Pandoc’s standard image syntax with an extensionless logical build target. Its source file on disk keeps an <code>.excalidraw.svg</code> extension so Excalidraw-aware tools can still recognize and edit it.</p>
+
+<ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">fig:standard-pandoc-excalidraw</ac:parameter></ac:structured-macro><ac:structured-macro ac:name="align" ac:schema-version="1"><ac:parameter ac:name="align">center</ac:parameter><ac:rich-text-body><ac:structured-macro ac:name="panel">
+<ac:parameter ac:name="bgColor">#FFFFFF</ac:parameter>
+<ac:parameter ac:name="title">
+Figure 2: An Excalidraw-style SVG fixture
+</ac:parameter>
+<ac:rich-text-body>
+<figure>
+<ac:image ac:width="440"><ri:attachment ri:filename="build/img/demo-excalidraw.png"/></ac:image>
+</figure>
+</ac:rich-text-body>
+</ac:structured-macro>
+</ac:rich-text-body>
+</ac:structured-macro>
+
 <ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">refs</ac:parameter></ac:structured-macro><div id="refs" class="references csl-bib-body hanging-indent">
 <ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">ref-doe2020</ac:parameter></ac:structured-macro><ac:structured-macro ac:name="panel">
   <ac:parameter ac:name="bgColor">#EFEFEF</ac:parameter>

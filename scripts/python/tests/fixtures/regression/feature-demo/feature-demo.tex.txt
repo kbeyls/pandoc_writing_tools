@@ -347,6 +347,21 @@ The display math below exercises Pandoc's standard display math support.
 E = mc^2
 \]
 
+\subsection{\texorpdfstring{Images{
+\href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v<VER>\%20-\%20Section\%3A\%20Images\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Images\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v<VER>.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Images }}\label{sec:standard-pandoc-images}
+
+The image below uses Pandoc's standard image syntax with an
+extensionless logical build target. Its source file on disk keeps an
+\texttt{.excalidraw.svg} extension so Excalidraw-aware tools can still
+recognize and edit it.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio]{build/img/demo-excalidraw.pdf}}
+\caption{Figure 2: An Excalidraw-style SVG
+fixture}\label{fig:standard-pandoc-excalidraw}
+\end{figure}
+
 \protect\phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}
 \bibitem[\citeproctext]{ref-doe2020}

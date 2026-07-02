@@ -75,4 +75,8 @@ Second row covered by span
 This paragraph exercises Pandoc’s standard inline math support, , in ordinary text.
 The display math below exercises Pandoc’s standard display math support.
 
+2.3	Images
+The image below uses Pandoc’s standard image syntax with an extensionless logical build target. Its source file on disk keeps an .excalidraw.svg extension so Excalidraw-aware tools can still recognize and edit it.
+
+Figure 2: An Excalidraw-style SVG fixture
 Doe, Jane. 2020. “Demo Reference.” Demo Journal.

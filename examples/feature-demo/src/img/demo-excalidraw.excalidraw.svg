@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="240" viewBox="0 0 480 240">
+  <!-- svg-source:excalidraw -->
+  <rect width="480" height="240" fill="#ffffff" />
+  <rect x="48" y="48" width="384" height="144" rx="8" fill="#d7ecff" stroke="#1f5f99" stroke-width="4" />
+  <circle cx="132" cy="120" r="44" fill="#ffd166" stroke="#9a6700" stroke-width="4" />
+  <path d="M210 92 L370 92 L370 148 L210 148 Z" fill="#b7f0c3" stroke="#2d7a3e" stroke-width="4" />
+  <text x="238" y="127" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#1e1e1e">Excalidraw SVG</text>
+</svg>
