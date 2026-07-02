@@ -283,3 +283,60 @@ def test_make_dry_run_rebuilds_only_document_for_touched_image(tmp_path):
 
     assert "doc-a.md -t html" in result.stdout
     assert "doc-b.md -t html" not in result.stdout
+
+
+def test_make_builds_logical_image_from_excalidraw_svg_source(tmp_path):
+    missing_tools = [tool for tool in ("git", "make", "pandoc") if not shutil.which(tool)]
+    if missing_tools:
+        pytest.skip("missing tools: " + ", ".join(missing_tools))
+
+    repo_root = Path(__file__).resolve().parents[3]
+    content_root = tmp_path / "content"
+    src_dir = content_root / "src"
+    img_dir = src_dir / "img"
+    img_dir.mkdir(parents=True)
+    (content_root / "Makefile").write_text(
+        f"TOOLS_ROOT := {repo_root}\n"
+        "CONTENT_ROOT := $(CURDIR)\n"
+        "include $(TOOLS_ROOT)/Makefile\n",
+        encoding="utf-8",
+    )
+    (src_dir / "doc.md").write_text(
+        "---\n"
+        "title: Doc\n"
+        "contact-email: docs@example.com\n"
+        "---\n\n"
+        "# Doc\n\n"
+        "![Excalidraw export](build/img/diagram)\n",
+        encoding="utf-8",
+    )
+    svg = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"></svg>\n'
+    source_svg = img_dir / "diagram.excalidraw.svg"
+    source_svg.write_text(svg, encoding="utf-8")
+
+    subprocess.run(["git", "init"], cwd=content_root, check=True, stdout=subprocess.PIPE)
+    subprocess.run(["git", "add", "."], cwd=content_root, check=True)
+    subprocess.run(
+        [
+            "git",
+            "-c",
+            "user.name=Test User",
+            "-c",
+            "user.email=test@example.com",
+            "commit",
+            "--no-gpg-sign",
+            "-m",
+            "init",
+        ],
+        cwd=content_root,
+        check=True,
+        stdout=subprocess.PIPE,
+    )
+
+    subprocess.run(["make", "-C", str(content_root), "html"], check=True)
+
+    # The source keeps the Excalidraw-specific suffix for editor tooling, while
+    # the built file uses the logical image stem referenced from Markdown.
+    built_svg = content_root / "build/img/diagram.svg"
+    assert built_svg.read_text(encoding="utf-8") == svg
+    assert (content_root / "build/doc.html").exists()

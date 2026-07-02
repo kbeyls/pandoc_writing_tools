@@ -364,6 +364,7 @@ margin-left: 40px;
     <ul>
     <li><a href="#sec:standard-pandoc-tables" id="toc-sec:standard-pandoc-tables"><span class="toc-section-number">2.1</span> Tables<span class="feedback-button"> [give feedback]</span></a></li>
     <li><a href="#sec:standard-pandoc-math" id="toc-sec:standard-pandoc-math"><span class="toc-section-number">2.2</span> Math<span class="feedback-button"> [give feedback]</span></a></li>
+    <li><a href="#sec:standard-pandoc-images" id="toc-sec:standard-pandoc-images"><span class="toc-section-number">2.3</span> Images<span class="feedback-button"> [give feedback]</span></a></li>
     </ul></li>
     </ul>
   </div>
@@ -564,6 +565,16 @@ text.</p>
 <p>The display math below exercises Pandoc’s standard display math
 support.</p>
 <p><span class="math display"><em>E</em> = <em>m</em><em>c</em><sup>2</sup></span></p>
+<h2 data-number="2.3" data-section-number="2.3" id="sec:standard-pandoc-images"><span class="header-section-number">2.3</span> Images<a href="#sec:standard-pandoc-images" class="selflink"></a><span class="feedback-button"> <a href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Images&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Images%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v<VER>.%0D%0A%0D%0A">[give
+feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md#L144" class="suggestedit" title="Suggest an edit"></a></h2>
+<p>The image below uses Pandoc’s standard image syntax with an
+extensionless logical build target. Its source file on disk keeps an
+<code>.excalidraw.svg</code> extension so Excalidraw-aware tools can
+still recognize and edit it.</p>
+<figure id="fig:standard-pandoc-excalidraw" data-count="2">
+<img role="img" aria-label="An Excalidraw-style SVG fixture" src="data:image/<BASE64>" alt="An Excalidraw-style SVG fixture" />
+<figcaption>Figure 2: An Excalidraw-style SVG fixture</figcaption>
+</figure>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-doe2020" class="csl-entry" role="listitem">
 Doe, Jane. 2020. <span>“Demo Reference.”</span> <em>Demo Journal</em>.

@@ -140,3 +140,11 @@ The display math below exercises Pandoc's standard display math support.
 $$
 E = mc^2
 $$
+
+## Images {#sec:standard-pandoc-images}
+
+The image below uses Pandoc's standard image syntax with an extensionless
+logical build target. Its source file on disk keeps an `.excalidraw.svg`
+extension so Excalidraw-aware tools can still recognize and edit it.
+
+![An Excalidraw-style SVG fixture](build/img/demo-excalidraw){#fig:standard-pandoc-excalidraw}
