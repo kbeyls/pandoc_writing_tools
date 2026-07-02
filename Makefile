@@ -152,23 +152,23 @@ endif
 # that they can be included in the LaTeX/PDF build.
 # The source images live in src/img, the produced images live in build/img.
 # The pandoc markdown source files need to include the images living in build/img.
+# Derive Inkscape's export type from the target suffix so the normal SVG and
+# Excalidraw SVG rules share one command for both PDF and PNG outputs.
+INKSCAPE_EXPORT_IMAGE = inkscape $< --export-type=$(patsubst .%,%,$(suffix $@)) --export-filename=$@
+
 $(BUILD_IMG_DIR)/%.pdf: $(SRC_IMG_DIR)/%.svg | $(BUILD_IMG_DIR)
-	inkscape $< --export-type="pdf" --export-filename=$@ # --dpi=300 # --export-width=3000
-	# rsvg-convert -f pdf -o $@ $<
+	$(INKSCAPE_EXPORT_IMAGE)
 # Excalidraw exports keep editable scene metadata in files named
 # `name.excalidraw.svg`. Markdown should still refer to the logical image stem,
 # e.g. `build/img/name`, so Pandoc can select `.svg`, `.pdf`, or `.png` per
 # output format. These fallback rules strip the editor marker from build
 # artifact names while preserving the source filename on disk.
 $(BUILD_IMG_DIR)/%.pdf: $(SRC_IMG_DIR)/%.excalidraw.svg | $(BUILD_IMG_DIR)
-	inkscape $< --export-type="pdf" --export-filename=$@ # --dpi=300 # --export-width=3000
-	# rsvg-convert -f pdf -o $@ $<
+	$(INKSCAPE_EXPORT_IMAGE)
 $(BUILD_IMG_DIR)/%.png: $(SRC_IMG_DIR)/%.svg | $(BUILD_IMG_DIR)
-	inkscape $< --export-type="png" --export-filename=$@ # --dpi=300 # --export-width=3000
-	# rsvg-convert --keep-aspect-ratio --width=3000 -f png -o $@ $<
+	$(INKSCAPE_EXPORT_IMAGE)
 $(BUILD_IMG_DIR)/%.png: $(SRC_IMG_DIR)/%.excalidraw.svg | $(BUILD_IMG_DIR)
-	inkscape $< --export-type="png" --export-filename=$@ # --dpi=300 # --export-width=3000
-	# rsvg-convert --keep-aspect-ratio --width=3000 -f png -o $@ $<
+	$(INKSCAPE_EXPORT_IMAGE)
 $(BUILD_IMG_DIR)/%.png: $(SRC_IMG_DIR)/%.png | $(BUILD_IMG_DIR)
 	cp $< $@
 $(BUILD_IMG_DIR)/%.jpg: $(SRC_IMG_DIR)/%.jpg | $(BUILD_IMG_DIR)
