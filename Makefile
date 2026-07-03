@@ -128,11 +128,13 @@ BIB_FILE_ARGS = $(foreach bib,$(BIB_DEPS),--bib-file $(bib))
 
 .PHONY: all clean pdf html eml pptx
 # These generated prerequisites carry incremental state in their mtimes. If
-# Make deletes them as intermediate files, the next invocation must recreate
-# them and cannot distinguish unchanged metadata or bibliography fingerprints
-# from real changes. Preserve them after use so rebuild checks stay precise.
+# Make deletes generated intermediate files unless told otherwise. Metadata
+# stamps, bibliography fingerprints, and email HTML intermediates all carry
+# incremental state that later builds need to inspect, so preserve them after
+# use.
 .SECONDARY: $(VERSIONSTAMPS) $(GITHASHSTAMPS) $(VERSIONCHECKS) \
-	$(GITHASHCHECKS) $(BIB_REF_TARGETS) $(BIB_CHECK_TARGETS)
+	$(GITHASHCHECKS) $(BIB_REF_TARGETS) $(BIB_CHECK_TARGETS) \
+	$(EMLHTMLTARGETS)
 all: pdf html native downloads xhtml tex docx pptx eml
 pdf: $(PDFTARGETS)
 html: $(HTMLTARGETS) $(BUILD_DIR)/default.css
