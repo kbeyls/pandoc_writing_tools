@@ -106,6 +106,8 @@ NATIVETARGETS += $(NATIVE_TRANSFORMED_TARGETS)
 DOWNLOADSTARGETS = $(PDFTARGETS) $(HTMLTARGETS)
 VERSIONSTAMPS = $(patsubst %,$(BUILD_DIR)/.version-%.stamp,$(DOCS))
 GITHASHSTAMPS = $(patsubst %,$(BUILD_DIR)/.githash-%.stamp,$(DOCS))
+VERSIONCHECKS = $(patsubst %,$(BUILD_DIR)/.version-%.checked,$(DOCS))
+GITHASHCHECKS = $(patsubst %,$(BUILD_DIR)/.githash-%.checked,$(DOCS))
 EMLHTMLTARGETS = $(patsubst %,$(BUILD_DIR)/%.email.html,$(DOCS))
 EMLTARGETS = $(patsubst %,$(BUILD_DIR)/%.eml,$(DOCS))
 IMAGE_DEPS_MK := $(BUILD_DIR)/.image-deps.mk
@@ -129,7 +131,8 @@ BIB_FILE_ARGS = $(foreach bib,$(BIB_DEPS),--bib-file $(bib))
 # Make deletes them as intermediate files, the next invocation must recreate
 # them and cannot distinguish unchanged metadata or bibliography fingerprints
 # from real changes. Preserve them after use so rebuild checks stay precise.
-.SECONDARY: $(VERSIONSTAMPS) $(GITHASHSTAMPS) $(BIB_REF_TARGETS) $(BIB_CHECK_TARGETS)
+.SECONDARY: $(VERSIONSTAMPS) $(GITHASHSTAMPS) $(VERSIONCHECKS) \
+	$(GITHASHCHECKS) $(BIB_REF_TARGETS) $(BIB_CHECK_TARGETS)
 all: pdf html native downloads xhtml tex docx pptx eml
 pdf: $(PDFTARGETS)
 html: $(HTMLTARGETS) $(BUILD_DIR)/default.css
@@ -151,6 +154,10 @@ ifneq ($(MAKECMDGOALS),clean)
 # stale. The files intentionally contain no rules; their mtimes only record
 # that generate_bib_deps.py has checked the current Markdown and .bib inputs.
 -include $(BIB_CHECK_TARGETS)
+# Metadata checked files follow the same pattern. They are empty generated
+# makefiles that update the content stamps before Make compares document
+# outputs against VERSION and LAST_UPDATED metadata files.
+-include $(GITHASHCHECKS) $(VERSIONCHECKS)
 endif
 
 # The source of images are in SVG, PNG or JPEG format.
@@ -328,20 +335,32 @@ $(BUILD_DIR)/%.pdf: $(BUILD_DIR)/%.tex $(TOOLS_ROOT)/Makefile | $(BUILD_DIR)
 	latexmk -xelatex $< -output-directory=$(BUILD_DIR)
 	touch $@
 
-$(BUILD_DIR)/.version-%.stamp: $(SRC_DIR)/%.md $(TOOLS_ROOT)/Makefile $(BUILD_DIR)/.githash-%.stamp | $(BUILD_DIR)
-	# Update the stamp only if metadata changes to keep incremental builds fast.
+$(BUILD_DIR)/.version-%.checked: $(SRC_DIR)/%.md $(TOOLS_ROOT)/Makefile \
+		$(BUILD_DIR)/.githash-%.stamp | $(BUILD_DIR) \
+		$(BUILD_DIR)/.githash-%.checked
+	# Update the content stamp only if visible metadata changes.
 	mkdir -p $(dir $@)
-	@tmpfile="$@.tmp"; \
+	@stamp="$(BUILD_DIR)/.version-$*.stamp"; \
+	tmpfile="$$stamp.tmp"; \
 	{ \
 	  printf "VERSION=%s\n" "$(call compute_version,$(SRC_DIR)/$*.md)"; \
 	  printf "LAST_UPDATED=%s\n" "$(call last_updated,$(SRC_DIR)/$*.md)"; \
 	} > $$tmpfile; \
-	if [ -f $@ ] && cmp -s $$tmpfile $@; then rm $$tmpfile; else mv $$tmpfile $@; fi
+	if [ -f $$stamp ] && cmp -s $$tmpfile $$stamp; then \
+	  rm $$tmpfile; \
+	else \
+	  mv $$tmpfile $$stamp; \
+	fi; \
+	touch $@
+
+$(BUILD_DIR)/.version-%.stamp: | $(BUILD_DIR)/.version-%.checked
+	@test -f $@
 
 # Per-document git hashes prevent unrelated commits from triggering rebuilds.
-$(BUILD_DIR)/.githash-%.stamp: $(SRC_DIR)/%.md $(TOOLS_ROOT)/Makefile | $(GIT_HEAD_DEP) $(BUILD_DIR)
+$(BUILD_DIR)/.githash-%.checked: $(SRC_DIR)/%.md $(TOOLS_ROOT)/Makefile | $(GIT_HEAD_DEP) $(BUILD_DIR)
 	mkdir -p $(dir $@)
-	@tmpfile="$@.tmp"; \
+	@stamp="$(BUILD_DIR)/.githash-$*.stamp"; \
+	tmpfile="$$stamp.tmp"; \
 	last_commit="$$( $(GIT) log -1 --format=%H -- $(SRC_DIR)/$*.md )"; \
 	commit_count="$$( $(GIT) log --oneline --follow -- $(SRC_DIR)/$*.md | wc -l )"; \
 	dirty_suffix="$$( $(GIT) status --porcelain -- $(SRC_DIR)/$*.md )"; \
@@ -350,4 +369,12 @@ $(BUILD_DIR)/.githash-%.stamp: $(SRC_DIR)/%.md $(TOOLS_ROOT)/Makefile | $(GIT_HE
 	  printf "COMMIT_COUNT=%s\n" "$$commit_count"; \
 	  printf "DIRTY=%s\n" "$$dirty_suffix"; \
 	} > $$tmpfile; \
-	if [ -f $@ ] && cmp -s $$tmpfile $@; then rm $$tmpfile; else mv $$tmpfile $@; fi
+	if [ -f $$stamp ] && cmp -s $$tmpfile $$stamp; then \
+	  rm $$tmpfile; \
+	else \
+	  mv $$tmpfile $$stamp; \
+	fi; \
+	touch $@
+
+$(BUILD_DIR)/.githash-%.stamp: | $(BUILD_DIR)/.githash-%.checked
+	@test -f $@
