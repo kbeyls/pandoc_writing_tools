@@ -118,6 +118,7 @@ BUILD_BIB_DEPS_DIR := $(BUILD_DIR)/bib-deps
 # the JSON did not change, so later no-change builds do not rerun the scanner.
 BIB_REF_TARGETS = $(patsubst %,$(BUILD_BIB_DEPS_DIR)/%.refs.json,$(DOCS))
 BIB_CHECK_TARGETS = $(patsubst %,$(BUILD_BIB_DEPS_DIR)/%.refs.checked,$(DOCS))
+BIB_CHECKED_PATTERN = $(BUILD_BIB_DEPS_DIR)/%.refs.checked
 BIB_FILE_ARGS = $(foreach bib,$(BIB_DEPS),--bib-file $(bib))
 
 # Version stamps track git-derived metadata so outputs rebuild when VERSION or
@@ -145,6 +146,11 @@ eml: $(EMLTARGETS)
 # include image dependencies so the build goal has an accurate graph.
 ifneq ($(MAKECMDGOALS),clean)
 -include $(IMAGE_DEPS_MK)
+# Empty refs.checked files are included as generated makefiles so Make updates
+# bibliography fingerprints before it decides whether document outputs are
+# stale. The files intentionally contain no rules; their mtimes only record
+# that generate_bib_deps.py has checked the current Markdown and .bib inputs.
+-include $(BIB_CHECK_TARGETS)
 endif
 
 # The source of images are in SVG, PNG or JPEG format.
@@ -216,10 +222,12 @@ $(BUILD_BIB_DEPS_DIR)/%.refs.checked: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/
 	touch $@
 
 # Fingerprints are produced or validated as a side effect of updating the
-# stamp. This no-recipe forwarding rule keeps outputs depending on refs.json
-# rather than the stamp, so touching refs.checked does not rebuild documents
-# whose selected bibliography data did not change.
-$(BUILD_BIB_DEPS_DIR)/%.refs.json: $(BUILD_BIB_DEPS_DIR)/%.refs.checked ;
+# checked stamp. refs.json is the content file that document outputs compare
+# against; refs.checked only records that the scanner examined the current
+# Markdown and .bib inputs. Keep refs.checked order-only here so a scanner run
+# that leaves refs.json unchanged does not make document outputs rebuild.
+$(BUILD_BIB_DEPS_DIR)/%.refs.json: | $(BUILD_BIB_DEPS_DIR)/%.refs.checked
+	@test -f $@
 
 $(BUILD_DIR)/default.css: $(TOOLS_ROOT)/theme/html/default.css $(TOOLS_ROOT)/Makefile | $(BUILD_DIR)
 	mkdir -p $(dir $@)
@@ -231,7 +239,7 @@ $(BUILD_DIR)/%.html: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS_R
 				 $(TOOLS_ROOT)/theme/markup_todo.lua \
 				 $(HTML_EXTRA_DEPS) \
 				 $(commonfilters) \
-				 $(BUILD_DIR)/default.css $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
+				 $(BUILD_DIR)/default.css $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR) $(BIB_CHECKED_PATTERN)
 	mkdir -p $(dir $@)
 	pandoc $< -t html \
 		--template $(TOOLS_ROOT)/theme/html/pandoc_template.html \
@@ -249,7 +257,7 @@ $(BUILD_DIR)/%.email.html: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(T
 				 $(TOOLS_ROOT)/theme/html/convert_to_sidenote.lua \
 				 $(TOOLS_ROOT)/theme/markup_todo.lua \
 				 $(commonfilters) \
-				 $(BUILD_DIR)/default.css $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
+				 $(BUILD_DIR)/default.css $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR) $(BIB_CHECKED_PATTERN)
 	mkdir -p $(dir $@)
 	pandoc $< -t html \
 		--template $(TOOLS_ROOT)/theme/html/pandoc_template.html \
@@ -261,20 +269,20 @@ $(BUILD_DIR)/%.email.html: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(T
 		--default-image-extension=png \
 		-o $@ $(EMAILPANDOCFLAGS) $(COMMONFILTERS)
 
-$(BUILD_DIR)/%.native: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS_ROOT)/Makefile $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
+$(BUILD_DIR)/%.native: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS_ROOT)/Makefile $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR) $(BIB_CHECKED_PATTERN)
 	mkdir -p $(dir $@)
 	pandoc $< -t native -o $@ $(PANDOCFLAGS)
 
 $(BUILD_DIR)/%.transformed.native: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS_ROOT)/Makefile \
 				 $(commonfilters)
-$(BUILD_DIR)/%.transformed.native: $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
+$(BUILD_DIR)/%.transformed.native: $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR) $(BIB_CHECKED_PATTERN)
 	mkdir -p $(dir $@)
 	pandoc $< -t native -o $@ $(PANDOCFLAGS) $(COMMONFILTERS)
 
 $(BUILD_DIR)/%.tex: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS_ROOT)/Makefile $(TOOLS_ROOT)/theme/tex/pandoc_template.tex \
 				$(TOOLS_ROOT)/theme/markup_todo.lua \
 				$(commonfilters) \
-				$(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
+				$(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR) $(BIB_CHECKED_PATTERN)
 	mkdir -p $(dir $@)
 	pandoc $< -t latex \
 		--template $(TOOLS_ROOT)/theme/tex/pandoc_template.tex \
@@ -287,7 +295,7 @@ $(BUILD_DIR)/%.tex: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS_RO
 $(BUILD_DIR)/%.xhtml: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS_ROOT)/Makefile \
 				$(TOOLS_ROOT)/theme/markup_todo.lua \
 				$(commonfilters) \
-				$(TOOLS_ROOT)/theme/confluence.lua $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
+				$(TOOLS_ROOT)/theme/confluence.lua $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR) $(BIB_CHECKED_PATTERN)
 	mkdir -p $(dir $@)
 	pandoc $< -t $(TOOLS_ROOT)/theme/confluence.lua \
 	    --default-image-extension=png \
@@ -296,7 +304,7 @@ $(BUILD_DIR)/%.xhtml: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS_
 $(BUILD_DIR)/%.docx: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS_ROOT)/Makefile \
 				$(TOOLS_ROOT)/theme/markup_todo.lua \
 				$(commonfilters) \
-				$(TOOLS_ROOT)/theme/confluence.lua $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
+				$(TOOLS_ROOT)/theme/confluence.lua $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR) $(BIB_CHECKED_PATTERN)
 	mkdir -p $(dir $@)
 	pandoc $< -t docx \
 	    --default-image-extension=png \
@@ -305,7 +313,7 @@ $(BUILD_DIR)/%.docx: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS_R
 $(BUILD_DIR)/%.pptx: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS_ROOT)/Makefile \
 				$(TOOLS_ROOT)/theme/markup_todo.lua \
 				$(commonfilters) \
-				$(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR)
+				$(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR) $(BIB_CHECKED_PATTERN)
 	mkdir -p $(dir $@)
 	pandoc $< -t pptx \
 	    --default-image-extension=png \
