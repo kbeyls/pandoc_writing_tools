@@ -109,3 +109,47 @@ def test_newer_bib_checked_stamp_does_not_rebuild_document(tmp_path: Path) -> No
     result = _make(content_root, "html", dry_run=True)
 
     assert "doc.md -t html" not in result.stdout
+
+
+def test_unchanged_metadata_check_does_not_rebuild_document(tmp_path: Path) -> None:
+    missing_tools = [tool for tool in ("git", "make", "pandoc") if not shutil.which(tool)]
+    if missing_tools:
+        pytest.skip("missing tools: " + ", ".join(missing_tools))
+
+    tools_root = Path(__file__).resolve().parents[3]
+    content_root = tmp_path / "content"
+    src_dir = content_root / "src"
+    src_dir.mkdir(parents=True)
+    _write_content_makefile(content_root, tools_root)
+    (src_dir / "doc.md").write_text(
+        "---\n"
+        "title: Doc\n"
+        "contact-email: docs@example.com\n"
+        "---\n\n"
+        "# Doc\n",
+        encoding="utf-8",
+    )
+    _commit_fixture_repo(content_root)
+
+    _make(content_root, "html")
+
+    old_mtime = (tools_root / "Makefile").stat().st_mtime - 10
+    for path in [
+        content_root / "build/.githash-doc.stamp",
+        content_root / "build/.version-doc.stamp",
+        content_root / "build/.githash-doc.checked",
+        content_root / "build/.version-doc.checked",
+    ]:
+        if path.exists():
+            os.utime(path, (old_mtime, old_mtime))
+
+    # The checked files may need to run because the tools Makefile is newer.
+    # If the recomputed metadata bytes match the existing content stamps, the
+    # document output must remain up to date.
+    result = _make(content_root, "html")
+
+    assert (content_root / "build/.githash-doc.stamp").stat().st_mtime == old_mtime
+    assert (content_root / "build/.version-doc.stamp").stat().st_mtime == old_mtime
+    assert (content_root / "build/.githash-doc.checked").stat().st_mtime > old_mtime
+    assert (content_root / "build/.version-doc.checked").stat().st_mtime > old_mtime
+    assert "doc.md -t html" not in result.stdout
