@@ -111,6 +111,52 @@ def test_newer_bib_checked_stamp_does_not_rebuild_document(tmp_path: Path) -> No
     assert "doc.md -t html" not in result.stdout
 
 
+def test_missing_bib_fingerprint_is_recreated(tmp_path: Path) -> None:
+    missing_tools = [tool for tool in ("git", "make", "pandoc") if not shutil.which(tool)]
+    if missing_tools:
+        pytest.skip("missing tools: " + ", ".join(missing_tools))
+
+    tools_root = Path(__file__).resolve().parents[3]
+    content_root = tmp_path / "content"
+    src_dir = content_root / "src"
+    src_dir.mkdir(parents=True)
+    _write_content_makefile(content_root, tools_root)
+    (src_dir / "doc.md").write_text(
+        "---\n"
+        "title: Doc\n"
+        "contact-email: docs@example.com\n"
+        "bibliography: src/refs.bib\n"
+        "---\n\n"
+        "# Doc\n\n"
+        "Alpha citation [@alpha].\n",
+        encoding="utf-8",
+    )
+    (src_dir / "refs.bib").write_text(
+        "@article{alpha,\n"
+        "  title = {Alpha},\n"
+        "  author = {Author, Alice},\n"
+        "  year = {2020}\n"
+        "}\n",
+        encoding="utf-8",
+    )
+    _commit_fixture_repo(content_root)
+
+    _make(content_root, "html")
+
+    refs_json = content_root / "build/bib-deps/doc.refs.json"
+    refs_checked = content_root / "build/bib-deps/doc.refs.checked"
+    refs_json.unlink()
+    old_checked_mtime = refs_checked.stat().st_mtime
+
+    # Preserved generated state must still be recoverable. If refs.json is
+    # missing, Make should rebuild it instead of ignoring it as an intermediate
+    # prerequisite just because the final HTML output already exists.
+    _make(content_root, "html")
+
+    assert refs_json.exists()
+    assert refs_checked.stat().st_mtime >= old_checked_mtime
+
+
 def test_unchanged_metadata_check_does_not_rebuild_document(tmp_path: Path) -> None:
     missing_tools = [tool for tool in ("git", "make", "pandoc") if not shutil.which(tool)]
     if missing_tools:
@@ -153,6 +199,48 @@ def test_unchanged_metadata_check_does_not_rebuild_document(tmp_path: Path) -> N
     assert (content_root / "build/.githash-doc.checked").stat().st_mtime > old_mtime
     assert (content_root / "build/.version-doc.checked").stat().st_mtime > old_mtime
     assert "doc.md -t html" not in result.stdout
+
+
+def test_missing_metadata_stamps_are_recreated(tmp_path: Path) -> None:
+    missing_tools = [tool for tool in ("git", "make", "pandoc") if not shutil.which(tool)]
+    if missing_tools:
+        pytest.skip("missing tools: " + ", ".join(missing_tools))
+
+    tools_root = Path(__file__).resolve().parents[3]
+    content_root = tmp_path / "content"
+    src_dir = content_root / "src"
+    src_dir.mkdir(parents=True)
+    _write_content_makefile(content_root, tools_root)
+    (src_dir / "doc.md").write_text(
+        "---\n"
+        "title: Doc\n"
+        "contact-email: docs@example.com\n"
+        "---\n\n"
+        "# Doc\n",
+        encoding="utf-8",
+    )
+    _commit_fixture_repo(content_root)
+
+    _make(content_root, "html")
+
+    version_stamp = content_root / "build/.version-doc.stamp"
+    githash_stamp = content_root / "build/.githash-doc.stamp"
+    version_checked = content_root / "build/.version-doc.checked"
+    githash_checked = content_root / "build/.githash-doc.checked"
+    version_stamp.unlink()
+    githash_stamp.unlink()
+    old_version_checked_mtime = version_checked.stat().st_mtime
+    old_githash_checked_mtime = githash_checked.stat().st_mtime
+
+    # The stamp files are content fingerprints, not optional cache files. If
+    # they are missing, Make should recreate them instead of treating them as
+    # ignorable intermediates behind an existing document output.
+    _make(content_root, "html")
+
+    assert version_stamp.exists()
+    assert githash_stamp.exists()
+    assert version_checked.stat().st_mtime >= old_version_checked_mtime
+    assert githash_checked.stat().st_mtime >= old_githash_checked_mtime
 
 
 def test_email_html_intermediate_survives_eml_build(tmp_path: Path) -> None:

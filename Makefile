@@ -127,12 +127,12 @@ BIB_FILE_ARGS = $(foreach bib,$(BIB_DEPS),--bib-file $(bib))
 # LAST_UPDATED changes (e.g., after commits) without forcing full rebuilds.
 
 .PHONY: all clean pdf html eml pptx
-# These generated prerequisites carry incremental state in their mtimes. If
-# Make deletes generated intermediate files unless told otherwise. Metadata
-# stamps, bibliography fingerprints, and email HTML intermediates all carry
-# incremental state that later builds need to inspect, so preserve them after
-# use.
-.SECONDARY: $(VERSIONSTAMPS) $(GITHASHSTAMPS) $(VERSIONCHECKS) \
+# These generated prerequisites carry incremental state in their mtimes.
+# `.SECONDARY` would prevent Make from deleting them, but it would also let
+# Make ignore a missing generated prerequisite if a final output already
+# exists. `.PRECIOUS` only disables the automatic deletion, so missing state is
+# rebuilt and no-change builds can still inspect the preserved files.
+.PRECIOUS: $(VERSIONSTAMPS) $(GITHASHSTAMPS) $(VERSIONCHECKS) \
 	$(GITHASHCHECKS) $(BIB_REF_TARGETS) $(BIB_CHECK_TARGETS) \
 	$(EMLHTMLTARGETS)
 all: pdf html native downloads xhtml tex docx pptx eml
@@ -236,6 +236,13 @@ $(BUILD_BIB_DEPS_DIR)/%.refs.checked: $(SRC_DIR)/%.md $(BIB_DEPS) $(TOOLS_ROOT)/
 # Markdown and .bib inputs. Keep refs.checked order-only here so a scanner run
 # that leaves refs.json unchanged does not make document outputs rebuild.
 $(BUILD_BIB_DEPS_DIR)/%.refs.json: | $(BUILD_BIB_DEPS_DIR)/%.refs.checked
+	@set -e; \
+	if [ ! -f $@ ]; then \
+	  $(PYTHON_RUNNER) $(TOOLS_ROOT)/scripts/python/generate_bib_deps.py \
+	    --content-root $(CONTENT_ROOT) --document $(SRC_DIR)/$*.md \
+	    --output $@ $(BIB_FILE_ARGS); \
+	  touch $(BUILD_BIB_DEPS_DIR)/$*.refs.checked; \
+	fi
 	@test -f $@
 
 $(BUILD_DIR)/default.css: $(TOOLS_ROOT)/theme/html/default.css $(TOOLS_ROOT)/Makefile | $(BUILD_DIR)
@@ -356,6 +363,17 @@ $(BUILD_DIR)/.version-%.checked: $(SRC_DIR)/%.md $(TOOLS_ROOT)/Makefile \
 	touch $@
 
 $(BUILD_DIR)/.version-%.stamp: | $(BUILD_DIR)/.version-%.checked
+	@set -e; \
+	if [ ! -f $@ ]; then \
+	  mkdir -p $(dir $@); \
+	  tmpfile="$@.tmp"; \
+	  { \
+	    printf "VERSION=%s\n" "$(call compute_version,$(SRC_DIR)/$*.md)"; \
+	    printf "LAST_UPDATED=%s\n" "$(call last_updated,$(SRC_DIR)/$*.md)"; \
+	  } > $$tmpfile; \
+	  mv $$tmpfile $@; \
+	  touch $(BUILD_DIR)/.version-$*.checked; \
+	fi
 	@test -f $@
 
 # Per-document git hashes prevent unrelated commits from triggering rebuilds.
@@ -379,4 +397,19 @@ $(BUILD_DIR)/.githash-%.checked: $(SRC_DIR)/%.md $(TOOLS_ROOT)/Makefile | $(GIT_
 	touch $@
 
 $(BUILD_DIR)/.githash-%.stamp: | $(BUILD_DIR)/.githash-%.checked
+	@set -e; \
+	if [ ! -f $@ ]; then \
+	  mkdir -p $(dir $@); \
+	  tmpfile="$@.tmp"; \
+	  last_commit="$$( $(GIT) log -1 --format=%H -- $(SRC_DIR)/$*.md )"; \
+	  commit_count="$$( $(GIT) log --oneline --follow -- $(SRC_DIR)/$*.md | wc -l )"; \
+	  dirty_suffix="$$( $(GIT) status --porcelain -- $(SRC_DIR)/$*.md )"; \
+	  { \
+	    printf "LAST_COMMIT=%s\n" "$$last_commit"; \
+	    printf "COMMIT_COUNT=%s\n" "$$commit_count"; \
+	    printf "DIRTY=%s\n" "$$dirty_suffix"; \
+	  } > $$tmpfile; \
+	  mv $$tmpfile $@; \
+	  touch $(BUILD_DIR)/.githash-$*.checked; \
+	fi
 	@test -f $@
