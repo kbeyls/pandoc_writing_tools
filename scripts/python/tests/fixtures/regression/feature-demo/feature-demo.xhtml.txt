@@ -91,9 +91,11 @@ Figure 1: A demo figure
 
 <ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">sec:todos</ac:parameter></ac:structured-macro><h2 id="sec:todos">1.7 TODOs</h2>
 
-<p>It is often useful to be able to mark TODO items in the text. It helps you to avoid writer’s block on something you can’t quite put into words just yet. The <code>markup_todo.lua</code> filter allows you to do this with a <code>.todo</code> class. You can use this class on inline spans for inline TODOs, or on divs for block TODOs. For example, please <span style="background-color: yellow; color: red; font-weight: bold;">TODO: fix this</span> inline.</p>
+<p>It is often useful to be able to mark TODO items in the text. It helps you to avoid writer’s block on something you can’t quite put into words just yet. The <code>markup_todo.lua</code> filter allows you to do this with a <code>.todo</code> class. You can use this class on inline spans for inline TODOs, or on divs for block TODOs. For example, please <span style="background-color: #FFFFE0; border: 1px solid #ccc; padding: 2px 4px;"><span style="color: red; font-weight: bold;">TODO: </span>fix this</span> inline.</p>
 
-<div style="background-color: yellow; color: red; font-weight: bold;">TODO: Block TODO content.</div>
+<div style="background-color: #FFFFE0; border: 1px solid #ccc; padding: 2px 4px;"><span style="color: red; font-weight: bold;">TODO:</span><br/>
+<p>Block TODO content.</p>
+</div>
 
 <ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">sec:github-links</ac:parameter></ac:structured-macro><h2 id="sec:github-links">1.8 Linking to github issues and edit links</h2>
 

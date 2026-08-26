@@ -239,9 +239,12 @@ local function process_specific_spans(span)
             --            escape_html(entry))
             --    end
             if class == "todo" then
-                return anchor .. string.format(
-                    '<span style="background-color: yellow; color: red; font-weight: bold;">TODO: %s</span>',
-                    escape_html(content))
+                return {anchor,
+                    '<span style="background-color: #FFFFE0; border: 1px solid #ccc; padding: 2px 4px;">',
+                    '<span style="color: red; font-weight: bold;">TODO: </span>',
+                    Writer.Inlines(span.content),
+                    '</span>',
+                }
             elseif class == "index-entry" then
                 return {anchor, Writer.Inlines(span.content), '<br/>'} -- let the content be processed normally
             elseif class == "index-entry-indentation" then
@@ -333,10 +336,13 @@ local function process_specific_divs(div)
                     '<ac:layout-section ac:type="single">\n<ac:layout-cell>\n',
                 }
             elseif class == "TODO" then
-                local content = pandoc.utils.stringify(div.content)
-                return anchor .. string.format(
-                    '<div style="background-color: yellow; color: red; font-weight: bold;">TODO: %s</div>',
-                    escape_html(content))
+                return {
+                    anchor,
+                    '<div style="background-color: #FFFFE0; border: 1px solid #ccc; padding: 2px 4px;">',
+                    '<span style="color: red; font-weight: bold;">TODO:</span><br/>\n',
+                    Writer.Blocks(div.content),
+                    '</div>'
+                }
             --elseif class == "csl-entry" then
             --    return { '\n<p>', Writer.Blocks(div.content), '</p>' }
             elseif class == "csl-entry" then
