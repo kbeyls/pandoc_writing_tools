@@ -343,6 +343,10 @@ Notes:
   remote updates. Use `--dry-run-output` to override the output path.
 - Images referenced in the XHTML are uploaded as attachments and rewritten to
   Confluence attachment links.
+- Graphviz images whose DOT sources contain links are uploaded automatically as
+  interactive draw.io diagrams on Confluence Server/Data Center. This requires
+  the draw.io app on the target server; Confluence Cloud is not supported by
+  this integration yet.
 - If `build/<name>.pdf` or `build/<name>.html` exists next to the XHTML file,
   those formats are uploaded as attachments and linked in the page.
 - Inline comments are reattached on a best-effort basis (exact match first,
@@ -398,6 +402,42 @@ The feature demo shows the Excalidraw and Graphviz conventions together in its
 and
 [`demo-graphviz.dot`](examples/feature-demo/src/img/demo-graphviz.dot).
 
+Clickable Graphviz regions are preserved automatically on Confluence
+Server/Data Center. Use the normal extensionless DOT-backed image syntax:
+
+```markdown
+![Component flow](build/img/component-flow)
+```
+
+Put each target URL and optional hover text in the DOT source so links have a
+single source of truth:
+
+```dot
+service [
+  label="Service"
+  URL="https://example.com/service"
+  tooltip="Service documentation"
+]
+```
+
+Other output formats are unchanged: HTML uses SVG, LaTeX/PDF uses PDF, and
+Office and email outputs use PNG. For Confluence, Make additionally generates
+an uncompressed `.drawio` file containing the Graphviz SVG as a vector
+background and transparent linked regions derived from Graphviz's image map.
+The upload script publishes that file using the installed Server/Data Center
+draw.io attachment convention and uses the normal PNG as its preview.
+
+The linked regions use rectangular bounds around Graphviz's `rect`, `circle`,
+and `poly` image-map areas. This is exact for rectangular nodes and may make a
+small amount of transparent space around ellipses or polygons clickable. Use
+`--dry-run` to inspect the generated macro and attachment list before uploading.
+Add the `.no-drawio` class when a linked DOT image should remain an ordinary
+PNG attachment on Confluence:
+
+```markdown
+![Component flow](build/img/component-flow){.no-drawio}
+```
+
 Generated variants can also be requested directly. Make's image targets use
 absolute paths, so invoke them from the content repository root as follows:
 
@@ -405,6 +445,7 @@ absolute paths, so invoke them from the content repository root as follows:
 make "$(pwd)/build/img/component-flow.svg"
 make "$(pwd)/build/img/component-flow.pdf"
 make "$(pwd)/build/img/component-flow.png"
+make "$(pwd)/build/img/component-flow.drawio"
 ```
 
 Native SVG and Excalidraw conversion requires Inkscape. Native DOT conversion

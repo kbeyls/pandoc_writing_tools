@@ -32,6 +32,14 @@ class OutputProfile:
     default_extension: str
 
 
+@dataclass(frozen=True)
+class ImageReference:
+    """One Pandoc image target and the classes attached to that image."""
+
+    target: str
+    classes: frozenset[str]
+
+
 OUTPUT_PROFILES: Mapping[str, OutputProfile] = {
     "html": OutputProfile(".html", "svg"),
     "tex": OutputProfile(".tex", "pdf"),
@@ -54,14 +62,20 @@ def iter_image_targets(pandoc_json: object) -> list[str]:
     from Pandoc `Image` elements, such as `build/img/figure`.
     """
 
-    targets: list[str] = []
+    return [reference.target for reference in iter_image_references(pandoc_json)]
+
+
+def iter_image_references(pandoc_json: object) -> list[ImageReference]:
+    """Return image targets and classes found anywhere in a Pandoc JSON tree."""
+
+    references: list[ImageReference] = []
 
     def walk(value: object) -> None:
         if isinstance(value, dict):
             if value.get("t") == "Image":
-                target = _image_target(value.get("c"))
-                if target:
-                    targets.append(target)
+                reference = _image_reference(value.get("c"))
+                if reference:
+                    references.append(reference)
             for child in value.values():
                 walk(child)
         elif isinstance(value, list):
@@ -69,10 +83,15 @@ def iter_image_targets(pandoc_json: object) -> list[str]:
                 walk(child)
 
     walk(pandoc_json)
-    return targets
+    return references
 
 
 def _image_target(content: object) -> str | None:
+    reference = _image_reference(content)
+    return reference.target if reference else None
+
+
+def _image_reference(content: object) -> ImageReference | None:
     if not isinstance(content, list) or not content:
         return None
     target = content[-1]
@@ -81,8 +100,52 @@ def _image_target(content: object) -> str | None:
         and target
         and isinstance(target[0], str)
     ):
-        return target[0]
+        classes: frozenset[str] = frozenset()
+        attributes = content[0] if content else None
+        if (
+            isinstance(attributes, list)
+            and len(attributes) >= 2
+            and isinstance(attributes[1], list)
+        ):
+            classes = frozenset(
+                item for item in attributes[1] if isinstance(item, str)
+            )
+        return ImageReference(target=target[0], classes=classes)
     return None
+
+
+def drawio_dependency(
+    reference: ImageReference,
+    *,
+    content_root: Path,
+    build_dir: Path,
+) -> Path | None:
+    """Return a draw.io candidate for an extensionless DOT-backed image."""
+
+    target_path = PurePosixPath(urlparse(reference.target).path)
+    if target_path.suffix:
+        return None
+
+    rendered = resolve_image_target(
+        reference.target,
+        content_root=content_root,
+        build_dir=build_dir,
+        default_extension="png",
+    )
+    if rendered is None:
+        return None
+    build_img_dir = (build_dir / "img").resolve()
+    try:
+        relative = rendered.resolve().relative_to(build_img_dir)
+    except ValueError:
+        return None
+    source_relative = relative.with_suffix("")
+    source = content_root.resolve() / "src" / "img" / source_relative.with_suffix(
+        ".dot"
+    )
+    if not source.exists():
+        return None
+    return rendered.with_suffix(".drawio")
 
 
 def read_pandoc_json(markdown_path: Path, markdown_format: str) -> object:
@@ -171,19 +234,27 @@ def deps_for_document(
 
     build_dir = content_root / "build"
     pandoc_json = read_pandoc_json(markdown_path, markdown_format)
-    image_targets = iter_image_targets(pandoc_json)
+    image_references = iter_image_references(pandoc_json)
     dependencies: dict[str, set[Path]] = {}
     for profile_name, default_extension in profiles.items():
         profile_deps: set[Path] = set()
-        for image_target in image_targets:
+        for reference in image_references:
             resolved = resolve_image_target(
-                image_target,
+                reference.target,
                 content_root=content_root,
                 build_dir=build_dir,
                 default_extension=default_extension,
             )
             if resolved is not None:
                 profile_deps.add(resolved)
+            if profile_name == "xhtml" and "no-drawio" not in reference.classes:
+                drawio = drawio_dependency(
+                    reference,
+                    content_root=content_root,
+                    build_dir=build_dir,
+                )
+                if drawio is not None:
+                    profile_deps.add(drawio)
         dependencies[profile_name] = profile_deps
     return dependencies
 

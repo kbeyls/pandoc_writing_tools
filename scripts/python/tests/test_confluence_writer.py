@@ -98,3 +98,57 @@ def test_confluence_writer_renders_display_math_as_block(docker_pandoc_image):
     assert '<div class="math display">\nx &lt; y &amp; y &gt; z\n</div>' in output
     assert '<p><div class="math display">' not in output
     assert '</div></p>' not in output
+
+
+def test_confluence_writer_automatically_renders_linked_sidecar_as_macro(
+    docker_pandoc_image,
+):
+    fixture = "scripts/python/tests/fixtures/confluence_drawio_server/example-diagram"
+    output = render_confluence(
+        f"![Linked graph]({fixture})\n",
+        docker_pandoc_image,
+    )
+
+    assert '<ac:structured-macro ac:name="drawio"' in output
+    assert (
+        f'<ac:parameter ac:name="diagramName">{fixture}.drawio</ac:parameter>'
+        in output
+    )
+    assert '<ac:image' not in output
+
+
+def test_confluence_writer_honors_no_drawio_opt_out(docker_pandoc_image):
+    fixture = "scripts/python/tests/fixtures/confluence_drawio_server/example-diagram"
+    output = render_confluence(
+        f"![Linked graph]({fixture}){{.no-drawio}}\n",
+        docker_pandoc_image,
+    )
+
+    assert 'ac:name="drawio"' not in output
+    assert f'ri:filename="{fixture}"' in output
+
+
+def test_confluence_writer_keeps_unlinked_sidecar_as_ordinary_image(
+    docker_pandoc_image,
+):
+    fixture = "scripts/python/tests/fixtures/confluence_drawio_server/unlinked-diagram"
+    output = render_confluence(
+        f"![Unlinked graph]({fixture})\n",
+        docker_pandoc_image,
+    )
+
+    assert 'ac:name="drawio"' not in output
+    assert f'ri:filename="{fixture}"' in output
+
+
+def test_confluence_writer_keeps_ordinary_image_output(docker_pandoc_image):
+    output = render_confluence(
+        "Before ![Ordinary](build/img/ordinary.png) after.\n",
+        docker_pandoc_image,
+    )
+
+    assert (
+        '<ac:image ac:width="440"><ri:attachment '
+        'ri:filename="build/img/ordinary.png"/></ac:image>'
+    ) in output
+    assert 'ac:name="drawio"' not in output

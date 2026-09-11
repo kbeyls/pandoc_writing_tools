@@ -1,0 +1,16 @@
+{
+  "results": [
+    {
+      "title": "example-diagram.png",
+      "metadata": {"mediaType": "image/png"},
+      "extensions": {"fileSize": 1200},
+      "version": {"number": 2}
+    },
+    {
+      "title": "example-diagram",
+      "metadata": {"mediaType": "application/vnd.jgraph.mxfile"},
+      "extensions": {"fileSize": 800},
+      "version": {"number": 2}
+    }
+  ]
+}

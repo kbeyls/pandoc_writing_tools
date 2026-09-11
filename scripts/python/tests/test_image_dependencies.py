@@ -17,7 +17,10 @@ import pytest
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from generate_image_deps import (  # noqa: E402
+    ImageReference,
     collect_make_dependencies,
+    drawio_dependency,
+    iter_image_references,
     iter_image_targets,
     make_variable_path,
     render_makefile,
@@ -74,6 +77,55 @@ def test_iter_image_targets_finds_nested_images():
         "build/img/table-figure",
         "build/img/div-figure.png",
     ]
+
+
+def test_iter_image_references_preserves_classes():
+    pandoc_json = {
+        "blocks": [
+            {
+                "t": "Para",
+                "c": [
+                    {
+                        "t": "Image",
+                        "c": [
+                            ["figure", ["no-drawio", "thumbnail"], []],
+                            [],
+                            ["build/img/graph", ""],
+                        ],
+                    }
+                ],
+            }
+        ]
+    }
+
+    assert iter_image_references(pandoc_json) == [
+        ImageReference("build/img/graph", frozenset({"no-drawio", "thumbnail"}))
+    ]
+
+
+def test_drawio_dependency_finds_only_dot_backed_logical_images(tmp_path):
+    content_root = tmp_path / "content"
+    image_dir = content_root / "src/img"
+    image_dir.mkdir(parents=True)
+    reference = ImageReference("build/img/graph", frozenset())
+
+    assert drawio_dependency(
+        reference,
+        content_root=content_root,
+        build_dir=content_root / "build",
+    ) is None
+
+    (image_dir / "graph.dot").write_text("digraph G {}\n", encoding="utf-8")
+    assert drawio_dependency(
+        reference,
+        content_root=content_root,
+        build_dir=content_root / "build",
+    ) == content_root / "build/img/graph.drawio"
+    assert drawio_dependency(
+        ImageReference("build/img/graph.png", frozenset()),
+        content_root=content_root,
+        build_dir=content_root / "build",
+    ) is None
 
 
 def test_resolve_image_target_maps_supported_prefixes(tmp_path):
@@ -189,6 +241,49 @@ def test_collect_make_dependencies_is_per_document(tmp_path):
     assert "$(BUILD_IMG_DIR)/b.png" in rendered
     assert "$(BUILD_DIR)/doc-a.html: $(BUILD_IMG_DIR)/b.png" not in rendered
     assert "$(BUILD_DIR)/doc-b.html: $(BUILD_IMG_DIR)/a.svg" not in rendered
+
+
+def test_collect_make_dependencies_adds_drawio_candidates_only_to_xhtml(tmp_path):
+    if not shutil.which("pandoc"):
+        pytest.skip("pandoc is required to parse Markdown into JSON")
+
+    content_root = tmp_path / "content"
+    src_dir = content_root / "src"
+    image_dir = src_dir / "img"
+    image_dir.mkdir(parents=True)
+    (src_dir / "doc.md").write_text(
+        "![Linked](build/img/linked)\n\n"
+        "![Unlinked](build/img/unlinked)\n\n"
+        "![Disabled](build/img/disabled){.no-drawio}\n",
+        encoding="utf-8",
+    )
+    (image_dir / "linked.dot").write_text(
+        'digraph G { a [URL="https://example.com"]; }\n', encoding="utf-8"
+    )
+    (image_dir / "unlinked.dot").write_text("digraph G { a; }\n", encoding="utf-8")
+    (image_dir / "disabled.dot").write_text(
+        'digraph G { a [URL="https://example.com"]; }\n', encoding="utf-8"
+    )
+
+    rendered = render_makefile(
+        collect_make_dependencies(
+            content_root=content_root,
+            src_dir=src_dir,
+            build_dir=content_root / "build",
+        )
+    )
+
+    xhtml_rule = next(
+        line for line in rendered.splitlines() if "$(BUILD_DIR)/doc.xhtml:" in line
+    )
+    html_rule = next(
+        line for line in rendered.splitlines() if "$(BUILD_DIR)/doc.html:" in line
+    )
+    assert "$(BUILD_IMG_DIR)/linked.drawio" in xhtml_rule
+    assert "$(BUILD_IMG_DIR)/linked.png" in xhtml_rule
+    assert "$(BUILD_IMG_DIR)/unlinked.drawio" in xhtml_rule
+    assert "disabled.drawio" not in xhtml_rule
+    assert "drawio" not in html_rule
 
 
 def test_make_dry_run_rebuilds_only_document_for_touched_image(tmp_path):
@@ -424,4 +519,85 @@ def test_make_builds_graphviz_source_in_all_output_formats(tmp_path):
         "svg",
         "pdf",
         "png",
+    ]
+
+
+def test_make_builds_drawio_sidecar_incrementally(tmp_path):
+    missing_tools = [tool for tool in ("git", "make") if not shutil.which(tool)]
+    if missing_tools:
+        pytest.skip("missing tools: " + ", ".join(missing_tools))
+
+    repo_root = Path(__file__).resolve().parents[3]
+    content_root = tmp_path / "content"
+    image_dir = content_root / "src/img"
+    image_dir.mkdir(parents=True)
+    (content_root / "Makefile").write_text(
+        f"TOOLS_ROOT := {repo_root}\n"
+        "CONTENT_ROOT := $(CURDIR)\n"
+        "include $(TOOLS_ROOT)/Makefile\n",
+        encoding="utf-8",
+    )
+    source = image_dir / "linked.dot"
+    source.write_text(
+        'digraph G { a [URL="https://example.com"]; }\n', encoding="utf-8"
+    )
+
+    invocation_log = tmp_path / "drawio-graphviz.log"
+    fake_dot = tmp_path / "fake-dot.py"
+    fake_dot.write_text(
+        f"#!{sys.executable}\n"
+        "import os, struct, sys\n"
+        "fmt = sys.argv[1][2:]\n"
+        "output = sys.argv[4]\n"
+        "with open(os.environ['GRAPHVIZ_TEST_LOG'], 'a') as log: log.write(fmt + '\\n')\n"
+        "if fmt == 'svg': data = b'<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100\" height=\"50\" />'\n"
+        "elif fmt == 'png': data = b'\\x89PNG\\r\\n\\x1a\\n' + struct.pack('>I4sII', 13, b'IHDR', 100, 50)\n"
+        "elif fmt == 'cmapx': data = b'<map><area shape=\"rect\" id=\"node1\" href=\"https://example.com\" title=\"Example\" coords=\"10,10,40,30\"/></map>'\n"
+        "else: raise SystemExit('unexpected format: ' + fmt)\n"
+        "open(output, 'wb').write(data)\n",
+        encoding="utf-8",
+    )
+    fake_dot.chmod(0o755)
+    subprocess.run(["git", "init"], cwd=content_root, check=True, stdout=subprocess.PIPE)
+
+    target = content_root / "build/img/linked.drawio"
+    command = [
+        "make",
+        "-C",
+        str(content_root),
+        f"PYTHON_RUNNER={sys.executable}",
+        f"GRAPHVIZ_DOT={fake_dot}",
+        str(target),
+    ]
+    environment = os.environ.copy()
+    environment["GRAPHVIZ_TEST_LOG"] = str(invocation_log)
+
+    subprocess.run(command, check=True, env=environment)
+    assert target.exists()
+    assert b"https://example.com" in target.read_bytes()
+    assert sorted(invocation_log.read_text(encoding="utf-8").splitlines()) == [
+        "cmapx",
+        "png",
+        "svg",
+    ]
+
+    original_mtime = target.stat().st_mtime_ns
+    subprocess.run(command, check=True, env=environment)
+    assert target.stat().st_mtime_ns == original_mtime
+    assert sorted(invocation_log.read_text(encoding="utf-8").splitlines()) == [
+        "cmapx",
+        "png",
+        "svg",
+    ]
+
+    time.sleep(1.1)
+    source.write_text('digraph G { b [URL="https://example.com"]; }\n', encoding="utf-8")
+    subprocess.run(command, check=True, env=environment)
+    assert sorted(invocation_log.read_text(encoding="utf-8").splitlines()) == [
+        "cmapx",
+        "cmapx",
+        "png",
+        "png",
+        "svg",
+        "svg",
     ]
