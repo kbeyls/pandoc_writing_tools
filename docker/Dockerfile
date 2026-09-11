@@ -17,6 +17,7 @@ RUN dnf -y --setopt=install_weak_deps=False update && \
         python3 \
         uv \
         inkscape \
+        graphviz \
         libxcrypt-compat \
         latexmk \
         texlive-xetex \

@@ -369,6 +369,27 @@ outputs remain up to date.
 These generated dependency files live under `build/` and should not be
 committed. Delete `build/` to regenerate them from scratch.
 
+### Graphviz image sources
+
+Place Graphviz DOT sources in `src/img/` and refer to them from Markdown by
+their extensionless logical build path. For example, a source named
+`src/img/component-flow.dot` is included as
+`![Component flow](build/img/component-flow)`. The build renders SVG for HTML,
+PDF for LaTeX/PDF, and PNG for Confluence, Word, PowerPoint, native, and email
+outputs.
+
+Any format can also be built directly:
+
+```shell
+make "$(pwd)/build/img/component-flow.svg"
+make "$(pwd)/build/img/component-flow.pdf"
+make "$(pwd)/build/img/component-flow.png"
+```
+
+Native builds require Graphviz's `dot` executable; the Docker image includes
+it. Set `GRAPHVIZ_DOT=/path/to/dot` on the Make command line when it is not on
+`PATH` or when a specific Graphviz installation is required.
+
 ## Contributing
 
 Developer notes, regression testing, and golden update guidance live in
