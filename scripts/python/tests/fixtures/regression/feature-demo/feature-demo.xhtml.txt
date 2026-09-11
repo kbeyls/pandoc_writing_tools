@@ -225,6 +225,22 @@ Figure 2: An Excalidraw-style SVG fixture
 </ac:rich-text-body>
 </ac:structured-macro>
 
+<p>The next image uses the same extensionless Markdown convention, but its source is a Graphviz DOT file. Make renders the logical image as SVG for HTML, PDF for LaTeX, and PNG for output formats such as Confluence, Word, and PowerPoint.</p>
+
+<ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">fig:standard-pandoc-graphviz</ac:parameter></ac:structured-macro><ac:structured-macro ac:name="align" ac:schema-version="1"><ac:parameter ac:name="align">center</ac:parameter><ac:rich-text-body><ac:structured-macro ac:name="panel">
+<ac:parameter ac:name="bgColor">#FFFFFF</ac:parameter>
+<ac:parameter ac:name="title">
+Figure 3: A Graphviz DOT fixture rendered in the format needed by each output
+</ac:parameter>
+<ac:rich-text-body>
+<figure>
+<ac:image ac:width="440"><ri:attachment ri:filename="build/img/demo-graphviz.png"/></ac:image>
+</figure>
+</ac:rich-text-body>
+</ac:structured-macro>
+</ac:rich-text-body>
+</ac:structured-macro>
+
 <ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">refs</ac:parameter></ac:structured-macro><div id="refs" class="references csl-bib-body hanging-indent">
 <ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">ref-doe2020</ac:parameter></ac:structured-macro><ac:structured-macro ac:name="panel">
   <ac:parameter ac:name="bgColor">#EFEFEF</ac:parameter>

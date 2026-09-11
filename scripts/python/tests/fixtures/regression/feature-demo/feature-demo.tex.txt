@@ -362,6 +362,18 @@ recognize and edit it.
 fixture}\label{fig:standard-pandoc-excalidraw}
 \end{figure}
 
+The next image uses the same extensionless Markdown convention, but its
+source is a Graphviz DOT file. Make renders the logical image as SVG for
+HTML, PDF for LaTeX, and PNG for output formats such as Confluence,
+Word, and PowerPoint.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio]{build/img/demo-graphviz.pdf}}
+\caption{Figure 3: A Graphviz DOT fixture rendered in the format needed
+by each output}\label{fig:standard-pandoc-graphviz}
+\end{figure}
+
 \protect\phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}
 \bibitem[\citeproctext]{ref-doe2020}
