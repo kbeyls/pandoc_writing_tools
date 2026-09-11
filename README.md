@@ -369,16 +369,37 @@ outputs remain up to date.
 These generated dependency files live under `build/` and should not be
 committed. Delete `build/` to regenerate them from scratch.
 
-### Graphviz image sources
+### Image sources and logical references
 
-Place Graphviz DOT sources in `src/img/` and refer to them from Markdown by
-their extensionless logical build path. For example, a source named
-`src/img/component-flow.dot` is included as
-`![Component flow](build/img/component-flow)`. The build renders SVG for HTML,
-PDF for LaTeX/PDF, and PNG for Confluence, Word, PowerPoint, native, and email
-outputs.
+Keep source images in `src/img/`; generated images belong in `build/img/` and
+should not be committed. For source formats that the build can render in
+several ways, use an extensionless logical path in Markdown:
 
-Any format can also be built directly:
+```markdown
+![Component flow](build/img/component-flow)
+```
+
+Pandoc then selects SVG for HTML, PDF for LaTeX/PDF, and PNG for Confluence,
+Word, PowerPoint, native, and email outputs. The shared Makefile generates the
+selected file automatically.
+
+The supported source conventions are:
+
+| Source in `src/img/` | Markdown reference | Build behavior |
+|---|---|---|
+| `component-flow.svg` | `build/img/component-flow` | Copies SVG and uses Inkscape to produce PDF and PNG. |
+| `component-flow.excalidraw.svg` | `build/img/component-flow` | Preserves the editable Excalidraw filename while omitting `.excalidraw` from generated filenames; copies SVG and uses Inkscape for PDF and PNG. |
+| `component-flow.dot` | `build/img/component-flow` | Uses Graphviz to render SVG, PDF, and PNG directly. |
+| `photo.png`, `photo.jpg`, or `photo.jpeg` | Include the extension, such as `build/img/photo.png`. | Copies the bitmap without converting it to other formats. |
+
+The feature demo shows the Excalidraw and Graphviz conventions together in its
+[Images section](examples/feature-demo/src/feature-demo.md), backed by
+[`demo-excalidraw.excalidraw.svg`](examples/feature-demo/src/img/demo-excalidraw.excalidraw.svg)
+and
+[`demo-graphviz.dot`](examples/feature-demo/src/img/demo-graphviz.dot).
+
+Generated variants can also be requested directly. Make's image targets use
+absolute paths, so invoke them from the content repository root as follows:
 
 ```shell
 make "$(pwd)/build/img/component-flow.svg"
@@ -386,9 +407,11 @@ make "$(pwd)/build/img/component-flow.pdf"
 make "$(pwd)/build/img/component-flow.png"
 ```
 
-Native builds require Graphviz's `dot` executable; the Docker image includes
-it. Set `GRAPHVIZ_DOT=/path/to/dot` on the Make command line when it is not on
-`PATH` or when a specific Graphviz installation is required.
+Native SVG and Excalidraw conversion requires Inkscape. Native DOT conversion
+requires Graphviz's `dot` executable; set
+`GRAPHVIZ_DOT=/path/to/dot` on the Make command line when it is not on `PATH`
+or when a specific Graphviz installation is required. The Docker image includes
+both Inkscape and Graphviz.
 
 ## Contributing
 
