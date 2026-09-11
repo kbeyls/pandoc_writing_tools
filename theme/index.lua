@@ -39,16 +39,25 @@
 -- This is needed to be able to add the section number to the index entries.
 span_id2innermost_header = {}
 last_header_seen = nil
+
+local function is_index_span(el)
+  return el.classes:includes('index')
+end
+
 function record_headers(header)
   --logging.warning('record_headers: ', header);
   last_header_seen = header
 end
 
 function record_innermost_header_for_span(span)
-  assert(span.identifier, 'span should have an id');
-  assert(last_header_seen, 'last_header_seen should not be nil');
+  if not is_index_span(span) then
+    return
+  end
+  assert(span.identifier and span.identifier ~= '', 'index span should have an id');
   --logging.warning('recording last_header_seen for ', span);
-  span_id2innermost_header[span.identifier] = last_header_seen
+  if last_header_seen then
+    span_id2innermost_header[span.identifier] = last_header_seen
+  end
 end
 
 -----
@@ -68,11 +77,6 @@ function create_unique_id_for_el(base, el)
 end
 
 -----
-
-local function is_index_span(el)
-  -- Check if the span has class "index"
-  return el.classes:includes('index')
-end
 
 local function ensure_every_index_span_has_an_id(el)
     if not is_index_span(el) then
@@ -273,7 +277,9 @@ local function process_divs(div)
 end
 
 -- We first make sure each index span has an id.
--- Then, we record for each span the innermost header it is in.
+-- Then, we record for each index span the innermost header it is in. An index
+-- span before the first header has no section number and uses the existing
+-- ordinal fallback when the index is rendered.
 -- Then, we process all spans, to find all index entries in the text.
 -- Then we need to process all divs, to find the div with name "#index".
 return {
