@@ -201,6 +201,16 @@ $(BUILD_IMG_DIR)/%.pdf: $(SRC_IMG_DIR)/%.dot | $(BUILD_IMG_DIR)
 	$(GRAPHVIZ_DOT) -Tpdf $< -o $@
 $(BUILD_IMG_DIR)/%.png: $(SRC_IMG_DIR)/%.dot | $(BUILD_IMG_DIR)
 	$(GRAPHVIZ_DOT) -Tpng $< -o $@
+$(BUILD_IMG_DIR)/%.cmapx: $(SRC_IMG_DIR)/%.dot | $(BUILD_IMG_DIR)
+	$(GRAPHVIZ_DOT) -Tcmapx $< -o $@
+$(BUILD_IMG_DIR)/%.drawio: $(BUILD_IMG_DIR)/%.svg $(BUILD_IMG_DIR)/%.png \
+					$(BUILD_IMG_DIR)/%.cmapx $(TOOLS_ROOT)/scripts/python/generate_drawio_overlay.py | $(BUILD_IMG_DIR)
+	$(PYTHON_RUNNER) $(TOOLS_ROOT)/scripts/python/generate_drawio_overlay.py \
+		--svg $(BUILD_IMG_DIR)/$*.svg \
+		--png $(BUILD_IMG_DIR)/$*.png \
+		--map $(BUILD_IMG_DIR)/$*.cmapx \
+		--output $@
+	touch $@
 $(BUILD_IMG_DIR): | $(BUILD_DIR)
 	mkdir -p $(BUILD_IMG_DIR)
 srcsvgimages := $(wildcard $(SRC_IMG_DIR)/*.svg)
@@ -214,12 +224,16 @@ bldsvgpngimages := $(patsubst $(SRC_IMG_DIR)/%.svg,$(BUILD_IMG_DIR)/%.png,$(srcs
 blddotsvgimages := $(patsubst $(SRC_IMG_DIR)/%.dot,$(BUILD_IMG_DIR)/%.svg,$(srcdotimages))
 blddotpdfimages := $(patsubst $(SRC_IMG_DIR)/%.dot,$(BUILD_IMG_DIR)/%.pdf,$(srcdotimages))
 blddotpngimages := $(patsubst $(SRC_IMG_DIR)/%.dot,$(BUILD_IMG_DIR)/%.png,$(srcdotimages))
+blddotmapimages := $(patsubst $(SRC_IMG_DIR)/%.dot,$(BUILD_IMG_DIR)/%.cmapx,$(srcdotimages))
+blddotdrawioimages := $(patsubst $(SRC_IMG_DIR)/%.dot,$(BUILD_IMG_DIR)/%.drawio,$(srcdotimages))
 bldpngpngimages := $(patsubst $(SRC_IMG_DIR)/%.png,$(BUILD_IMG_DIR)/%.png,$(srcpngimages))
 bldjpgjpgimages := $(patsubst $(SRC_IMG_DIR)/%.jpg,$(BUILD_IMG_DIR)/%.jpg,$(srcjpgimages))
 bldjpegjpegimages := $(patsubst $(SRC_IMG_DIR)/%.jpeg,$(BUILD_IMG_DIR)/%.jpeg,$(srcjpegimages))
 bldimages := $(bldsvgimages) $(bldpngpngimages) $(bldsvgpngimages) $(bldpdfimages) \
 	$(blddotsvgimages) $(blddotpdfimages) $(blddotpngimages) \
+	$(blddotmapimages) $(blddotdrawioimages) \
 	$(bldjpgjpgimages) $(bldjpegjpegimages)
+.PRECIOUS: $(blddotsvgimages) $(blddotpngimages) $(blddotmapimages)
 commonfilters := $(TOOLS_ROOT)/theme/fignos.lua $(TOOLS_ROOT)/theme/index.lua $(TOOLS_ROOT)/theme/toc.lua
 
 

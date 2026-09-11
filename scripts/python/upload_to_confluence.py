@@ -5,15 +5,43 @@
 # This python script uploads the generated XHTML files to Confluence.
 # It requires the 'atlassian-python-api' package, which can be installed via pip:
 # pip install atlassian-python-api
-import re
-import sys
-from atlassian import Confluence
-import os
 import argparse
+import html
+import os
+import re
+import uuid
+from dataclasses import dataclass
+from pathlib import Path
 
 import requests
+from atlassian import Confluence
+
+from generate_drawio_overlay import read_png_size
 
 confluence_token = None
+
+DRAWIO_MEDIA_TYPE = "application/vnd.jgraph.mxfile"
+DRAWIO_MACRO_RE = re.compile(
+    r'<ac:structured-macro\b(?=[^>]*ac:name="drawio")[\s\S]*?</ac:structured-macro>'
+)
+
+
+@dataclass(frozen=True)
+class AttachmentSpec:
+    source_path: str
+    attachment_name: str
+    content_type: str
+    role: str = "ordinary"
+
+
+@dataclass(frozen=True)
+class DrawioDiagram:
+    source_path: str
+    preview_path: str
+    attachment_name: str
+    preview_attachment_name: str
+    macro_id: str
+    revision_token: str
 
 
 # Upload XHTML files to Confluence
@@ -53,6 +81,219 @@ def rewrite_attachment_paths(content, base_path):
     content = re.sub(r'ri:filename="([^"]+)"', replace_img_path, content)
     return content, imgpath2attachment_name
 
+
+def _replace_macro_parameter(macro, name, value):
+    pattern = re.compile(
+        rf'(<ac:parameter ac:name="{re.escape(name)}">)[\s\S]*?(</ac:parameter>)'
+    )
+    updated, count = pattern.subn(
+        lambda match: (
+            match.group(1)
+            + html.escape(str(value), quote=False)
+            + match.group(2)
+        ),
+        macro,
+        count=1,
+    )
+    if count != 1:
+        raise ValueError(f"draw.io macro is missing parameter {name!r}")
+    return updated
+
+
+def prepare_drawio_macros(content):
+    """Resolve generated draw.io paths and static macro placeholders."""
+
+    diagrams = []
+    attachment_sources = {}
+
+    def replace_macro(match):
+        macro = match.group(0)
+        if "__DRAWIO_MACRO_ID__" not in macro:
+            return macro
+        name_match = re.search(
+            r'<ac:parameter ac:name="diagramName">([\s\S]*?)</ac:parameter>',
+            macro,
+        )
+        if not name_match:
+            raise ValueError("draw.io macro is missing parameter 'diagramName'")
+        source_path = html.unescape(name_match.group(1))
+        if not source_path.endswith(".drawio"):
+            return macro
+
+        source = Path(source_path)
+        preview = source.with_suffix(".png")
+        if not source.is_file():
+            raise FileNotFoundError(f"draw.io source attachment does not exist: {source}")
+        if not preview.is_file():
+            raise FileNotFoundError(f"draw.io preview attachment does not exist: {preview}")
+
+        attachment_name = source.stem
+        preview_attachment_name = attachment_name + ".png"
+        previous = attachment_sources.setdefault(attachment_name, str(source))
+        if previous != str(source):
+            raise ValueError(
+                f"draw.io attachment name collision for {attachment_name!r}: "
+                f"{previous} and {source}"
+            )
+
+        occurrence = len(diagrams) + 1
+        macro_id = str(
+            uuid.uuid5(uuid.NAMESPACE_URL, f"drawio:{source.as_posix()}:{occurrence}")
+        )
+        revision_token = f"__DRAWIO_REVISION_{macro_id}__"
+        width, height = read_png_size(preview)
+
+        macro = macro.replace("__DRAWIO_MACRO_ID__", macro_id)
+        macro = _replace_macro_parameter(macro, "diagramName", attachment_name)
+        macro = _replace_macro_parameter(macro, "diagramWidth", width)
+        macro = _replace_macro_parameter(macro, "height", height)
+        macro = _replace_macro_parameter(macro, "revision", revision_token)
+        diagrams.append(
+            DrawioDiagram(
+                source_path=str(source),
+                preview_path=str(preview),
+                attachment_name=attachment_name,
+                preview_attachment_name=preview_attachment_name,
+                macro_id=macro_id,
+                revision_token=revision_token,
+            )
+        )
+        return macro
+
+    return DRAWIO_MACRO_RE.sub(replace_macro, content), diagrams
+
+
+def finalize_drawio_revisions(content, diagrams, attachment_versions, *, dry_run=False):
+    for diagram in diagrams:
+        if dry_run:
+            revision = "DRY_RUN_REVISION"
+        else:
+            revision = attachment_versions.get(diagram.attachment_name)
+            if revision is None:
+                raise RuntimeError(
+                    f"Confluence did not report a revision for draw.io attachment "
+                    f"{diagram.attachment_name!r}"
+                )
+        content = content.replace(diagram.revision_token, str(revision))
+    return content
+
+
+def content_type_for_attachment(attachment_name):
+    suffix = Path(attachment_name).suffix.lower()
+    return {
+        ".html": "text/html",
+        ".jpeg": "image/jpeg",
+        ".jpg": "image/jpeg",
+        ".pdf": "application/pdf",
+        ".png": "image/png",
+        ".svg": "image/svg+xml",
+        ".txt": "text/plain",
+    }.get(suffix, "application/octet-stream")
+
+
+def attachment_specs(image_paths, diagrams=()):
+    specs = [
+        AttachmentSpec(
+            source_path=source_path,
+            attachment_name=attachment_name,
+            content_type=content_type_for_attachment(attachment_name),
+        )
+        for source_path, attachment_name in image_paths.items()
+    ]
+    for diagram in diagrams:
+        specs.extend(
+            [
+                AttachmentSpec(
+                    source_path=diagram.source_path,
+                    attachment_name=diagram.attachment_name,
+                    content_type=DRAWIO_MEDIA_TYPE,
+                    role="drawio-source",
+                ),
+                AttachmentSpec(
+                    source_path=diagram.preview_path,
+                    attachment_name=diagram.preview_attachment_name,
+                    content_type="image/png",
+                    role="drawio-preview",
+                ),
+            ]
+        )
+
+    unique_by_name = {}
+    for spec in specs:
+        previous = unique_by_name.get(spec.attachment_name)
+        if previous is not None and previous.source_path != spec.source_path:
+            raise ValueError(
+                f"attachment name collision for {spec.attachment_name!r}: "
+                f"{previous.source_path} and {spec.source_path}"
+            )
+        if previous is None or spec.role != "ordinary":
+            unique_by_name[spec.attachment_name] = spec
+    return list(unique_by_name.values())
+
+
+def fetch_attachment_metadata(confluence, page_id):
+    """Fetch enough attachment metadata to compare files and resolve versions."""
+
+    return confluence.get_attachments_from_content(
+        page_id, limit=500, expand="version"
+    )
+
+
+def upload_attachment_specs_if_different(
+    confluence, page_id, specs, dry_run=False
+):
+    if dry_run:
+        for spec in specs:
+            print(
+                f"[dry-run] Would upload {spec.role} attachment "
+                f"{spec.attachment_name} from {spec.source_path} to page {page_id}"
+            )
+        return {}
+
+    existing_response = fetch_attachment_metadata(confluence, page_id)
+    existing = {
+        attachment["title"]: attachment
+        for attachment in existing_response.get("results", [])
+    }
+    versions = {}
+    uploaded = False
+    for spec in specs:
+        source = Path(spec.source_path)
+        if not source.is_file():
+            raise FileNotFoundError(f"attachment source does not exist: {source}")
+        attachment = existing.get(spec.attachment_name)
+        if attachment:
+            download_url = attachment["_links"]["download"]
+            existing_content = requests.get(
+                confluence.url + download_url,
+                headers={"Authorization": "Bearer " + confluence_token},
+            ).content
+            if existing_content == source.read_bytes():
+                print(
+                    f"Attachment {spec.attachment_name} already exists on page "
+                    f"{page_id} with identical content, skipping upload."
+                )
+                version = attachment.get("version", {}).get("number")
+                if version is not None:
+                    versions[spec.attachment_name] = version
+                continue
+        confluence.attach_file(
+            filename=str(source),
+            page_id=page_id,
+            name=spec.attachment_name,
+            content_type=spec.content_type,
+        )
+        uploaded = True
+        print(f"Uploaded attachment {spec.attachment_name} to page {page_id}")
+
+    if uploaded or any(spec.attachment_name not in versions for spec in specs):
+        refreshed = fetch_attachment_metadata(confluence, page_id)
+        for attachment in refreshed.get("results", []):
+            version = attachment.get("version", {}).get("number")
+            if version is not None:
+                versions[attachment["title"]] = version
+    return versions
+
 def upload_files_if_different(confluence, page_id, file_paths2attachment_names, dry_run: bool = False):
     """
     Upload files to Confluence if they are different from existing attachments.
@@ -60,35 +301,10 @@ def upload_files_if_different(confluence, page_id, file_paths2attachment_names, 
     :param page_id: ID of the Confluence page
     :param file_paths2attachment_names: dict mapping full file paths to attachment names
     """
-    if dry_run:
-        for full_path, attachment_name in file_paths2attachment_names.items():
-            print(f"[dry-run] Would upload attachment {attachment_name} from {full_path} to page {page_id}")
-        return
-
-    existing_attachments = confluence.get_attachments_from_content(page_id)
-    for full_path, attachment_name in file_paths2attachment_names.items():
-        # check if the attachment already exists, and the content is the same. If so, skip uploading.
-        with open(full_path, "rb") as file:
-            new_att_content = file.read()
-        existing_att = next((att for att in existing_attachments.get("results", []) if att["title"] == attachment_name), None)
-        if existing_att:
-            # now check if the content is the same
-            existing_att_url = existing_att["_links"]["download"]
-            existing_att_content = requests.get(
-                confluence.url + existing_att_url,
-                headers={"Authorization": "Bearer " + confluence_token},
-            ).content
-            if existing_att_content == new_att_content:  # same content
-                print(f"Attachment {attachment_name} already exists on page {page_id} with identical content, skipping upload.")
-                continue
-        # with open(full_path, 'rb') as file:
-        confluence.attach_file(
-            filename=full_path,
-            page_id=page_id,
-            name=attachment_name,
-            content_type="application/" + attachment_name.split(".")[-1].lower(),
-        )
-        print(f"Uploaded attachment {attachment_name} to page {page_id}")
+    specs = attachment_specs(file_paths2attachment_names)
+    return upload_attachment_specs_if_different(
+        confluence, page_id, specs, dry_run=dry_run
+    )
 
 def fetch_page_content(confluence, page_id):
     # page = confluence.get_page_by_id(page_id, expand="body.storage")
@@ -429,10 +645,15 @@ def main():
     content, imgpath2attachment_name = rewrite_attachment_paths(
         content, os.path.dirname(xhtml_file)
     )
+    content, drawio_diagrams = prepare_drawio_macros(content)
     content = reattach_comments(confluence, content, page_id)
     content = add_other_formats(confluence, content, page_id, xhtml_file, dry_run=args.dry_run)
+    specs = attachment_specs(imgpath2attachment_name, drawio_diagrams)
 
     if args.dry_run:
+        content = finalize_drawio_revisions(
+            content, drawio_diagrams, {}, dry_run=True
+        )
         # Determine output path
         if args.dry_run_output:
             out_path = args.dry_run_output
@@ -444,15 +665,20 @@ def main():
             f.write(content)
         print(f"[dry-run] Prepared content written to {out_path}")
         print(f"[dry-run] Skipping upload of page {page_id} titled '{page_title}'")
-        # List images that would be uploaded
-        for src_path, att_name in imgpath2attachment_name.items():
-            print(f"[dry-run] Would upload image attachment {att_name} from {src_path}")
+        upload_attachment_specs_if_different(
+            confluence, page_id, specs, dry_run=True
+        )
         print(f"[dry-run] Would target URL: {args.url}/pages/viewpage.action?pageId={page_id}")
         return
 
+    attachment_versions = upload_attachment_specs_if_different(
+        confluence, page_id, specs
+    )
+    content = finalize_drawio_revisions(
+        content, drawio_diagrams, attachment_versions
+    )
     upload_xhtml_to_confluence(confluence, page_id, page_title, content)
     print(f"Uploaded {xhtml_file} to Confluence page {page_id} as {page_title}")
-    upload_files_if_different(confluence, page_id, imgpath2attachment_name)
     print(f"URL: {args.url}/pages/viewpage.action?pageId={page_id}")
 
 

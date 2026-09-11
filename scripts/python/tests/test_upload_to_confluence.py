@@ -3,7 +3,11 @@
 # SPDX-License-Identifier: MIT
 
 import os
+import json
+import struct
 import sys
+import xml.etree.ElementTree as ET
+from pathlib import Path
 import pytest
 
 # Add scripts/python to sys.path for imports
@@ -11,6 +15,10 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 import upload_to_confluence
 import io
 import requests
+
+
+def png_header(width, height):
+    return b"\x89PNG\r\n\x1a\n" + struct.pack(">I4sII", 13, b"IHDR", width, height)
 
 
 def test_extract_title_from_content_with_title():
@@ -43,6 +51,147 @@ def test_rewrite_attachment_paths_single():
     updated_content, mapping = upload_to_confluence.rewrite_attachment_paths(content, "images")
     assert 'ri:filename="pic.png"' in updated_content
     assert mapping == {"images/pic.png": "pic.png"}
+
+
+def test_sanitized_drawio_contract_fixture():
+    fixture_dir = Path(__file__).parent / "fixtures/confluence_drawio_server"
+    macro = (fixture_dir / "macro.xml").read_text(encoding="utf-8")
+    metadata = json.loads((fixture_dir / "attachments.json").read_text(encoding="utf-8"))
+
+    assert 'ac:name="drawio"' in macro
+    assert '<ac:parameter ac:name="diagramName">example-diagram</ac:parameter>' in macro
+    assert '<ac:parameter ac:name="revision">2</ac:parameter>' in macro
+    assert {
+        (item["title"], item["metadata"]["mediaType"], item["version"]["number"])
+        for item in metadata["results"]
+    } == {
+        ("example-diagram", "application/vnd.jgraph.mxfile", 2),
+        ("example-diagram.png", "image/png", 2),
+    }
+    assert ET.parse(fixture_dir / "example-diagram.drawio").getroot().tag == "mxfile"
+
+
+def test_prepare_drawio_macro_resolves_paths_dimensions_and_stable_id(tmp_path):
+    source = tmp_path / "linked.drawio"
+    source.write_text("<mxfile />", encoding="utf-8")
+    source.with_suffix(".png").write_bytes(png_header(640, 360))
+    raw = (
+        '<ac:structured-macro ac:name="drawio" ac:schema-version="1" '
+        'ac:macro-id="__DRAWIO_MACRO_ID__">'
+        '<ac:parameter ac:name="diagramName">' + str(source) + '</ac:parameter>'
+        '<ac:parameter ac:name="diagramWidth">__DRAWIO_WIDTH__</ac:parameter>'
+        '<ac:parameter ac:name="height">__DRAWIO_HEIGHT__</ac:parameter>'
+        '<ac:parameter ac:name="revision">__DRAWIO_REVISION__</ac:parameter>'
+        '</ac:structured-macro>'
+    )
+
+    content, diagrams = upload_to_confluence.prepare_drawio_macros(raw)
+
+    assert len(diagrams) == 1
+    assert diagrams[0].attachment_name == "linked"
+    assert diagrams[0].preview_attachment_name == "linked.png"
+    assert '<ac:parameter ac:name="diagramName">linked</ac:parameter>' in content
+    assert '<ac:parameter ac:name="diagramWidth">640</ac:parameter>' in content
+    assert '<ac:parameter ac:name="height">360</ac:parameter>' in content
+    assert "__DRAWIO_MACRO_ID__" not in content
+    assert upload_to_confluence.prepare_drawio_macros(raw)[0] == content
+    finalized = upload_to_confluence.finalize_drawio_revisions(
+        content, diagrams, {"linked": 7}
+    )
+    assert '<ac:parameter ac:name="revision">7</ac:parameter>' in finalized
+
+
+def test_prepare_drawio_macro_requires_both_attachments(tmp_path):
+    source = tmp_path / "missing.drawio"
+    raw = (
+        '<ac:structured-macro ac:name="drawio" ac:macro-id="__DRAWIO_MACRO_ID__">'
+        f'<ac:parameter ac:name="diagramName">{source}</ac:parameter>'
+        '</ac:structured-macro>'
+    )
+    with pytest.raises(FileNotFoundError, match="source attachment"):
+        upload_to_confluence.prepare_drawio_macros(raw)
+
+
+def test_prepare_drawio_macro_leaves_existing_server_macro_untouched():
+    macro = (
+        '<ac:structured-macro ac:name="drawio" ac:macro-id="existing">'
+        '<ac:parameter ac:name="diagramName">existing.drawio</ac:parameter>'
+        '</ac:structured-macro>'
+    )
+    assert upload_to_confluence.prepare_drawio_macros(macro) == (macro, [])
+
+
+def test_drawio_attachment_specs_use_server_media_types(tmp_path):
+    diagram = upload_to_confluence.DrawioDiagram(
+        source_path=str(tmp_path / "graph.drawio"),
+        preview_path=str(tmp_path / "graph.png"),
+        attachment_name="graph",
+        preview_attachment_name="graph.png",
+        macro_id="id",
+        revision_token="token",
+    )
+    specs = upload_to_confluence.attachment_specs({}, [diagram])
+    assert [(spec.attachment_name, spec.content_type, spec.role) for spec in specs] == [
+        ("graph", "application/vnd.jgraph.mxfile", "drawio-source"),
+        ("graph.png", "image/png", "drawio-preview"),
+    ]
+
+
+def test_upload_attachment_specs_returns_refreshed_revision(tmp_path, capsys):
+    source = tmp_path / "graph.drawio"
+    source.write_text("new", encoding="utf-8")
+    spec = upload_to_confluence.AttachmentSpec(
+        str(source), "graph", "application/vnd.jgraph.mxfile", "drawio-source"
+    )
+
+    class DummyConf:
+        url = "https://example.test"
+
+        def __init__(self):
+            self.fetch_count = 0
+            self.upload = None
+
+        def get_attachments_from_content(self, page_id, **kwargs):
+            self.fetch_count += 1
+            if self.fetch_count == 1:
+                return {"results": []}
+            return {"results": [{"title": "graph", "version": {"number": 4}}]}
+
+        def attach_file(self, **kwargs):
+            self.upload = kwargs
+
+    confluence = DummyConf()
+    versions = upload_to_confluence.upload_attachment_specs_if_different(
+        confluence, "page", [spec]
+    )
+    assert versions == {"graph": 4}
+    assert confluence.upload["name"] == "graph"
+    assert confluence.upload["content_type"] == "application/vnd.jgraph.mxfile"
+    assert "Uploaded attachment graph" in capsys.readouterr().out
+
+
+def test_upload_attachment_specs_dry_run_performs_no_remote_calls(capsys):
+    class NoRemoteCalls:
+        def __getattr__(self, name):
+            raise AssertionError(f"unexpected remote call: {name}")
+
+    spec = upload_to_confluence.AttachmentSpec(
+        "build/graph.drawio",
+        "graph",
+        "application/vnd.jgraph.mxfile",
+        "drawio-source",
+    )
+    assert upload_to_confluence.upload_attachment_specs_if_different(
+        NoRemoteCalls(), "page", [spec], dry_run=True
+    ) == {}
+    assert "[dry-run] Would upload drawio-source attachment graph" in capsys.readouterr().out
+
+
+def test_attachment_specs_reject_same_basename_from_different_paths():
+    with pytest.raises(ValueError, match="attachment name collision"):
+        upload_to_confluence.attachment_specs(
+            {"first/graph.png": "graph.png", "second/graph.png": "graph.png"}
+        )
 
 
 def test_upload_xhtml_to_confluence_calls_update_page(monkeypatch):
@@ -91,7 +240,7 @@ def test_upload_files_if_different_new_attachment(tmp_path, monkeypatch, capsys)
     file.write_bytes(data)
     mapping = {str(file): "att.txt"}
     class DummyConf:
-        def get_attachments_from_content(self, page_id):
+        def get_attachments_from_content(self, page_id, **kwargs):
             return {"results": []}
         def attach_file(self, filename, page_id, name, content_type):
             print(f"ATTACH called: {name}")
@@ -112,7 +261,7 @@ def test_upload_files_if_different_skip_same(monkeypatch, tmp_path, capsys):
     }]
     class DummyConf2:
         url = "http://ex"
-        def get_attachments_from_content(self, page_id):
+        def get_attachments_from_content(self, page_id, **kwargs):
             return {"results": existing}
         def attach_file(self, **kwargs):
             pytest.skip("Should not attach when same content")
@@ -412,3 +561,31 @@ def test_only_adjust_comment_outside_confluence_macros(monkeypatch):
         '</ac:structured-macro>'
     )
     assert expected == res
+
+
+def test_rough_comment_is_not_inserted_inside_drawio_macro(monkeypatch):
+    existing = (
+        '<p><ac:inline-comment-marker ac:ref="c1">old</ac:inline-comment-marker></p>'
+    )
+    macro = (
+        '<ac:structured-macro ac:name="drawio" ac:schema-version="1">'
+        '<ac:parameter ac:name="diagramName">graph</ac:parameter>'
+        '</ac:structured-macro>'
+    )
+    monkeypatch.setattr(
+        upload_to_confluence, "fetch_page_content", lambda confluence, page_id: existing
+    )
+    monkeypatch.setattr(
+        upload_to_confluence,
+        "fetch_existing_inline_comments",
+        lambda confluence, page_id: [
+            {"markerRef": "c1", "resolveProperties": {"resolved": False}}
+        ],
+    )
+
+    result = upload_to_confluence.reattach_comments(None, macro, "page")
+
+    marker_position = result.index('<ac:inline-comment-marker ac:ref="c1">')
+    macro_start = result.index('<ac:structured-macro ac:name="drawio"')
+    macro_end = result.index("</ac:structured-macro>")
+    assert not macro_start < marker_position < macro_end

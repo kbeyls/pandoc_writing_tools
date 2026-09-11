@@ -15,8 +15,18 @@ digraph FeatureDemo {
     color="#3d5a80"
   ]
 
-  source [label="Graphviz DOT source"]
-  renderer [label="Make + Graphviz", fillcolor="#f7d6bf", color="#c65d28"]
+  source [
+    label="Graphviz DOT source"
+    URL="https://graphviz.org/doc/info/lang.html"
+    tooltip="Graphviz DOT language documentation"
+  ]
+  renderer [
+    label="Make + Graphviz"
+    fillcolor="#f7d6bf"
+    color="#c65d28"
+    URL="https://graphviz.org/documentation/"
+    tooltip="Graphviz documentation"
+  ]
   svg [label="SVG for HTML"]
   pdf [label="PDF for LaTeX"]
   png [label="PNG for Office\nand Confluence"]

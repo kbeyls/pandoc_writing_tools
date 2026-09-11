@@ -474,6 +474,39 @@ Writer.Inline.Image = function(image)
             break
         end
     end
+    local no_drawio = false
+    for _, class in ipairs(image.attr.classes) do
+        if class == "no-drawio" then
+            no_drawio = true
+        end
+    end
+    local logical_src = src:gsub("%.png$", "")
+    local drawio_src = logical_src .. ".drawio"
+    local drawio_file = io.open(drawio_src, "rb")
+    local drawio_has_link = false
+    if drawio_file then
+        local drawio_content = drawio_file:read("*a")
+        drawio_file:close()
+        drawio_has_link = drawio_content:find(' link="', 1, true) ~= nil
+    end
+    local is_drawio = not no_drawio and drawio_has_link
+    if is_drawio then
+        return table.concat({
+            '<ac:structured-macro ac:name="drawio" ac:schema-version="1" ac:macro-id="__DRAWIO_MACRO_ID__">',
+            '<ac:parameter ac:name="border">true</ac:parameter>',
+            '<ac:parameter ac:name="" />',
+            '<ac:parameter ac:name="diagramName">', escape_html(drawio_src), '</ac:parameter>',
+            '<ac:parameter ac:name="simpleViewer">false</ac:parameter>',
+            '<ac:parameter ac:name="width">', tostring(width), '</ac:parameter>',
+            '<ac:parameter ac:name="links">auto</ac:parameter>',
+            '<ac:parameter ac:name="tbstyle">top</ac:parameter>',
+            '<ac:parameter ac:name="lbox">true</ac:parameter>',
+            '<ac:parameter ac:name="diagramWidth">__DRAWIO_WIDTH__</ac:parameter>',
+            '<ac:parameter ac:name="height">__DRAWIO_HEIGHT__</ac:parameter>',
+            '<ac:parameter ac:name="revision">__DRAWIO_REVISION__</ac:parameter>',
+            '</ac:structured-macro>'
+        })
+    end
     return string.format('<ac:image ac:width="%d"><ri:attachment ri:filename="%s"/></ac:image>', width, src)
 end
 
