@@ -340,3 +340,88 @@ def test_make_builds_logical_image_from_excalidraw_svg_source(tmp_path):
     built_svg = content_root / "build/img/diagram.svg"
     assert built_svg.read_text(encoding="utf-8") == svg
     assert (content_root / "build/doc.html").exists()
+
+
+def test_make_builds_graphviz_source_in_all_output_formats(tmp_path):
+    missing_tools = [tool for tool in ("git", "make") if not shutil.which(tool)]
+    if missing_tools:
+        pytest.skip("missing tools: " + ", ".join(missing_tools))
+
+    repo_root = Path(__file__).resolve().parents[3]
+    content_root = tmp_path / "content"
+    img_dir = content_root / "src/img"
+    img_dir.mkdir(parents=True)
+    (content_root / "Makefile").write_text(
+        f"TOOLS_ROOT := {repo_root}\n"
+        "CONTENT_ROOT := $(CURDIR)\n"
+        "include $(TOOLS_ROOT)/Makefile\n",
+        encoding="utf-8",
+    )
+    source_dot = img_dir / "diagram.dot"
+    source_dot.write_text("digraph G { input -> output; }\n", encoding="utf-8")
+
+    invocation_log = tmp_path / "graphviz-invocations.log"
+    fake_dot = tmp_path / "fake-dot"
+    fake_dot.write_text(
+        "#!/bin/sh\n"
+        "set -eu\n"
+        "format=${1#-T}\n"
+        "source=$2\n"
+        "output=$4\n"
+        'printf "%s\\n" "$format" >> "$GRAPHVIZ_TEST_LOG"\n'
+        "{\n"
+        '  printf "format=%s\\n" "$format"\n'
+        '  cat "$source"\n'
+        '} > "$output"\n',
+        encoding="utf-8",
+    )
+    fake_dot.chmod(0o755)
+
+    subprocess.run(["git", "init"], cwd=content_root, check=True, stdout=subprocess.PIPE)
+
+    targets = [
+        str(content_root / f"build/img/diagram.{extension}")
+        for extension in ("svg", "pdf", "png")
+    ]
+    command = [
+        "make",
+        "-C",
+        str(content_root),
+        f"PYTHON_RUNNER={sys.executable}",
+        f"GRAPHVIZ_DOT={fake_dot}",
+        *targets,
+    ]
+    environment = os.environ.copy()
+    environment["GRAPHVIZ_TEST_LOG"] = str(invocation_log)
+
+    subprocess.run(command, check=True, env=environment)
+
+    for extension in ("svg", "pdf", "png"):
+        rendered = content_root / f"build/img/diagram.{extension}"
+        assert rendered.read_text(encoding="utf-8").startswith(
+            f"format={extension}\n"
+        )
+    assert invocation_log.read_text(encoding="utf-8").splitlines() == [
+        "svg",
+        "pdf",
+        "png",
+    ]
+
+    subprocess.run(command, check=True, env=environment)
+    assert invocation_log.read_text(encoding="utf-8").splitlines() == [
+        "svg",
+        "pdf",
+        "png",
+    ]
+
+    time.sleep(1.1)
+    source_dot.write_text("digraph G { input -> middle -> output; }\n", encoding="utf-8")
+    subprocess.run(command, check=True, env=environment)
+    assert invocation_log.read_text(encoding="utf-8").splitlines() == [
+        "svg",
+        "pdf",
+        "png",
+        "svg",
+        "pdf",
+        "png",
+    ]

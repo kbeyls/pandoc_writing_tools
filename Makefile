@@ -162,7 +162,7 @@ ifneq ($(MAKECMDGOALS),clean)
 -include $(GITHASHCHECKS) $(VERSIONCHECKS)
 endif
 
-# The source of images are in SVG, PNG or JPEG format.
+# Image sources can be SVG, Graphviz DOT, PNG, or JPEG files.
 # The below lines define to convert the SVG source images to PDF images such
 # that they can be included in the LaTeX/PDF build.
 # The source images live in src/img, the produced images live in build/img.
@@ -170,6 +170,7 @@ endif
 # Derive Inkscape's export type from the target suffix so the normal SVG and
 # Excalidraw SVG rules share one command for both PDF and PNG outputs.
 INKSCAPE_EXPORT_IMAGE = inkscape $< --export-type=$(patsubst .%,%,$(suffix $@)) --export-filename=$@
+GRAPHVIZ_DOT ?= dot
 
 $(BUILD_IMG_DIR)/%.pdf: $(SRC_IMG_DIR)/%.svg | $(BUILD_IMG_DIR)
 	$(INKSCAPE_EXPORT_IMAGE)
@@ -194,19 +195,31 @@ $(BUILD_IMG_DIR)/%.svg: $(SRC_IMG_DIR)/%.svg | $(BUILD_IMG_DIR)
 	cp $< $@
 $(BUILD_IMG_DIR)/%.svg: $(SRC_IMG_DIR)/%.excalidraw.svg | $(BUILD_IMG_DIR)
 	cp $< $@
+$(BUILD_IMG_DIR)/%.svg: $(SRC_IMG_DIR)/%.dot | $(BUILD_IMG_DIR)
+	$(GRAPHVIZ_DOT) -Tsvg $< -o $@
+$(BUILD_IMG_DIR)/%.pdf: $(SRC_IMG_DIR)/%.dot | $(BUILD_IMG_DIR)
+	$(GRAPHVIZ_DOT) -Tpdf $< -o $@
+$(BUILD_IMG_DIR)/%.png: $(SRC_IMG_DIR)/%.dot | $(BUILD_IMG_DIR)
+	$(GRAPHVIZ_DOT) -Tpng $< -o $@
 $(BUILD_IMG_DIR): | $(BUILD_DIR)
 	mkdir -p $(BUILD_IMG_DIR)
 srcsvgimages := $(wildcard $(SRC_IMG_DIR)/*.svg)
+srcdotimages := $(wildcard $(SRC_IMG_DIR)/*.dot)
 srcpngimages := $(wildcard $(SRC_IMG_DIR)/*.png)
 srcjpgimages := $(wildcard $(SRC_IMG_DIR)/*.jpg)
 srcjpegimages := $(wildcard $(SRC_IMG_DIR)/*.jpeg)
 bldsvgimages := $(patsubst $(SRC_IMG_DIR)/%.svg,$(BUILD_IMG_DIR)/%.svg,$(srcsvgimages))
 bldpdfimages := $(patsubst $(SRC_IMG_DIR)/%.svg,$(BUILD_IMG_DIR)/%.pdf,$(srcsvgimages))
 bldsvgpngimages := $(patsubst $(SRC_IMG_DIR)/%.svg,$(BUILD_IMG_DIR)/%.png,$(srcsvgimages))
+blddotsvgimages := $(patsubst $(SRC_IMG_DIR)/%.dot,$(BUILD_IMG_DIR)/%.svg,$(srcdotimages))
+blddotpdfimages := $(patsubst $(SRC_IMG_DIR)/%.dot,$(BUILD_IMG_DIR)/%.pdf,$(srcdotimages))
+blddotpngimages := $(patsubst $(SRC_IMG_DIR)/%.dot,$(BUILD_IMG_DIR)/%.png,$(srcdotimages))
 bldpngpngimages := $(patsubst $(SRC_IMG_DIR)/%.png,$(BUILD_IMG_DIR)/%.png,$(srcpngimages))
 bldjpgjpgimages := $(patsubst $(SRC_IMG_DIR)/%.jpg,$(BUILD_IMG_DIR)/%.jpg,$(srcjpgimages))
 bldjpegjpegimages := $(patsubst $(SRC_IMG_DIR)/%.jpeg,$(BUILD_IMG_DIR)/%.jpeg,$(srcjpegimages))
-bldimages := $(bldsvgimages) $(bldpngpngimages) $(bldsvgpngimages) $(bldpdfimages) $(bldjpgjpgimages) $(bldjpegjpegimages)
+bldimages := $(bldsvgimages) $(bldpngpngimages) $(bldsvgpngimages) $(bldpdfimages) \
+	$(blddotsvgimages) $(blddotpdfimages) $(blddotpngimages) \
+	$(bldjpgjpgimages) $(bldjpegjpegimages)
 commonfilters := $(TOOLS_ROOT)/theme/fignos.lua $(TOOLS_ROOT)/theme/index.lua $(TOOLS_ROOT)/theme/toc.lua
 
 
