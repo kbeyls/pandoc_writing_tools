@@ -24,6 +24,7 @@ path = [
     "scripts/python/tests/fixtures/regression/feature-demo/**",
     "examples/feature-demo/src/img/demo-excalidraw.excalidraw.svg",
     "examples/feature-demo/src/img/demo-figure.svg",
+    "examples/feature-demo/src/img/demo-graphviz.dot",
 ]
 SPDX-FileCopyrightText = "Copyright 2026 Arm Limited and/or its affiliates <open-source-office@arm.com>"
 SPDX-License-Identifier = "MIT"

@@ -148,3 +148,9 @@ logical build target. Its source file on disk keeps an `.excalidraw.svg`
 extension so Excalidraw-aware tools can still recognize and edit it.
 
 ![An Excalidraw-style SVG fixture](build/img/demo-excalidraw){#fig:standard-pandoc-excalidraw}
+
+The next image uses the same extensionless Markdown convention, but its source
+is a Graphviz DOT file. Make renders the logical image as SVG for HTML, PDF for
+LaTeX, and PNG for output formats such as Confluence, Word, and PowerPoint.
+
+![A Graphviz DOT fixture rendered in the format needed by each output](build/img/demo-graphviz){#fig:standard-pandoc-graphviz}

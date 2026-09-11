@@ -432,6 +432,16 @@ still recognize and edit it.</p>
 alt="An Excalidraw-style SVG fixture" />
 <figcaption>Figure 2: An Excalidraw-style SVG fixture</figcaption>
 </figure>
+<p>The next image uses the same extensionless Markdown convention, but
+its source is a Graphviz DOT file. Make renders the logical image as SVG
+for HTML, PDF for LaTeX, and PNG for output formats such as Confluence,
+Word, and PowerPoint.</p>
+<figure id="fig:standard-pandoc-graphviz" data-count="3">
+<img src="cid:img-3@"
+alt="A Graphviz DOT fixture rendered in the format needed by each output" />
+<figcaption>Figure 3: A Graphviz DOT fixture rendered in the format
+needed by each output</figcaption>
+</figure>
 <div id="refs" class="references csl-bib-body hanging-indent"
 data-entry-spacing="0" role="list">
 <div id="ref-doe2020" class="csl-entry" role="listitem">

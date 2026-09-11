@@ -79,4 +79,7 @@ The display math below exercises Pandoc’s standard display math support.
 The image below uses Pandoc’s standard image syntax with an extensionless logical build target. Its source file on disk keeps an .excalidraw.svg extension so Excalidraw-aware tools can still recognize and edit it.
 
 Figure 2: An Excalidraw-style SVG fixture
+The next image uses the same extensionless Markdown convention, but its source is a Graphviz DOT file. Make renders the logical image as SVG for HTML, PDF for LaTeX, and PNG for output formats such as Confluence, Word, and PowerPoint.
+
+Figure 3: A Graphviz DOT fixture rendered in the format needed by each output
 Doe, Jane. 2020. “Demo Reference.” Demo Journal.
