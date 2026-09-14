@@ -322,6 +322,19 @@ output can be uploaded via the Confluence REST API and rendered properly on
 Confluence pages. The `scripts/python/upload_to_confluence.py` script provides
 an example of how to do that.
 
+Images default to 440 pixels wide in Confluence output. Use the optional
+`confluence-width` image attribute to make an image either smaller or larger:
+
+```markdown
+![Compact overview](build/img/overview){confluence-width=220px}
+![Wide architecture](build/img/architecture){confluence-width=880px}
+```
+
+The value must be a positive integer followed by lowercase `px`. It controls
+both ordinary Confluence image attachments and automatically generated draw.io
+diagrams. Other output formats retain their own sizing behavior; use their
+normal Pandoc attributes, such as `width=50%`, when needed.
+
 ### Confluence uploads (upload_to_confluence.py)
 
 Build the Confluence XHTML output, which can then be uploaded to Confluence

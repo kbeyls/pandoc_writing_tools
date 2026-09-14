@@ -27,7 +27,7 @@ The table of contents is generated from the section headers. The toc-list-top-le
 1.3	Figures and references
 
 Figure 1: A demo figure
-See Figure 1 for the numbered figure reference.
+See Figure 1 for the numbered figure reference. This figure intentionally renders at a compact 220-pixel width on Confluence; other output formats retain their own sizing behavior.
 1.4	Examples and definitions
 We have custom environments for examples and definitions, which are numbered and can be referenced from the text:
 This block is tagged as an example.
@@ -82,4 +82,5 @@ Figure 2: An Excalidraw-style SVG fixture
 The next image uses the same extensionless Markdown convention, but its source is a Graphviz DOT file. Make renders the logical image as SVG for HTML, PDF for LaTeX, and PNG for output formats such as Confluence, Word, and PowerPoint.
 
 Figure 3: A Graphviz DOT fixture rendered in the format needed by each output
+The Graphviz figure intentionally renders at a wide 880-pixel width on Confluence, including when it is published as an interactive draw.io diagram. Other output formats retain their own sizing behavior.
 Doe, Jane. 2020. “Demo Reference.” Demo Journal.

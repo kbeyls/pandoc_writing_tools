@@ -456,6 +456,22 @@ Writer.Block.Figure = function(figure)
     }
 end
 
+local function get_confluence_image_width(image)
+    local value = image.attr.attributes["confluence-width"]
+    if value == nil then
+        return 440
+    end
+
+    local pixels = value:match("^(%d+)px$")
+    local width = pixels and tonumber(pixels) or nil
+    if width == nil or width <= 0 then
+        error(string.format(
+            "invalid confluence-width value %q; expected a positive integer in pixels, for example confluence-width=880px",
+            value))
+    end
+    return width
+end
+
 Writer.Inline.Image = function(image)
     --local attr = pandoc.utils.stringify(image.attr.identifier) ~= "" and
     --    ' id="' .. escape_html(pandoc.utils.stringify(image.attr.identifier)) .. '"' or ""
@@ -466,14 +482,7 @@ Writer.Inline.Image = function(image)
     --local title = pandoc.utils.stringify(image.attr.attributes["title"]) ~= "" and
     --    ' title="' .. escape_html(pandoc.utils.stringify(image.attr.attributes["title"])) .. '"' or ""
     local src = image.src -- escape_html(image.src)
-    -- if the image has class thumbnail, set the width to 220 pixels, otherwise set it to 440 pixels
-    local width = 440
-    for _, class in ipairs(image.attr.classes) do
-        if class == "thumbnail" then
-            width = 220
-            break
-        end
-    end
+    local width = get_confluence_image_width(image)
     local no_drawio = false
     for _, class in ipairs(image.attr.classes) do
         if class == "no-drawio" then

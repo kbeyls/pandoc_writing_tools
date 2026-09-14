@@ -61,8 +61,21 @@ def docker_pandoc_image() -> str:
 
 
 def render_confluence(markdown: str, docker_pandoc_image: str) -> str:
+    result = run_confluence(markdown, docker_pandoc_image)
+    if result.returncode != 0:
+        pytest.fail(
+            "Pandoc failed with exit code "
+            f"{result.returncode}\nstdout:\n{result.stdout}\nstderr:\n{result.stderr}"
+        )
+    return result.stdout
+
+
+def run_confluence(
+    markdown: str,
+    docker_pandoc_image: str,
+) -> subprocess.CompletedProcess[str]:
     root = repo_root()
-    result = run_checked(
+    return subprocess.run(
         [
             "docker",
             "run",
@@ -80,9 +93,11 @@ def render_confluence(markdown: str, docker_pandoc_image: str) -> str:
             "--to",
             "/src/theme/confluence.lua",
         ],
-        input_text=markdown,
+        input=markdown,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
-    return result.stdout
 
 
 def test_confluence_writer_renders_inline_math(docker_pandoc_image):
@@ -105,7 +120,7 @@ def test_confluence_writer_automatically_renders_linked_sidecar_as_macro(
 ):
     fixture = "scripts/python/tests/fixtures/confluence_drawio_server/example-diagram"
     output = render_confluence(
-        f"![Linked graph]({fixture})\n",
+        f"![Linked graph]({fixture}){{confluence-width=880px}}\n",
         docker_pandoc_image,
     )
 
@@ -114,6 +129,7 @@ def test_confluence_writer_automatically_renders_linked_sidecar_as_macro(
         f'<ac:parameter ac:name="diagramName">{fixture}.drawio</ac:parameter>'
         in output
     )
+    assert '<ac:parameter ac:name="width">880</ac:parameter>' in output
     assert '<ac:image' not in output
 
 
@@ -152,3 +168,32 @@ def test_confluence_writer_keeps_ordinary_image_output(docker_pandoc_image):
         'ri:filename="build/img/ordinary.png"/></ac:image>'
     ) in output
     assert 'ac:name="drawio"' not in output
+
+
+def test_confluence_writer_honors_custom_ordinary_image_width(
+    docker_pandoc_image,
+):
+    output = render_confluence(
+        "![Compact](build/img/compact.png){confluence-width=220px}\n",
+        docker_pandoc_image,
+    )
+
+    assert (
+        '<ac:image ac:width="220"><ri:attachment '
+        'ri:filename="build/img/compact.png"/></ac:image>'
+    ) in output
+
+
+def test_confluence_writer_rejects_invalid_image_width(
+    docker_pandoc_image,
+):
+    for invalid_width in ["0px", "800", "50%", "1.5px", "-1px", "wide"]:
+        result = run_confluence(
+            "![Invalid](build/img/invalid.png)"
+            f"{{confluence-width={invalid_width}}}\n",
+            docker_pandoc_image,
+        )
+
+        assert result.returncode != 0
+        assert "invalid confluence-width value" in result.stderr
+        assert "confluence-width=880px" in result.stderr

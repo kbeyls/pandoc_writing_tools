@@ -203,6 +203,8 @@ under the ``Overview'' section:
 \end{figure}
 
 See Figure \hyperref[fig:demo]{1} for the numbered figure reference.
+This figure intentionally renders at a compact 220-pixel width on
+Confluence; other output formats retain their own sizing behavior.
 
 \subsection{\texorpdfstring{Examples and definitions{
 \href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v<VER>\%20-\%20Section\%3A\%20Examples\%20and\%20definitions\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Examples\%20and\%20definitions\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v<VER>.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Examples and definitions }}\label{sec:examples}
@@ -373,6 +375,10 @@ Word, and PowerPoint.
 \caption{Figure 3: A Graphviz DOT fixture rendered in the format needed
 by each output}\label{fig:standard-pandoc-graphviz}
 \end{figure}
+
+The Graphviz figure intentionally renders at a wide 880-pixel width on
+Confluence, including when it is published as an interactive draw.io
+diagram. Other output formats retain their own sizing behavior.
 
 \protect\phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}
