@@ -432,14 +432,16 @@ feedback]</a><br />
 <a href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Figures%20and%20references&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Figures%20and%20references%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v<VER>.%0D%0A%0D%0A">[give
 feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md#L38" class="suggestedit" title="Suggest an edit"></a></h2>
 <figure id="fig:demo" data-count="1">
-<img role="img" aria-label="A demo figure" src="data:image/<BASE64>" alt="A demo figure" />
+<img role="img" aria-label="A demo figure" src="data:image/<BASE64>" data-confluence-width="220px" alt="A demo figure" />
 <figcaption>Figure 1: A demo figure</figcaption>
 </figure>
 <p>See Figure <a href="#fig:demo">1</a> for the numbered figure
-reference.</p>
+reference. This figure intentionally renders at a compact 220-pixel
+width on Confluence; other output formats retain their own sizing
+behavior.</p>
 <h2 data-number="1.4" data-section-number="1.4" id="sec:examples"><span class="header-section-number">1.4</span> Examples and definitions<a href="#sec:examples" class="selflink"></a><span class="feedback-button">
 <a href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Examples%20and%20definitions&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Examples%20and%20definitions%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v<VER>.%0D%0A%0D%0A">[give
-feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md#L44" class="suggestedit" title="Suggest an edit"></a></h2>
+feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md#L46" class="suggestedit" title="Suggest an edit"></a></h2>
 <p>We have custom environments for examples and definitions, which are
 numbered and can be referenced from the text:</p>
 <div id="ex:demo" class="example" data-caption="Example 1: Demo example" data-count="1">
@@ -453,7 +455,7 @@ numbered and can be referenced from the text:</p>
 <p>Refer back to Example <a href="#ex:demo">1</a> and Definition <a href="#def:demo">1</a>.</p>
 <h2 data-number="1.5" data-section-number="1.5" id="sec:index-entries"><span class="header-section-number">1.5</span>
 Index entries<a href="#sec:index-entries" class="selflink"></a><span class="feedback-button"> <a href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Index%20entries&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Index%20entries%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v<VER>.%0D%0A%0D%0A">[give
-feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md#L59" class="suggestedit" title="Suggest an edit"></a></h2>
+feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md#L61" class="suggestedit" title="Suggest an edit"></a></h2>
 <p>The index filter allows you to mark index entries in the text, which
 are then collected and emitted in an index div, see at the end of this
 document. The simplest usage is to just add <code>.index</code> spans
@@ -466,11 +468,11 @@ attribute on the span to customize the index entry text, and use
 “idea”. We can also create nested entries like <span id="__index_entry_3" class="index">color!blue</span>, and multiple
 entries like <span id="__index_entry_4" class="index">alpha;beta</span>.</p>
 <h2 data-number="1.6" data-section-number="1.6" id="sec:sidenotes"><span class="header-section-number">1.6</span> Sidenotes<a href="#sec:sidenotes" class="selflink"></a><span class="feedback-button"> <a href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Sidenotes&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Sidenotes%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v<VER>.%0D%0A%0D%0A">[give
-feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md#L74" class="suggestedit" title="Suggest an edit"></a></h2>
+feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md#L76" class="suggestedit" title="Suggest an edit"></a></h2>
 <p>This sentence has a footnote.<span class="sidenote_ref" href="#sidenote_1"><sup>1</sup></span><span id="sidenote_1" class="sidenote">1. Footnote content that becomes a sidenote in
 HTML.</span></p>
 <h2 data-number="1.7" data-section-number="1.7" id="sec:todos"><span class="header-section-number">1.7</span> TODOs<a href="#sec:todos" class="selflink"></a><span class="feedback-button"> <a href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20TODOs&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27TODOs%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v<VER>.%0D%0A%0D%0A">[give
-feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md#L80" class="suggestedit" title="Suggest an edit"></a></h2>
+feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md#L82" class="suggestedit" title="Suggest an edit"></a></h2>
 <p>It is often useful to be able to mark TODO items in the text. It
 helps you to avoid writer’s block on something you can’t quite put into
 words just yet. The <code>markup_todo.lua</code> filter allows you to do
@@ -481,7 +483,7 @@ spans for inline TODOs, or on divs for block TODOs. For example, please
 <span id="todo_2" class="todo">Block TODO content.</span>
 <h2 data-number="1.8" data-section-number="1.8" id="sec:github-links"><span class="header-section-number">1.8</span>
 Linking to github issues and edit links<a href="#sec:github-links" class="selflink"></a><span class="feedback-button"> <a href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Linking%20to%20github%20issues%20and%20edit%20links&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Linking%20to%20github%20issues%20and%20edit%20links%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v<VER>.%0D%0A%0D%0A">[give
-feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md#L92" class="suggestedit" title="Suggest an edit"></a></h2>
+feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md#L94" class="suggestedit" title="Suggest an edit"></a></h2>
 <p>Github issue link when enabled: Github issue <a href="https://github.com/kbeyls/pandoc_writing_tools/issues/1"><img role="img" aria-label="#1" src="data:image/<BASE64>" alt="#1" /></a>.</p>
 <p>Edit links appear as little pencil icons at the end of headers when
 <code>add_edit_to_headers.lua</code> is enabled.</p>
@@ -503,7 +505,7 @@ feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit
 </div>
 <h1 data-number="2" data-section-number="2" id="sec:standard-pandoc-regression"><span class="header-section-number">2</span> Standard Pandoc Regression
 Coverage<a href="#sec:standard-pandoc-regression" class="selflink"></a><span class="feedback-button"> <a href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Standard%20Pandoc%20Regression%20Coverage&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Standard%20Pandoc%20Regression%20Coverage%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v<VER>.%0D%0A%0D%0A">[give
-feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md#L102" class="suggestedit" title="Suggest an edit"></a></h1>
+feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md#L104" class="suggestedit" title="Suggest an edit"></a></h1>
 <p>The features in this final section are standard Pandoc features. They
 are not features added or enabled by the pandoc_writing_tools Lua
 filters.</p>
@@ -512,7 +514,7 @@ features keep working across output formats. In particular, it helps
 catch accidentally missing dependencies that are needed for LaTeX/PDF
 output when standard Pandoc constructs trigger extra TeX packages.</p>
 <h2 data-number="2.1" data-section-number="2.1" id="sec:standard-pandoc-tables"><span class="header-section-number">2.1</span> Tables<a href="#sec:standard-pandoc-tables" class="selflink"></a><span class="feedback-button"> <a href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Tables&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Tables%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v<VER>.%0D%0A%0D%0A">[give
-feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md#L112" class="suggestedit" title="Suggest an edit"></a></h2>
+feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md#L114" class="suggestedit" title="Suggest an edit"></a></h2>
 <p>This table exercises Pandoc’s standard Markdown table support. For
 LaTeX/PDF output, Pandoc renders this construct through
 longtable-compatible LaTeX.</p>
@@ -559,14 +561,14 @@ Pandoc renders this standard table construct with the
 </tbody>
 </table>
 <h2 data-number="2.2" data-section-number="2.2" id="sec:standard-pandoc-math"><span class="header-section-number">2.2</span> Math<a href="#sec:standard-pandoc-math" class="selflink"></a><span class="feedback-button"> <a href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Math&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Math%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v<VER>.%0D%0A%0D%0A">[give
-feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md#L133" class="suggestedit" title="Suggest an edit"></a></h2>
+feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md#L135" class="suggestedit" title="Suggest an edit"></a></h2>
 <p>This paragraph exercises Pandoc’s standard inline math support, <span class="math inline"><em>a</em> &lt; <em>b</em></span>, in ordinary
 text.</p>
 <p>The display math below exercises Pandoc’s standard display math
 support.</p>
 <p><span class="math display"><em>E</em> = <em>m</em><em>c</em><sup>2</sup></span></p>
 <h2 data-number="2.3" data-section-number="2.3" id="sec:standard-pandoc-images"><span class="header-section-number">2.3</span> Images<a href="#sec:standard-pandoc-images" class="selflink"></a><span class="feedback-button"> <a href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Images&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Images%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v<VER>.%0D%0A%0D%0A">[give
-feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md#L144" class="suggestedit" title="Suggest an edit"></a></h2>
+feedback]</a></span><a href="https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md#L146" class="suggestedit" title="Suggest an edit"></a></h2>
 <p>The image below uses Pandoc’s standard image syntax with an
 extensionless logical build target. Its source file on disk keeps an
 <code>.excalidraw.svg</code> extension so Excalidraw-aware tools can
@@ -580,10 +582,13 @@ its source is a Graphviz DOT file. Make renders the logical image as SVG
 for HTML, PDF for LaTeX, and PNG for output formats such as Confluence,
 Word, and PowerPoint.</p>
 <figure id="fig:standard-pandoc-graphviz" data-count="3">
-<img role="img" aria-label="A Graphviz DOT fixture rendered in the format needed by each output" src="data:image/<BASE64>" alt="A Graphviz DOT fixture rendered in the format needed by each output" />
+<img role="img" aria-label="A Graphviz DOT fixture rendered in the format needed by each output" src="data:image/<BASE64>" data-confluence-width="880px" alt="A Graphviz DOT fixture rendered in the format needed by each output" />
 <figcaption>Figure 3: A Graphviz DOT fixture rendered in the format
 needed by each output</figcaption>
 </figure>
+<p>The Graphviz figure intentionally renders at a wide 880-pixel width
+on Confluence, including when it is published as an interactive draw.io
+diagram. Other output formats retain their own sizing behavior.</p>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-doe2020" class="csl-entry" role="listitem">
 Doe, Jane. 2020. <span>“Demo Reference.”</span> <em>Demo Journal</em>.

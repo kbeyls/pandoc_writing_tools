@@ -37,9 +37,11 @@ includes level 2 and level 3 headers under the "Overview" section:
 
 ## Figures and references {#sec:figures}
 
-![A demo figure](img/demo-figure){#fig:demo}
+![A demo figure](img/demo-figure){#fig:demo confluence-width=220px}
 
 See Figure [@fig:demo] for the numbered figure reference.
+This figure intentionally renders at a compact 220-pixel width on Confluence;
+other output formats retain their own sizing behavior.
 
 ## Examples and definitions {#sec:examples}
 
@@ -153,4 +155,8 @@ The next image uses the same extensionless Markdown convention, but its source
 is a Graphviz DOT file. Make renders the logical image as SVG for HTML, PDF for
 LaTeX, and PNG for output formats such as Confluence, Word, and PowerPoint.
 
-![A Graphviz DOT fixture rendered in the format needed by each output](build/img/demo-graphviz){#fig:standard-pandoc-graphviz}
+![A Graphviz DOT fixture rendered in the format needed by each output](build/img/demo-graphviz){#fig:standard-pandoc-graphviz confluence-width=880px}
+
+The Graphviz figure intentionally renders at a wide 880-pixel width on
+Confluence, including when it is published as an interactive draw.io diagram.
+Other output formats retain their own sizing behavior.

@@ -234,11 +234,14 @@ href="#sec:figures" class="selflink"></a><span class="feedback-button">
 href="mailto:docs@example.com?subject=%5BFeedback%5D%20pandoc_writing_tools%20Feature%20Demo%20v<VER>%20-%20Section%3A%20Figures%20and%20references&amp;body=Hi%2C%0D%0A%0D%0AI%20have%20some%20feedback%20regarding%20the%20section%20%27Figures%20and%20references%27%20in%20%27pandoc_writing_tools%20Feature%20Demo%27%20v<VER>.%0D%0A%0D%0A">[give
 feedback]</a></span></h2>
 <figure id="fig:demo" data-count="1">
-<img src="cid:img-1@" alt="A demo figure" />
+<img src="cid:img-1@" data-confluence-width="220px"
+alt="A demo figure" />
 <figcaption>Figure 1: A demo figure</figcaption>
 </figure>
 <p>See Figure <a href="#fig:demo">1</a> for the numbered figure
-reference.</p>
+reference. This figure intentionally renders at a compact 220-pixel
+width on Confluence; other output formats retain their own sizing
+behavior.</p>
 <h2 data-number="1.4" data-section-number="1.4" id="sec:examples"><span
 class="header-section-number">1.4</span> Examples and definitions<a
 href="#sec:examples" class="selflink"></a><span class="feedback-button">
@@ -437,11 +440,14 @@ its source is a Graphviz DOT file. Make renders the logical image as SVG
 for HTML, PDF for LaTeX, and PNG for output formats such as Confluence,
 Word, and PowerPoint.</p>
 <figure id="fig:standard-pandoc-graphviz" data-count="3">
-<img src="cid:img-3@"
+<img src="cid:img-3@" data-confluence-width="880px"
 alt="A Graphviz DOT fixture rendered in the format needed by each output" />
 <figcaption>Figure 3: A Graphviz DOT fixture rendered in the format
 needed by each output</figcaption>
 </figure>
+<p>The Graphviz figure intentionally renders at a wide 880-pixel width
+on Confluence, including when it is published as an interactive draw.io
+diagram. Other output formats retain their own sizing behavior.</p>
 <div id="refs" class="references csl-bib-body hanging-indent"
 data-entry-spacing="0" role="list">
 <div id="ref-doe2020" class="csl-entry" role="listitem">

@@ -52,14 +52,14 @@ Figure 1: A demo figure
 </ac:parameter>
 <ac:rich-text-body>
 <figure>
-<ac:image ac:width="440"><ri:attachment ri:filename="img/demo-figure.png"/></ac:image>
+<ac:image ac:width="220"><ri:attachment ri:filename="img/demo-figure.png"/></ac:image>
 </figure>
 </ac:rich-text-body>
 </ac:structured-macro>
 </ac:rich-text-body>
 </ac:structured-macro>
 
-<p>See Figure <ac:link ac:anchor="fig:demo"><ac:link-body>1</ac:link-body></ac:link> for the numbered figure reference.</p>
+<p>See Figure <ac:link ac:anchor="fig:demo"><ac:link-body>1</ac:link-body></ac:link> for the numbered figure reference. This figure intentionally renders at a compact 220-pixel width on Confluence; other output formats retain their own sizing behavior.</p>
 
 <ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">sec:examples</ac:parameter></ac:structured-macro><h2 id="sec:examples">1.4 Examples and definitions</h2>
 
@@ -234,12 +234,14 @@ Figure 3: A Graphviz DOT fixture rendered in the format needed by each output
 </ac:parameter>
 <ac:rich-text-body>
 <figure>
-<ac:structured-macro ac:name="drawio" ac:schema-version="1" ac:macro-id="__DRAWIO_MACRO_ID__"><ac:parameter ac:name="border">true</ac:parameter><ac:parameter ac:name="" /><ac:parameter ac:name="diagramName">build/img/demo-graphviz.drawio</ac:parameter><ac:parameter ac:name="simpleViewer">false</ac:parameter><ac:parameter ac:name="width">440</ac:parameter><ac:parameter ac:name="links">auto</ac:parameter><ac:parameter ac:name="tbstyle">top</ac:parameter><ac:parameter ac:name="lbox">true</ac:parameter><ac:parameter ac:name="diagramWidth">__DRAWIO_WIDTH__</ac:parameter><ac:parameter ac:name="height">__DRAWIO_HEIGHT__</ac:parameter><ac:parameter ac:name="revision">__DRAWIO_REVISION__</ac:parameter></ac:structured-macro>
+<ac:structured-macro ac:name="drawio" ac:schema-version="1" ac:macro-id="__DRAWIO_MACRO_ID__"><ac:parameter ac:name="border">true</ac:parameter><ac:parameter ac:name="" /><ac:parameter ac:name="diagramName">build/img/demo-graphviz.drawio</ac:parameter><ac:parameter ac:name="simpleViewer">false</ac:parameter><ac:parameter ac:name="width">880</ac:parameter><ac:parameter ac:name="links">auto</ac:parameter><ac:parameter ac:name="tbstyle">top</ac:parameter><ac:parameter ac:name="lbox">true</ac:parameter><ac:parameter ac:name="diagramWidth">__DRAWIO_WIDTH__</ac:parameter><ac:parameter ac:name="height">__DRAWIO_HEIGHT__</ac:parameter><ac:parameter ac:name="revision">__DRAWIO_REVISION__</ac:parameter></ac:structured-macro>
 </figure>
 </ac:rich-text-body>
 </ac:structured-macro>
 </ac:rich-text-body>
 </ac:structured-macro>
+
+<p>The Graphviz figure intentionally renders at a wide 880-pixel width on Confluence, including when it is published as an interactive draw.io diagram. Other output formats retain their own sizing behavior.</p>
 
 <ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">refs</ac:parameter></ac:structured-macro><div id="refs" class="references csl-bib-body hanging-indent">
 <ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">ref-doe2020</ac:parameter></ac:structured-macro><ac:structured-macro ac:name="panel">
