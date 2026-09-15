@@ -85,6 +85,7 @@ local function collect_headers(start_id, min_level, max_level, headers)
                     for lvl = header.level-1,min_level,-1 do
                         if last_header_seen_at_level[lvl] then
                             parent = last_header_seen_at_level[lvl]
+                            break
                         end
                     end
                     assert(parent, "No parent found for header level " .. header.level)

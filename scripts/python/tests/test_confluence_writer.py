@@ -60,8 +60,17 @@ def docker_pandoc_image() -> str:
     return DOCKER_IMAGE
 
 
-def render_confluence(markdown: str, docker_pandoc_image: str) -> str:
-    result = run_confluence(markdown, docker_pandoc_image)
+def render_confluence(
+    markdown: str,
+    docker_pandoc_image: str,
+    *,
+    lua_filters: tuple[str, ...] = (),
+) -> str:
+    result = run_confluence(
+        markdown,
+        docker_pandoc_image,
+        lua_filters=lua_filters,
+    )
     if result.returncode != 0:
         pytest.fail(
             "Pandoc failed with exit code "
@@ -73,26 +82,31 @@ def render_confluence(markdown: str, docker_pandoc_image: str) -> str:
 def run_confluence(
     markdown: str,
     docker_pandoc_image: str,
+    *,
+    lua_filters: tuple[str, ...] = (),
 ) -> subprocess.CompletedProcess[str]:
     root = repo_root()
+    command = [
+        "docker",
+        "run",
+        "--rm",
+        "--interactive",
+        "--mount",
+        f"type=bind,source={root},target=/src",
+        "--workdir",
+        "/src",
+        "--entrypoint",
+        "pandoc",
+        docker_pandoc_image,
+        "--from",
+        "markdown-example_lists",
+        "--to",
+        "/src/theme/confluence.lua",
+    ]
+    for lua_filter in lua_filters:
+        command.extend(["--lua-filter", f"/src/{lua_filter}"])
     return subprocess.run(
-        [
-            "docker",
-            "run",
-            "--rm",
-            "--interactive",
-            "--mount",
-            f"type=bind,source={root},target=/src",
-            "--workdir",
-            "/src",
-            "--entrypoint",
-            "pandoc",
-            docker_pandoc_image,
-            "--from",
-            "markdown-example_lists",
-            "--to",
-            "/src/theme/confluence.lua",
-        ],
+        command,
         input=markdown,
         text=True,
         stdout=subprocess.PIPE,
@@ -197,3 +211,45 @@ def test_confluence_writer_rejects_invalid_image_width(
         assert result.returncode != 0
         assert "invalid confluence-width value" in result.stderr
         assert "confluence-width=880px" in result.stderr
+
+
+def test_confluence_writer_indents_each_toc_header_level(
+    docker_pandoc_image,
+):
+    output = render_confluence(
+        """::: {toc-list-top-level=#root toc-list-entry-levels=2-4}
+:::
+
+# Root {#root}
+
+## Parent {#parent}
+
+### Child {#child}
+
+#### Grandchild {#grandchild}
+
+## Sibling {#sibling}
+
+### Sibling child {#sibling-child}
+""",
+        docker_pandoc_image,
+        lua_filters=("theme/toc.lua",),
+    )
+
+    toc_output = output.split('<h1 id="root">', maxsplit=1)[0]
+    indentation_marker = '<div style="margin-left: 40px;">'
+
+    def indentation_at(anchor: str) -> int:
+        preceding_output = toc_output.split(
+            f'<ac:link ac:anchor="{anchor}">',
+            maxsplit=1,
+        )[0]
+        return preceding_output.count(indentation_marker) - preceding_output.count(
+            "</div>"
+        )
+
+    assert indentation_at("parent") == 1
+    assert indentation_at("child") == 2
+    assert indentation_at("grandchild") == 3
+    assert indentation_at("sibling") == 1
+    assert indentation_at("sibling-child") == 2
