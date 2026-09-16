@@ -210,8 +210,8 @@ customize the index entry text, and use `!` to create nested entries.
 ```markdown
 The [widget]{.index} is useful.
 A [concept]{.index entry="idea"} can be renamed.
-Nested entries: [widget!blue]{.index}.
-Multiple entries: [alpha;beta]{.index}.
+Nested entries: The widget is [blue]{.index entry="widget!blue"}.
+Multiple entries: [αβ]{.index entry="alpha;beta}.
 
 ::: {#index}
 :::
