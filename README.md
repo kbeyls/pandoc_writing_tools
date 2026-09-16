@@ -211,7 +211,7 @@ customize the index entry text, and use `!` to create nested entries.
 The [widget]{.index} is useful.
 A [concept]{.index entry="idea"} can be renamed.
 Nested entries: The widget is [blue]{.index entry="widget!blue"}.
-Multiple entries: [αβ]{.index entry="alpha;beta}.
+Multiple entries: [αβ]{.index entry="alpha;beta"}.
 
 ::: {#index}
 :::
