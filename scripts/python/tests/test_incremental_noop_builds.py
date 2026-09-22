@@ -275,3 +275,33 @@ def test_email_html_intermediate_survives_eml_build(tmp_path: Path) -> None:
 
     assert "doc.md -t html" not in result.stdout
     assert "render_email.py" not in result.stdout
+
+
+def test_transformed_native_uses_markdown_source(tmp_path: Path) -> None:
+    missing_tools = [tool for tool in ("git", "make", "pandoc") if not shutil.which(tool)]
+    if missing_tools:
+        pytest.skip("missing tools: " + ", ".join(missing_tools))
+
+    tools_root = Path(__file__).resolve().parents[3]
+    content_root = tmp_path / "content"
+    src_dir = content_root / "src"
+    src_dir.mkdir(parents=True)
+    _write_content_makefile(content_root, tools_root)
+    (src_dir / "doc.md").write_text(
+        "---\n"
+        "title: Doc\n"
+        "---\n\n"
+        "See section [@sec:target].\n\n"
+        "# Distinct heading {#sec:target}\n",
+        encoding="utf-8",
+    )
+    _commit_fixture_repo(content_root)
+
+    _make(content_root, "native")
+
+    transformed = (content_root / "build/doc.transformed.native").read_text(
+        encoding="utf-8"
+    )
+    assert 'Str "Distinct"' in transformed
+    assert '"#sec:target"' in transformed
+    assert 'Str "VERSION=' not in transformed

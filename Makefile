@@ -317,8 +317,7 @@ $(BUILD_DIR)/%.native: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS
 	pandoc $< -t native -o $@ $(PANDOCFLAGS)
 
 $(BUILD_DIR)/%.transformed.native: $(SRC_DIR)/%.md $(BUILD_BIB_DEPS_DIR)/%.refs.json $(TOOLS_ROOT)/Makefile \
-				 $(commonfilters)
-$(BUILD_DIR)/%.transformed.native: $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR) $(BIB_CHECKED_PATTERN)
+				 $(commonfilters) $(BUILD_DIR)/.version-%.stamp | $(BUILD_DIR) $(BIB_CHECKED_PATTERN)
 	mkdir -p $(dir $@)
 	pandoc $< -t native -o $@ $(PANDOCFLAGS) $(COMMONFILTERS)
 

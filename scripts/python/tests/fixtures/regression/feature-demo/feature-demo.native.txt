@@ -4,7 +4,1975 @@ Pandoc
         fromList
           [ ( "LAST_UPDATED" , MetaString "<DATE>" )
           , ( "VERSION" , MetaString "<VER>" )
+          , ( "bibliography"
+            , MetaInlines [ Str "src/feature-demo.bib" ]
+            )
+          , ( "contact-email"
+            , MetaInlines [ Str "docs@example.com" ]
+            )
+          , ( "edit-source-file"
+            , MetaInlines [ Str "src/feature-demo.md" ]
+            )
+          , ( "edit-url-base"
+            , MetaInlines
+                [ Str
+                    "https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md"
+                ]
+            )
+          , ( "github-repo"
+            , MetaInlines
+                [ Str "https://github.com/kbeyls/pandoc_writing_tools" ]
+            )
+          , ( "title"
+            , MetaInlines
+                [ Str "pandoc_writing_tools"
+                , Space
+                , Str "Feature"
+                , Space
+                , Str "Demo"
+                ]
+            )
           ]
     }
-  [ Para [ Str "VERSION:<VER>" , SoftBreak , Str "LAST_UPDATED:<DATE>" ]
+  [ RawBlock
+      (Format "html")
+      "<!--\nSPDX-FileCopyrightText: <text>Copyright 2026 Arm Limited and/or its affiliates <open-source-office@arm.com></text>\nSPDX-License-Identifier: MIT\n-->"
+  , Header
+      1
+      ( "sec:overview" , [] , [ ( "section-number" , "1" ) ] )
+      [ Str "Overview" ]
+  , Para
+      [ Str "This"
+      , Space
+      , Str "document"
+      , Space
+      , Str "demonstrates"
+      , Space
+      , Str "the"
+      , Space
+      , Str "functionality"
+      , Space
+      , Str "of"
+      , Space
+      , Str "the"
+      , Space
+      , Str "Lua"
+      , Space
+      , Str "filters"
+      , Space
+      , Str "in"
+      , SoftBreak
+      , Str "pandoc_writing_tools."
+      ]
+  , Header
+      2
+      ( "sec:citations-and-refs"
+      , []
+      , [ ( "section-number" , "1.1" ) ]
+      )
+      [ Str "Citations"
+      , Space
+      , Str "and"
+      , Space
+      , Str "section"
+      , Space
+      , Str "references"
+      ]
+  , Para
+      [ Str "This"
+      , Space
+      , Str "is"
+      , Space
+      , Str "what"
+      , Space
+      , Str "a"
+      , Space
+      , Str "citation"
+      , Space
+      , Str "looks"
+      , Space
+      , Str "like:"
+      , Space
+      , Cite
+          [ Citation
+              { citationId = "doe2020"
+              , citationPrefix = []
+              , citationSuffix = []
+              , citationMode = NormalCitation
+              , citationNoteNum = 1
+              , citationHash = 0
+              }
+          ]
+          [ Str "(Doe" , Space , Str "2020)" ]
+      , Str "."
+      , Space
+      , Str "The"
+      , Space
+      , Str "list"
+      , Space
+      , Str "of"
+      , Space
+      , Str "all"
+      , Space
+      , Str "cited"
+      , Space
+      , Str "references"
+      , SoftBreak
+      , Str "appears"
+      , Space
+      , Str "in"
+      , Space
+      , Str "the"
+      , Space
+      , Str "bibliography"
+      , Space
+      , Str "section"
+      , Space
+      , Str "at"
+      , Space
+      , Str "the"
+      , Space
+      , Str "end"
+      , Space
+      , Str "of"
+      , Space
+      , Str "the"
+      , Space
+      , Str "document."
+      ]
+  , Para
+      [ Str "The"
+      , Space
+      , Str "pandoc_writing_tools"
+      , Space
+      , Str "lua"
+      , Space
+      , Str "filters"
+      , Space
+      , Str "enable"
+      , Space
+      , Str "referring"
+      , Space
+      , Str "to"
+      , Space
+      , Str "a"
+      , Space
+      , Str "section"
+      , Space
+      , Str "by"
+      , Space
+      , Str "number,"
+      , SoftBreak
+      , Str "for"
+      , Space
+      , Str "example,"
+      , Space
+      , Str "this"
+      , Space
+      , Str "references"
+      , Space
+      , Str "section"
+      , Space
+      , Link ( "" , [] , [] ) [ Str "1" ] ( "#sec:overview" , "" )
+      , Str "."
+      ]
+  , Header
+      2
+      ( "table-of-contents"
+      , []
+      , [ ( "section-number" , "1.2" ) ]
+      )
+      [ Str "Table" , Space , Str "of" , Space , Str "contents" ]
+  , Para
+      [ Str "The"
+      , Space
+      , Str "table"
+      , Space
+      , Str "of"
+      , Space
+      , Str "contents"
+      , Space
+      , Str "is"
+      , Space
+      , Str "generated"
+      , Space
+      , Str "from"
+      , Space
+      , Str "the"
+      , Space
+      , Str "section"
+      , Space
+      , Str "headers."
+      , Space
+      , Str "The"
+      , SoftBreak
+      , Code ( "" , [] , [] ) "toc-list-top-level"
+      , Space
+      , Str "and"
+      , Space
+      , Code ( "" , [] , [] ) "toc-list-entry-levels"
+      , Space
+      , Str "attributes"
+      , Space
+      , Str "control"
+      , Space
+      , Str "which"
+      , SoftBreak
+      , Str "headers"
+      , Space
+      , Str "are"
+      , Space
+      , Str "included"
+      , Space
+      , Str "and"
+      , Space
+      , Str "how"
+      , Space
+      , Str "they"
+      , Space
+      , Str "are"
+      , Space
+      , Str "nested."
+      , Space
+      , Str "For"
+      , Space
+      , Str "example,"
+      , Space
+      , Str "the"
+      , Space
+      , Str "mini-TOC"
+      , Space
+      , Str "below"
+      , SoftBreak
+      , Str "includes"
+      , Space
+      , Str "level"
+      , Space
+      , Str "2"
+      , Space
+      , Str "and"
+      , Space
+      , Str "level"
+      , Space
+      , Str "3"
+      , Space
+      , Str "headers"
+      , Space
+      , Str "under"
+      , Space
+      , Str "the"
+      , Space
+      , Quoted DoubleQuote [ Str "Overview" ]
+      , Space
+      , Str "section:"
+      ]
+  , Div
+      ( "" , [ "toc-list" ] , [] )
+      [ Plain
+          [ Link
+              ( "" , [] , [] )
+              [ Str "1.1"
+              , Space
+              , Str "Citations"
+              , Space
+              , Str "and"
+              , Space
+              , Str "section"
+              , Space
+              , Str "references"
+              ]
+              ( "#sec:citations-and-refs" , "" )
+          , LineBreak
+          ]
+      , Plain
+          [ Link
+              ( "" , [] , [] )
+              [ Str "1.2"
+              , Space
+              , Str "Table"
+              , Space
+              , Str "of"
+              , Space
+              , Str "contents"
+              ]
+              ( "#table-of-contents" , "" )
+          , LineBreak
+          ]
+      , Plain
+          [ Link
+              ( "" , [] , [] )
+              [ Str "1.3"
+              , Space
+              , Str "Figures"
+              , Space
+              , Str "and"
+              , Space
+              , Str "references"
+              ]
+              ( "#sec:figures" , "" )
+          , LineBreak
+          ]
+      , Plain
+          [ Link
+              ( "" , [] , [] )
+              [ Str "1.4"
+              , Space
+              , Str "Examples"
+              , Space
+              , Str "and"
+              , Space
+              , Str "definitions"
+              ]
+              ( "#sec:examples" , "" )
+          , LineBreak
+          ]
+      , Plain
+          [ Link
+              ( "" , [] , [] )
+              [ Str "1.5"
+              , Space
+              , Str "Index"
+              , Space
+              , Str "entries"
+              ]
+              ( "#sec:index-entries" , "" )
+          , LineBreak
+          ]
+      , Plain
+          [ Link
+              ( "" , [] , [] )
+              [ Str "1.6" , Space , Str "Sidenotes" ]
+              ( "#sec:sidenotes" , "" )
+          , LineBreak
+          ]
+      , Plain
+          [ Link
+              ( "" , [] , [] )
+              [ Str "1.7" , Space , Str "TODOs" ]
+              ( "#sec:todos" , "" )
+          , LineBreak
+          ]
+      , Plain
+          [ Link
+              ( "" , [] , [] )
+              [ Str "1.8"
+              , Space
+              , Str "Linking"
+              , Space
+              , Str "to"
+              , Space
+              , Str "github"
+              , Space
+              , Str "issues"
+              , Space
+              , Str "and"
+              , Space
+              , Str "edit"
+              , Space
+              , Str "links"
+              ]
+              ( "#sec:github-links" , "" )
+          , LineBreak
+          ]
+      ]
+  , Header
+      2
+      ( "sec:figures" , [] , [ ( "section-number" , "1.3" ) ] )
+      [ Str "Figures"
+      , Space
+      , Str "and"
+      , Space
+      , Str "references"
+      ]
+  , Figure
+      ( "fig:demo" , [] , [ ( "count" , "1" ) ] )
+      (Caption
+         Nothing
+         [ Plain
+             [ Str "Figure 1: "
+             , Str "A"
+             , Space
+             , Str "demo"
+             , Space
+             , Str "figure"
+             ]
+         ])
+      [ Plain
+          [ Image
+              ( "" , [] , [ ( "confluence-width" , "220px" ) ] )
+              [ Str "A" , Space , Str "demo" , Space , Str "figure" ]
+              ( "img/demo-figure" , "" )
+          ]
+      ]
+  , Para
+      [ Str "See"
+      , Space
+      , Str "Figure"
+      , Space
+      , Link ( "" , [] , [] ) [ Str "1" ] ( "#fig:demo" , "" )
+      , Space
+      , Str "for"
+      , Space
+      , Str "the"
+      , Space
+      , Str "numbered"
+      , Space
+      , Str "figure"
+      , Space
+      , Str "reference."
+      , SoftBreak
+      , Str "This"
+      , Space
+      , Str "figure"
+      , Space
+      , Str "intentionally"
+      , Space
+      , Str "renders"
+      , Space
+      , Str "at"
+      , Space
+      , Str "a"
+      , Space
+      , Str "compact"
+      , Space
+      , Str "220-pixel"
+      , Space
+      , Str "width"
+      , Space
+      , Str "on"
+      , Space
+      , Str "Confluence;"
+      , SoftBreak
+      , Str "other"
+      , Space
+      , Str "output"
+      , Space
+      , Str "formats"
+      , Space
+      , Str "retain"
+      , Space
+      , Str "their"
+      , Space
+      , Str "own"
+      , Space
+      , Str "sizing"
+      , Space
+      , Str "behavior."
+      ]
+  , Header
+      2
+      ( "sec:examples" , [] , [ ( "section-number" , "1.4" ) ] )
+      [ Str "Examples"
+      , Space
+      , Str "and"
+      , Space
+      , Str "definitions"
+      ]
+  , Para
+      [ Str "We"
+      , Space
+      , Str "have"
+      , Space
+      , Str "custom"
+      , Space
+      , Str "environments"
+      , Space
+      , Str "for"
+      , Space
+      , Str "examples"
+      , Space
+      , Str "and"
+      , Space
+      , Str "definitions,"
+      , Space
+      , Str "which"
+      , Space
+      , Str "are"
+      , Space
+      , Str "numbered"
+      , Space
+      , Str "and"
+      , SoftBreak
+      , Str "can"
+      , Space
+      , Str "be"
+      , Space
+      , Str "referenced"
+      , Space
+      , Str "from"
+      , Space
+      , Str "the"
+      , Space
+      , Str "text:"
+      ]
+  , Div
+      ( "ex:demo"
+      , [ "example" ]
+      , [ ( "caption" , "Example 1: Demo example" )
+        , ( "count" , "1" )
+        ]
+      )
+      [ Para
+          [ Str "This"
+          , Space
+          , Str "block"
+          , Space
+          , Str "is"
+          , Space
+          , Str "tagged"
+          , Space
+          , Str "as"
+          , Space
+          , Str "an"
+          , Space
+          , Str "example."
+          ]
+      ]
+  , Div
+      ( "def:demo"
+      , [ "definition" ]
+      , [ ( "caption" , "Definition 1: Demo definition" )
+        , ( "count" , "1" )
+        ]
+      )
+      [ Para
+          [ Str "This"
+          , Space
+          , Str "block"
+          , Space
+          , Str "is"
+          , Space
+          , Str "tagged"
+          , Space
+          , Str "as"
+          , Space
+          , Str "a"
+          , Space
+          , Str "definition."
+          ]
+      ]
+  , Para
+      [ Str "Refer"
+      , Space
+      , Str "back"
+      , Space
+      , Str "to"
+      , Space
+      , Str "Example"
+      , Space
+      , Link ( "" , [] , [] ) [ Str "1" ] ( "#ex:demo" , "" )
+      , Space
+      , Str "and"
+      , Space
+      , Str "Definition"
+      , Space
+      , Link ( "" , [] , [] ) [ Str "1" ] ( "#def:demo" , "" )
+      , Str "."
+      ]
+  , Header
+      2
+      ( "sec:index-entries"
+      , []
+      , [ ( "section-number" , "1.5" ) ]
+      )
+      [ Str "Index" , Space , Str "entries" ]
+  , Para
+      [ Str "The"
+      , Space
+      , Str "index"
+      , Space
+      , Str "filter"
+      , Space
+      , Str "allows"
+      , Space
+      , Str "you"
+      , Space
+      , Str "to"
+      , Space
+      , Str "mark"
+      , Space
+      , Str "index"
+      , Space
+      , Str "entries"
+      , Space
+      , Str "in"
+      , Space
+      , Str "the"
+      , Space
+      , Str "text,"
+      , Space
+      , Str "which"
+      , Space
+      , Str "are"
+      , Space
+      , Str "then"
+      , SoftBreak
+      , Str "collected"
+      , Space
+      , Str "and"
+      , Space
+      , Str "emitted"
+      , Space
+      , Str "in"
+      , Space
+      , Str "an"
+      , Space
+      , Str "index"
+      , Space
+      , Str "div,"
+      , Space
+      , Str "see"
+      , Space
+      , Str "at"
+      , Space
+      , Str "the"
+      , Space
+      , Str "end"
+      , Space
+      , Str "of"
+      , Space
+      , Str "this"
+      , Space
+      , Str "document."
+      , Space
+      , Str "The"
+      , SoftBreak
+      , Str "simplest"
+      , Space
+      , Str "usage"
+      , Space
+      , Str "is"
+      , Space
+      , Str "to"
+      , Space
+      , Str "just"
+      , Space
+      , Str "add"
+      , Space
+      , Code ( "" , [] , [] ) ".index"
+      , Space
+      , Str "spans"
+      , Space
+      , Str "around"
+      , Space
+      , Str "the"
+      , Space
+      , Str "relevant"
+      , Space
+      , Str "text"
+      , Space
+      , Str "and"
+      , Space
+      , Str "add"
+      , Space
+      , Str "an"
+      , SoftBreak
+      , Str "index"
+      , Space
+      , Str "div"
+      , Space
+      , Str "somewhere"
+      , Space
+      , Str "in"
+      , Space
+      , Str "the"
+      , Space
+      , Str "document."
+      , Space
+      , Str "The"
+      , Space
+      , Str "filter"
+      , Space
+      , Str "will"
+      , Space
+      , Str "collect"
+      , Space
+      , Str "all"
+      , Space
+      , Code ( "" , [] , [] ) ".index"
+      , Space
+      , Str "spans"
+      , SoftBreak
+      , Str "and"
+      , Space
+      , Str "emit"
+      , Space
+      , Str "them"
+      , Space
+      , Str "as"
+      , Space
+      , Str "entries"
+      , Space
+      , Str "in"
+      , Space
+      , Str "the"
+      , Space
+      , Str "index"
+      , Space
+      , Str "div."
+      , Space
+      , Str "You"
+      , Space
+      , Str "can"
+      , Space
+      , Str "also"
+      , Space
+      , Str "specify"
+      , Space
+      , Str "an"
+      , Space
+      , Code ( "" , [] , [] ) "entry"
+      , SoftBreak
+      , Str "attribute"
+      , Space
+      , Str "on"
+      , Space
+      , Str "the"
+      , Space
+      , Str "span"
+      , Space
+      , Str "to"
+      , Space
+      , Str "customize"
+      , Space
+      , Str "the"
+      , Space
+      , Str "index"
+      , Space
+      , Str "entry"
+      , Space
+      , Str "text,"
+      , Space
+      , Str "and"
+      , Space
+      , Str "use"
+      , Space
+      , Code ( "" , [] , [] ) "!"
+      , Space
+      , Str "to"
+      , Space
+      , Str "create"
+      , SoftBreak
+      , Str "nested"
+      , Space
+      , Str "entries."
+      ]
+  , Para
+      [ Str "For"
+      , Space
+      , Str "example,"
+      , Space
+      , Str "in"
+      , Space
+      , Str "this"
+      , Space
+      , Str "sentence"
+      , Space
+      , Str "the"
+      , Space
+      , Str "word"
+      , Space
+      , Span
+          ( "__index_entry_1" , [ "index" ] , [] ) [ Str "color" ]
+      , Space
+      , Str "is"
+      , Space
+      , Str "indexed,"
+      , Space
+      , Str "and"
+      , Space
+      , Str "a"
+      , SoftBreak
+      , Str "we"
+      , Space
+      , Str "index"
+      , Space
+      , Str "the"
+      , Space
+      , Str "word"
+      , Space
+      , Quoted
+          DoubleQuote
+          [ Span
+              ( "__index_entry_2"
+              , [ "index" ]
+              , [ ( "entry" , "idea" ) ]
+              )
+              [ Str "concept" ]
+          ]
+      , Space
+      , Str "as"
+      , Space
+      , Quoted DoubleQuote [ Str "idea" ]
+      , Str "."
+      , Space
+      , Str "We"
+      , Space
+      , Str "can"
+      , Space
+      , Str "also"
+      , Space
+      , Str "create"
+      , SoftBreak
+      , Str "nested"
+      , Space
+      , Str "entries"
+      , Space
+      , Str "like"
+      , Space
+      , Span
+          ( "__index_entry_3" , [ "index" ] , [] )
+          [ Str "color!blue" ]
+      , Str ","
+      , Space
+      , Str "and"
+      , Space
+      , Str "multiple"
+      , Space
+      , Str "entries"
+      , Space
+      , Str "like"
+      , SoftBreak
+      , Span
+          ( "__index_entry_4" , [ "index" ] , [] )
+          [ Str "alpha;beta" ]
+      , Str "."
+      ]
+  , Header
+      2
+      ( "sec:sidenotes" , [] , [ ( "section-number" , "1.6" ) ] )
+      [ Str "Sidenotes" ]
+  , Para
+      [ Str "This"
+      , Space
+      , Str "sentence"
+      , Space
+      , Str "has"
+      , Space
+      , Str "a"
+      , Space
+      , Str "footnote."
+      , Note
+          [ Para
+              [ Str "Footnote"
+              , Space
+              , Str "content"
+              , Space
+              , Str "that"
+              , Space
+              , Str "becomes"
+              , Space
+              , Str "a"
+              , Space
+              , Str "sidenote"
+              , Space
+              , Str "in"
+              , Space
+              , Str "HTML."
+              ]
+          ]
+      ]
+  , Header
+      2
+      ( "sec:todos" , [] , [ ( "section-number" , "1.7" ) ] )
+      [ Str "TODOs" ]
+  , Para
+      [ Str "It"
+      , Space
+      , Str "is"
+      , Space
+      , Str "often"
+      , Space
+      , Str "useful"
+      , Space
+      , Str "to"
+      , Space
+      , Str "be"
+      , Space
+      , Str "able"
+      , Space
+      , Str "to"
+      , Space
+      , Str "mark"
+      , Space
+      , Str "TODO"
+      , Space
+      , Str "items"
+      , Space
+      , Str "in"
+      , Space
+      , Str "the"
+      , Space
+      , Str "text."
+      , Space
+      , Str "It"
+      , Space
+      , Str "helps"
+      , Space
+      , Str "you"
+      , Space
+      , Str "to"
+      , SoftBreak
+      , Str "avoid"
+      , Space
+      , Str "writer\8217s"
+      , Space
+      , Str "block"
+      , Space
+      , Str "on"
+      , Space
+      , Str "something"
+      , Space
+      , Str "you"
+      , Space
+      , Str "can\8217t"
+      , Space
+      , Str "quite"
+      , Space
+      , Str "put"
+      , Space
+      , Str "into"
+      , Space
+      , Str "words"
+      , Space
+      , Str "just"
+      , Space
+      , Str "yet."
+      , Space
+      , Str "The"
+      , SoftBreak
+      , Code ( "" , [] , [] ) "markup_todo.lua"
+      , Space
+      , Str "filter"
+      , Space
+      , Str "allows"
+      , Space
+      , Str "you"
+      , Space
+      , Str "to"
+      , Space
+      , Str "do"
+      , Space
+      , Str "this"
+      , Space
+      , Str "with"
+      , Space
+      , Str "a"
+      , Space
+      , Code ( "" , [] , [] ) ".todo"
+      , Space
+      , Str "class."
+      , Space
+      , Str "You"
+      , Space
+      , Str "can"
+      , Space
+      , Str "use"
+      , SoftBreak
+      , Str "this"
+      , Space
+      , Str "class"
+      , Space
+      , Str "on"
+      , Space
+      , Str "inline"
+      , Space
+      , Str "spans"
+      , Space
+      , Str "for"
+      , Space
+      , Str "inline"
+      , Space
+      , Str "TODOs,"
+      , Space
+      , Str "or"
+      , Space
+      , Str "on"
+      , Space
+      , Str "divs"
+      , Space
+      , Str "for"
+      , Space
+      , Str "block"
+      , Space
+      , Str "TODOs."
+      , SoftBreak
+      , Str "For"
+      , Space
+      , Str "example,"
+      , Space
+      , Str "please"
+      , Space
+      , Span
+          ( "" , [ "todo" ] , [] ) [ Str "fix" , Space , Str "this" ]
+      , Space
+      , Str "inline."
+      ]
+  , Div
+      ( "" , [ "TODO" ] , [] )
+      [ Para
+          [ Str "Block"
+          , Space
+          , Str "TODO"
+          , Space
+          , Str "content."
+          ]
+      ]
+  , Header
+      2
+      ( "sec:github-links"
+      , []
+      , [ ( "section-number" , "1.8" ) ]
+      )
+      [ Str "Linking"
+      , Space
+      , Str "to"
+      , Space
+      , Str "github"
+      , Space
+      , Str "issues"
+      , Space
+      , Str "and"
+      , Space
+      , Str "edit"
+      , Space
+      , Str "links"
+      ]
+  , Para
+      [ Str "Github"
+      , Space
+      , Str "issue"
+      , Space
+      , Str "link"
+      , Space
+      , Str "when"
+      , Space
+      , Str "enabled:"
+      , Space
+      , Str "Github"
+      , Space
+      , Str "issue"
+      , Space
+      , Span ( "" , [ "issue" ] , [] ) [ Str "1" ]
+      , Str "."
+      ]
+  , Para
+      [ Str "Edit"
+      , Space
+      , Str "links"
+      , Space
+      , Str "appear"
+      , Space
+      , Str "as"
+      , Space
+      , Str "little"
+      , Space
+      , Str "pencil"
+      , Space
+      , Str "icons"
+      , Space
+      , Str "at"
+      , Space
+      , Str "the"
+      , Space
+      , Str "end"
+      , Space
+      , Str "of"
+      , Space
+      , Str "headers"
+      , Space
+      , Str "when"
+      , SoftBreak
+      , Code ( "" , [] , [] ) "add_edit_to_headers.lua"
+      , Space
+      , Str "is"
+      , Space
+      , Str "enabled."
+      ]
+  , Header
+      1 ( "index-header" , [ "unnumbered" ] , [] ) [ Str "Index" ]
+  , Div
+      ( "" , [ "index-entry-list" ] , [] )
+      [ Plain
+          [ Span
+              ( "" , [ "index-entry" ] , [] )
+              [ Span
+                  ( "" , [ "index-entry-text" ] , [] ) [ Str "alpha" ]
+              , Space
+              , Span
+                  ( "" , [ "index-entry-locator" ] , [] )
+                  [ Space
+                  , Link
+                      ( "" , [] , [] )
+                      [ Str "1.5" ]
+                      ( "#__index_entry_4" , "" )
+                  ]
+              ]
+          ]
+      , Para [ Str "" ]
+      , Plain
+          [ Span
+              ( "" , [ "index-entry" ] , [] )
+              [ Span ( "" , [ "index-entry-text" ] , [] ) [ Str "beta" ]
+              , Space
+              , Span
+                  ( "" , [ "index-entry-locator" ] , [] )
+                  [ Space
+                  , Link
+                      ( "" , [] , [] )
+                      [ Str "1.5" ]
+                      ( "#__index_entry_4" , "" )
+                  ]
+              ]
+          ]
+      , Para [ Str "" ]
+      , Plain
+          [ Span
+              ( "" , [ "index-entry" ] , [] )
+              [ Span
+                  ( "" , [ "index-entry-text" ] , [] ) [ Str "color" ]
+              , Space
+              , Span
+                  ( "" , [ "index-entry-locator" ] , [] )
+                  [ Space
+                  , Link
+                      ( "" , [] , [] )
+                      [ Str "1.5" ]
+                      ( "#__index_entry_1" , "" )
+                  ]
+              ]
+          ]
+      , Plain
+          [ Span
+              ( "" , [ "index-entry" ] , [] )
+              [ Span
+                  ( "" , [ "index-entry-indentation" ] , [] ) [ Str "" ]
+              , Span ( "" , [ "index-entry-text" ] , [] ) [ Str "blue" ]
+              , Space
+              , Span
+                  ( "" , [ "index-entry-locator" ] , [] )
+                  [ Space
+                  , Link
+                      ( "" , [] , [] )
+                      [ Str "1.5" ]
+                      ( "#__index_entry_3" , "" )
+                  ]
+              ]
+          ]
+      , Para [ Str "" ]
+      , Plain
+          [ Span
+              ( "" , [ "index-entry" ] , [] )
+              [ Span ( "" , [ "index-entry-text" ] , [] ) [ Str "idea" ]
+              , Space
+              , Span
+                  ( "" , [ "index-entry-locator" ] , [] )
+                  [ Space
+                  , Link
+                      ( "" , [] , [] )
+                      [ Str "1.5" ]
+                      ( "#__index_entry_2" , "" )
+                  ]
+              ]
+          ]
+      ]
+  , Header
+      1
+      ( "sec:standard-pandoc-regression"
+      , []
+      , [ ( "section-number" , "2" ) ]
+      )
+      [ Str "Standard"
+      , Space
+      , Str "Pandoc"
+      , Space
+      , Str "Regression"
+      , Space
+      , Str "Coverage"
+      ]
+  , Para
+      [ Str "The"
+      , Space
+      , Str "features"
+      , Space
+      , Str "in"
+      , Space
+      , Str "this"
+      , Space
+      , Str "final"
+      , Space
+      , Str "section"
+      , Space
+      , Str "are"
+      , Space
+      , Str "standard"
+      , Space
+      , Str "Pandoc"
+      , Space
+      , Str "features."
+      , Space
+      , Str "They"
+      , Space
+      , Str "are"
+      , Space
+      , Str "not"
+      , SoftBreak
+      , Str "features"
+      , Space
+      , Str "added"
+      , Space
+      , Str "or"
+      , Space
+      , Str "enabled"
+      , Space
+      , Str "by"
+      , Space
+      , Str "the"
+      , Space
+      , Str "pandoc_writing_tools"
+      , Space
+      , Str "Lua"
+      , Space
+      , Str "filters."
+      ]
+  , Para
+      [ Str "This"
+      , Space
+      , Str "section"
+      , Space
+      , Str "exists"
+      , Space
+      , Str "to"
+      , Space
+      , Str "regression-test"
+      , Space
+      , Str "whether"
+      , Space
+      , Str "selected"
+      , Space
+      , Str "Pandoc"
+      , Space
+      , Str "features"
+      , Space
+      , Str "keep"
+      , SoftBreak
+      , Str "working"
+      , Space
+      , Str "across"
+      , Space
+      , Str "output"
+      , Space
+      , Str "formats."
+      , Space
+      , Str "In"
+      , Space
+      , Str "particular,"
+      , Space
+      , Str "it"
+      , Space
+      , Str "helps"
+      , Space
+      , Str "catch"
+      , Space
+      , Str "accidentally"
+      , SoftBreak
+      , Str "missing"
+      , Space
+      , Str "dependencies"
+      , Space
+      , Str "that"
+      , Space
+      , Str "are"
+      , Space
+      , Str "needed"
+      , Space
+      , Str "for"
+      , Space
+      , Str "LaTeX/PDF"
+      , Space
+      , Str "output"
+      , Space
+      , Str "when"
+      , Space
+      , Str "standard"
+      , Space
+      , Str "Pandoc"
+      , SoftBreak
+      , Str "constructs"
+      , Space
+      , Str "trigger"
+      , Space
+      , Str "extra"
+      , Space
+      , Str "TeX"
+      , Space
+      , Str "packages."
+      ]
+  , Header
+      2
+      ( "sec:standard-pandoc-tables"
+      , []
+      , [ ( "section-number" , "2.1" ) ]
+      )
+      [ Str "Tables" ]
+  , Para
+      [ Str "This"
+      , Space
+      , Str "table"
+      , Space
+      , Str "exercises"
+      , Space
+      , Str "Pandoc\8217s"
+      , Space
+      , Str "standard"
+      , Space
+      , Str "Markdown"
+      , Space
+      , Str "table"
+      , Space
+      , Str "support."
+      , Space
+      , Str "For"
+      , Space
+      , Str "LaTeX/PDF"
+      , SoftBreak
+      , Str "output,"
+      , Space
+      , Str "Pandoc"
+      , Space
+      , Str "renders"
+      , Space
+      , Str "this"
+      , Space
+      , Str "construct"
+      , Space
+      , Str "through"
+      , Space
+      , Str "longtable-compatible"
+      , Space
+      , Str "LaTeX."
+      ]
+  , Table
+      ( "" , [] , [] )
+      (Caption Nothing [])
+      [ ( AlignDefault , ColWidthDefault )
+      , ( AlignDefault , ColWidthDefault )
+      ]
+      (TableHead
+         ( "" , [] , [] )
+         [ Row
+             ( "" , [] , [] )
+             [ Cell
+                 ( "" , [] , [] )
+                 AlignDefault
+                 (RowSpan 1)
+                 (ColSpan 1)
+                 [ Plain
+                     [ Str "Standard"
+                     , Space
+                     , Str "Pandoc"
+                     , Space
+                     , Str "feature"
+                     ]
+                 ]
+             , Cell
+                 ( "" , [] , [] )
+                 AlignDefault
+                 (RowSpan 1)
+                 (ColSpan 1)
+                 [ Plain [ Str "Regression" , Space , Str "coverage" ] ]
+             ]
+         ])
+      [ TableBody
+          ( "" , [] , [] )
+          (RowHeadColumns 0)
+          []
+          [ Row
+              ( "" , [] , [] )
+              [ Cell
+                  ( "" , [] , [] )
+                  AlignDefault
+                  (RowSpan 1)
+                  (ColSpan 1)
+                  [ Plain [ Str "Markdown" , Space , Str "tables" ] ]
+              , Cell
+                  ( "" , [] , [] )
+                  AlignDefault
+                  (RowSpan 1)
+                  (ColSpan 1)
+                  [ Plain
+                      [ Str "Longtable-compatible"
+                      , Space
+                      , Str "LaTeX/PDF"
+                      , Space
+                      , Str "output"
+                      ]
+                  ]
+              ]
+          , Row
+              ( "" , [] , [] )
+              [ Cell
+                  ( "" , [] , [] )
+                  AlignDefault
+                  (RowSpan 1)
+                  (ColSpan 1)
+                  [ Plain
+                      [ Str "LaTeX"
+                      , Space
+                      , Str "package"
+                      , Space
+                      , Str "selection"
+                      ]
+                  ]
+              , Cell
+                  ( "" , [] , [] )
+                  AlignDefault
+                  (RowSpan 1)
+                  (ColSpan 1)
+                  [ Plain
+                      [ Str "Required"
+                      , Space
+                      , Str "TeX"
+                      , Space
+                      , Str "packages"
+                      , Space
+                      , Str "are"
+                      , Space
+                      , Str "installed"
+                      ]
+                  ]
+              ]
+          ]
+      ]
+      (TableFoot ( "" , [] , [] ) [])
+  , Para
+      [ Str "The"
+      , Space
+      , Str "grid"
+      , Space
+      , Str "table"
+      , Space
+      , Str "below"
+      , Space
+      , Str "includes"
+      , Space
+      , Str "a"
+      , Space
+      , Str "row"
+      , Space
+      , Str "span."
+      , Space
+      , Str "For"
+      , Space
+      , Str "LaTeX/PDF"
+      , Space
+      , Str "output,"
+      , Space
+      , Str "Pandoc"
+      , Space
+      , Str "renders"
+      , SoftBreak
+      , Str "this"
+      , Space
+      , Str "standard"
+      , Space
+      , Str "table"
+      , Space
+      , Str "construct"
+      , Space
+      , Str "with"
+      , Space
+      , Str "the"
+      , Space
+      , Code ( "" , [] , [] ) "multirow"
+      , Space
+      , Str "package."
+      ]
+  , Table
+      ( "" , [] , [] )
+      (Caption Nothing [])
+      [ ( AlignDefault , ColWidth 0.3611111111111111 )
+      , ( AlignDefault , ColWidth 0.4444444444444444 )
+      ]
+      (TableHead
+         ( "" , [] , [] )
+         [ Row
+             ( "" , [] , [] )
+             [ Cell
+                 ( "" , [] , [] )
+                 AlignDefault
+                 (RowSpan 1)
+                 (ColSpan 1)
+                 [ Plain
+                     [ Str "Standard"
+                     , Space
+                     , Str "Pandoc"
+                     , Space
+                     , Str "feature"
+                     ]
+                 ]
+             , Cell
+                 ( "" , [] , [] )
+                 AlignDefault
+                 (RowSpan 1)
+                 (ColSpan 1)
+                 [ Plain [ Str "Regression" , Space , Str "coverage" ] ]
+             ]
+         ])
+      [ TableBody
+          ( "" , [] , [] )
+          (RowHeadColumns 0)
+          []
+          [ Row
+              ( "" , [] , [] )
+              [ Cell
+                  ( "" , [] , [] )
+                  AlignDefault
+                  (RowSpan 2)
+                  (ColSpan 1)
+                  [ Plain
+                      [ Str "Grid"
+                      , Space
+                      , Str "table"
+                      , Space
+                      , Str "row"
+                      , Space
+                      , Str "span"
+                      ]
+                  ]
+              , Cell
+                  ( "" , [] , [] )
+                  AlignDefault
+                  (RowSpan 1)
+                  (ColSpan 1)
+                  [ Plain
+                      [ Str "First"
+                      , Space
+                      , Str "row"
+                      , Space
+                      , Str "covered"
+                      , Space
+                      , Str "by"
+                      , Space
+                      , Str "span"
+                      ]
+                  ]
+              ]
+          , Row
+              ( "" , [] , [] )
+              [ Cell
+                  ( "" , [] , [] )
+                  AlignDefault
+                  (RowSpan 1)
+                  (ColSpan 1)
+                  [ Plain
+                      [ Str "Second"
+                      , Space
+                      , Str "row"
+                      , Space
+                      , Str "covered"
+                      , Space
+                      , Str "by"
+                      , Space
+                      , Str "span"
+                      ]
+                  ]
+              ]
+          ]
+      ]
+      (TableFoot ( "" , [] , [] ) [])
+  , Header
+      2
+      ( "sec:standard-pandoc-math"
+      , []
+      , [ ( "section-number" , "2.2" ) ]
+      )
+      [ Str "Math" ]
+  , Para
+      [ Str "This"
+      , Space
+      , Str "paragraph"
+      , Space
+      , Str "exercises"
+      , Space
+      , Str "Pandoc\8217s"
+      , Space
+      , Str "standard"
+      , Space
+      , Str "inline"
+      , Space
+      , Str "math"
+      , Space
+      , Str "support,"
+      , Space
+      , Math InlineMath "a < b"
+      , Str ","
+      , Space
+      , Str "in"
+      , SoftBreak
+      , Str "ordinary"
+      , Space
+      , Str "text."
+      ]
+  , Para
+      [ Str "The"
+      , Space
+      , Str "display"
+      , Space
+      , Str "math"
+      , Space
+      , Str "below"
+      , Space
+      , Str "exercises"
+      , Space
+      , Str "Pandoc\8217s"
+      , Space
+      , Str "standard"
+      , Space
+      , Str "display"
+      , Space
+      , Str "math"
+      , Space
+      , Str "support."
+      ]
+  , Para [ Math DisplayMath "\nE = mc^2\n" ]
+  , Header
+      2
+      ( "sec:standard-pandoc-images"
+      , []
+      , [ ( "section-number" , "2.3" ) ]
+      )
+      [ Str "Images" ]
+  , Para
+      [ Str "The"
+      , Space
+      , Str "image"
+      , Space
+      , Str "below"
+      , Space
+      , Str "uses"
+      , Space
+      , Str "Pandoc\8217s"
+      , Space
+      , Str "standard"
+      , Space
+      , Str "image"
+      , Space
+      , Str "syntax"
+      , Space
+      , Str "with"
+      , Space
+      , Str "an"
+      , Space
+      , Str "extensionless"
+      , SoftBreak
+      , Str "logical"
+      , Space
+      , Str "build"
+      , Space
+      , Str "target."
+      , Space
+      , Str "Its"
+      , Space
+      , Str "source"
+      , Space
+      , Str "file"
+      , Space
+      , Str "on"
+      , Space
+      , Str "disk"
+      , Space
+      , Str "keeps"
+      , Space
+      , Str "an"
+      , Space
+      , Code ( "" , [] , [] ) ".excalidraw.svg"
+      , SoftBreak
+      , Str "extension"
+      , Space
+      , Str "so"
+      , Space
+      , Str "Excalidraw-aware"
+      , Space
+      , Str "tools"
+      , Space
+      , Str "can"
+      , Space
+      , Str "still"
+      , Space
+      , Str "recognize"
+      , Space
+      , Str "and"
+      , Space
+      , Str "edit"
+      , Space
+      , Str "it."
+      ]
+  , Figure
+      ( "fig:standard-pandoc-excalidraw"
+      , []
+      , [ ( "count" , "2" ) ]
+      )
+      (Caption
+         Nothing
+         [ Plain
+             [ Str "Figure 2: "
+             , Str "An"
+             , Space
+             , Str "Excalidraw-style"
+             , Space
+             , Str "SVG"
+             , Space
+             , Str "fixture"
+             ]
+         ])
+      [ Plain
+          [ Image
+              ( "" , [] , [] )
+              [ Str "An"
+              , Space
+              , Str "Excalidraw-style"
+              , Space
+              , Str "SVG"
+              , Space
+              , Str "fixture"
+              ]
+              ( "build/img/demo-excalidraw" , "" )
+          ]
+      ]
+  , Para
+      [ Str "The"
+      , Space
+      , Str "next"
+      , Space
+      , Str "image"
+      , Space
+      , Str "uses"
+      , Space
+      , Str "the"
+      , Space
+      , Str "same"
+      , Space
+      , Str "extensionless"
+      , Space
+      , Str "Markdown"
+      , Space
+      , Str "convention,"
+      , Space
+      , Str "but"
+      , Space
+      , Str "its"
+      , Space
+      , Str "source"
+      , SoftBreak
+      , Str "is"
+      , Space
+      , Str "a"
+      , Space
+      , Str "Graphviz"
+      , Space
+      , Str "DOT"
+      , Space
+      , Str "file."
+      , Space
+      , Str "Make"
+      , Space
+      , Str "renders"
+      , Space
+      , Str "the"
+      , Space
+      , Str "logical"
+      , Space
+      , Str "image"
+      , Space
+      , Str "as"
+      , Space
+      , Str "SVG"
+      , Space
+      , Str "for"
+      , Space
+      , Str "HTML,"
+      , Space
+      , Str "PDF"
+      , Space
+      , Str "for"
+      , SoftBreak
+      , Str "LaTeX,"
+      , Space
+      , Str "and"
+      , Space
+      , Str "PNG"
+      , Space
+      , Str "for"
+      , Space
+      , Str "output"
+      , Space
+      , Str "formats"
+      , Space
+      , Str "such"
+      , Space
+      , Str "as"
+      , Space
+      , Str "Confluence,"
+      , Space
+      , Str "Word,"
+      , Space
+      , Str "and"
+      , Space
+      , Str "PowerPoint."
+      ]
+  , Figure
+      ( "fig:standard-pandoc-graphviz"
+      , []
+      , [ ( "count" , "3" ) ]
+      )
+      (Caption
+         Nothing
+         [ Plain
+             [ Str "Figure 3: "
+             , Str "A"
+             , Space
+             , Str "Graphviz"
+             , Space
+             , Str "DOT"
+             , Space
+             , Str "fixture"
+             , Space
+             , Str "rendered"
+             , Space
+             , Str "in"
+             , Space
+             , Str "the"
+             , Space
+             , Str "format"
+             , Space
+             , Str "needed"
+             , Space
+             , Str "by"
+             , Space
+             , Str "each"
+             , Space
+             , Str "output"
+             ]
+         ])
+      [ Plain
+          [ Image
+              ( "" , [] , [ ( "confluence-width" , "880px" ) ] )
+              [ Str "A"
+              , Space
+              , Str "Graphviz"
+              , Space
+              , Str "DOT"
+              , Space
+              , Str "fixture"
+              , Space
+              , Str "rendered"
+              , Space
+              , Str "in"
+              , Space
+              , Str "the"
+              , Space
+              , Str "format"
+              , Space
+              , Str "needed"
+              , Space
+              , Str "by"
+              , Space
+              , Str "each"
+              , Space
+              , Str "output"
+              ]
+              ( "build/img/demo-graphviz" , "" )
+          ]
+      ]
+  , Para
+      [ Str "The"
+      , Space
+      , Str "Graphviz"
+      , Space
+      , Str "figure"
+      , Space
+      , Str "intentionally"
+      , Space
+      , Str "renders"
+      , Space
+      , Str "at"
+      , Space
+      , Str "a"
+      , Space
+      , Str "wide"
+      , Space
+      , Str "880-pixel"
+      , Space
+      , Str "width"
+      , Space
+      , Str "on"
+      , SoftBreak
+      , Str "Confluence,"
+      , Space
+      , Str "including"
+      , Space
+      , Str "when"
+      , Space
+      , Str "it"
+      , Space
+      , Str "is"
+      , Space
+      , Str "published"
+      , Space
+      , Str "as"
+      , Space
+      , Str "an"
+      , Space
+      , Str "interactive"
+      , Space
+      , Str "draw.io"
+      , Space
+      , Str "diagram."
+      , SoftBreak
+      , Str "Other"
+      , Space
+      , Str "output"
+      , Space
+      , Str "formats"
+      , Space
+      , Str "retain"
+      , Space
+      , Str "their"
+      , Space
+      , Str "own"
+      , Space
+      , Str "sizing"
+      , Space
+      , Str "behavior."
+      ]
+  , Div
+      ( "refs"
+      , [ "references" , "csl-bib-body" , "hanging-indent" ]
+      , [ ( "entry-spacing" , "0" ) ]
+      )
+      [ Div
+          ( "ref-doe2020" , [ "csl-entry" ] , [] )
+          [ Para
+              [ Str "Doe,"
+              , Space
+              , Str "Jane."
+              , Space
+              , Str "2020."
+              , Space
+              , Span
+                  ( "" , [] , [] )
+                  [ Str "\8220"
+                  , Str "Demo"
+                  , Space
+                  , Str "Reference"
+                  , Str "."
+                  , Str "\8221"
+                  ]
+              , Space
+              , Emph [ Str "Demo" , Space , Str "Journal" ]
+              , Str "."
+              ]
+          ]
+      ]
   ]
