@@ -170,7 +170,7 @@ complete demo of the syntax.
 
 This script provides the ability to create numbered figures, examples and
 definition environments, and to reference them from the text. It also provides
-referring to sections by section number.
+referring to sections.
 
 ```markdown
 ![A demo figure](img/demo-figure.svg){#fig:demo}
@@ -197,6 +197,42 @@ Section references:
 # Overview {#sec:overview}
 See section [@sec:overview].
 ```
+
+Numbered references are the default, but can also show the section title, or
+both the number and title:
+
+```markdown
+# A detailed overview of the system {#sec:overview ref-title="system overview"}
+
+See section [@sec:overview]{ref-style=number}.
+See section [@sec:overview]{ref-style=title}.
+See section [@sec:overview]{ref-style=number-title}.
+```
+
+These render as `1`, `“system overview”`, and `1 (“system overview”)`. The
+optional `ref-title` header attribute gives references a concise title when the
+heading itself is long. Without it, title-bearing references use the complete
+heading text.
+
+A document can select `number`, `title`, or `number-title` as the default in its
+YAML metadata:
+
+```yaml
+---
+section-reference-style: number-title
+---
+```
+
+An individual `ref-style` overrides the document setting. If the setting is
+absent, unadorned `@sec:` references continue to use `number`. Citation prefixes
+remain visible; because the style attribute belongs to an outer span, use nested
+brackets for a prefixed styled reference, for example
+`[[see @sec:overview]]{ref-style=title}`.
+
+For deliberately one-off wording, an ordinary Markdown link such as
+`[the introductory discussion](#sec:overview)` remains available. Unlike an
+`@sec:` reference, its text is not updated from the target heading and the
+section-reference filter does not validate its target.
 
 ### Index entries (index.lua)
 

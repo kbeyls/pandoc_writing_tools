@@ -5,6 +5,7 @@ github-repo: https://github.com/kbeyls/pandoc_writing_tools
 edit-source-file: src/feature-demo.md
 edit-url-base: https://github.com/kbeyls/pandoc_writing_tools/edit/main/examples/feature-demo/src/feature-demo.md
 bibliography: src/feature-demo.bib
+section-reference-style: number-title
 ---
 
 <!--
@@ -12,7 +13,7 @@ SPDX-FileCopyrightText: <text>Copyright 2026 Arm Limited and/or its affiliates <
 SPDX-License-Identifier: MIT
 -->
 
-# Overview {#sec:overview}
+# Overview {#sec:overview ref-title="feature overview"}
 
 This document demonstrates the functionality of the Lua filters in
 pandoc_writing_tools.
@@ -22,8 +23,10 @@ pandoc_writing_tools.
 This is what a citation looks like: [@doe2020]. The list of all cited references
 appears in the bibliography section at the end of the document.
 
-The pandoc_writing_tools lua filters enable referring to a section by number,
-for example, this references section [@sec:overview].
+The document-wide setting makes an ordinary reference show both the number and
+title, as in section [@sec:overview]. A local override can show only the title,
+as in section [@sec:overview]{ref-style=title}, or retain only the number, as in
+section [@sec:overview]{ref-style=number}.
 
 ## Table of contents {#table-of-contents}
 

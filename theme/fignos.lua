@@ -171,6 +171,36 @@ end
 
 headerlevel2counter = {0,0,0,0,0,0,0,0,0,0};
 headerlabel2counter = {};
+headerlabel2title = {};
+section_reference_style = "number";
+
+local valid_section_reference_styles = {
+  ["number"] = true,
+  ["title"] = true,
+  ["number-title"] = true,
+}
+
+local function normalize_whitespace(value)
+  return value:match("^%s*(.-)%s*$"):gsub("%s+", " ")
+end
+
+local function validate_section_reference_style(value, source)
+  local style = normalize_whitespace(value)
+  if not valid_section_reference_styles[style] then
+    error(source .. " must be one of number, title, or number-title; got '" ..
+          style .. "'", 0)
+  end
+  return style
+end
+
+function process_metadata(meta)
+  if meta['section-reference-style'] ~= nil then
+    section_reference_style = validate_section_reference_style(
+      pandoc.utils.stringify(meta['section-reference-style']),
+      "section-reference-style"
+    )
+  end
+end
 
 function header_has_sec_label (header)
   if header.attr and header.attr.identifier and
@@ -206,6 +236,16 @@ function process_headers (header)
   local sec_label = header_has_sec_label(header);
   if sec_label then
     headerlabel2counter[sec_label] = counter;
+    local title = normalize_whitespace(pandoc.utils.stringify(header.content))
+    if header.attributes['ref-title'] ~= nil then
+      title = normalize_whitespace(header.attributes['ref-title'])
+      if title == '' then
+        error("Section '" .. sec_label .. "' has an empty ref-title", 0)
+      end
+      -- ref-title controls generated references and should not leak into output.
+      header.attributes['ref-title'] = nil
+    end
+    headerlabel2title[sec_label] = title;
   end
   -- also add attribute to header containing the section number
   -- so that later pandoc filters can use it.
@@ -227,6 +267,55 @@ end
 function get_section_reference_text(label)
   local section_number_array = headerlabel2counter[label]
   return section_counter_to_string(section_number_array);
+end
+
+local function text_to_inlines(value)
+  local inlines = pandoc.List:new()
+  local first = true
+  for word in value:gmatch("%S+") do
+    if not first then
+      pandoc.List.insert(inlines, pandoc.Space())
+    end
+    pandoc.List.insert(inlines, pandoc.Str(word))
+    first = false
+  end
+  return inlines
+end
+
+local function append_inlines(destination, source)
+  for i = 1, #source do
+    pandoc.List.insert(destination, source[i])
+  end
+end
+
+local function get_section_reference_body(label, style)
+  local text = pandoc.List:new()
+  local number = get_section_reference_text(label)
+  if style == "number" then
+    pandoc.List.insert(text, pandoc.Str(number))
+    return text
+  end
+
+  local title = headerlabel2title[label]
+  if title == nil or title == '' then
+    error("Section '" .. label ..
+          "' has no usable title for reference style '" .. style .. "'", 0)
+  end
+
+  if style == "number-title" then
+    pandoc.List.insert(text, pandoc.Str(number))
+    pandoc.List.insert(text, pandoc.Space())
+    pandoc.List.insert(text, pandoc.Str("(“"))
+  else
+    pandoc.List.insert(text, pandoc.Str("“"))
+  end
+  append_inlines(text, text_to_inlines(title))
+  if style == "number-title" then
+    pandoc.List.insert(text, pandoc.Str("”)"))
+  else
+    pandoc.List.insert(text, pandoc.Str("”"))
+  end
+  return text
 end
 
 function get_link_text(citation, label)
@@ -268,15 +357,51 @@ function process_cite (cite, citeref, kind)
   return link;
 end
 
-function process_sec_cite (cite, label)
+function process_sec_cite (cite, label, style, link_attr)
   if headerlabel2counter[label] == nil then
     ref_not_found(label, "section");
     return
   end
-  local link_text = get_link_text(cite.citations[1],
-                                  get_section_reference_text(label));
+  local citation = cite.citations[1]
+  local link_text = pandoc.List:new()
+  append_inlines(link_text, citation.prefix)
+  if #citation.prefix > 0 then
+    pandoc.List.insert(link_text, pandoc.Space())
+  end
+  append_inlines(link_text, get_section_reference_body(label, style))
   local link = pandoc.Link(link_text, '#'..label);
+  if link_attr ~= nil then
+    link.attr = link_attr
+  end
   return link;
+end
+
+local function link_attr_without_ref_style(span)
+  local attributes = {}
+  for key, value in pairs(span.attributes) do
+    if key ~= 'ref-style' then
+      attributes[key] = value
+    end
+  end
+  return pandoc.Attr(span.identifier, span.classes, attributes)
+end
+
+function process_reference_span(span)
+  local requested_style = span.attributes['ref-style']
+  if requested_style == nil then
+    return
+  end
+  if #span.content ~= 1 or span.content[1].tag ~= 'Cite' or
+      #span.content[1].citations ~= 1 or
+      not is_sec_label(span.content[1].citations[1].id)
+  then
+    error("ref-style must annotate a single section reference such as " ..
+          "[@sec:overview]{ref-style=title}", 0)
+  end
+  local style = validate_section_reference_style(requested_style, "ref-style")
+  local cite = span.content[1]
+  return process_sec_cite(cite, cite.citations[1].id, style,
+                          link_attr_without_ref_style(span))
 end
 
 -- convert Cite if the tag starts with @fig:, @sec:, @ex: or @def: to a link to the
@@ -297,11 +422,12 @@ function process_cites (cite)
     return process_cite(cite, citeref, kind);
   end
   if is_sec_label(citeref) then
-    return process_sec_cite(cite, citeref);
+    return process_sec_cite(cite, citeref, section_reference_style);
   end
 end
 
 -- The below ensures that first all figures, headers and divs are processed,
 -- and then all cites are processed.
-return {{Header=process_headers}, {Figure = process_figures},
-        {Div = process_divs}, {Cite = process_cites}}
+return {{Meta=process_metadata}, {Header=process_headers},
+        {Figure = process_figures}, {Div = process_divs},
+        {Span = process_reference_span}, {Cite = process_cites}}
