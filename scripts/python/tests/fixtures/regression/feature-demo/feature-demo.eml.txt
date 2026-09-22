@@ -190,9 +190,11 @@ feedback]</a></span></h2>
 <p>This is what a citation looks like: <span class="citation"
 data-cites="doe2020">(Doe 2020)</span>. The list of all cited references
 appears in the bibliography section at the end of the document.</p>
-<p>The pandoc_writing_tools lua filters enable referring to a section by
-number, for example, this references section <a
-href="#sec:overview">1</a>.</p>
+<p>The document-wide setting makes an ordinary reference show both the
+number and title, as in section <a href="#sec:overview">1 (“feature
+overview”)</a>. A local override can show only the title, as in section
+<a href="#sec:overview">“feature overview”</a>, or retain only the
+number, as in section <a href="#sec:overview">1</a>.</p>
 <h2 data-number="1.2" data-section-number="1.2"
 id="table-of-contents"><span class="header-section-number">1.2</span>
 Table of contents<a href="#table-of-contents" class="selflink"></a><span

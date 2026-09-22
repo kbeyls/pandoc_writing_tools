@@ -20,7 +20,7 @@ SPDX-License-Identifier: MIT
 
 <p>This is what a citation looks like: <cite>(Doe 2020)</cite>. The list of all cited references appears in the bibliography section at the end of the document.</p>
 
-<p>The pandoc_writing_tools lua filters enable referring to a section by number, for example, this references section <ac:link ac:anchor="sec:overview"><ac:link-body>1</ac:link-body></ac:link>.</p>
+<p>The document-wide setting makes an ordinary reference show both the number and title, as in section <ac:link ac:anchor="sec:overview"><ac:link-body>1 (“feature overview”)</ac:link-body></ac:link>. A local override can show only the title, as in section <ac:link ac:anchor="sec:overview"><ac:link-body>“feature overview”</ac:link-body></ac:link>, or retain only the number, as in section <ac:link ac:anchor="sec:overview"><ac:link-body>1</ac:link-body></ac:link>.</p>
 
 <ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">table-of-contents</ac:parameter></ac:structured-macro><h2 id="table-of-contents">1.2 Table of contents</h2>
 

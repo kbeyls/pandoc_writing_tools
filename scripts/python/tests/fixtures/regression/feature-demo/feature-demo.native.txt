@@ -23,6 +23,9 @@ Pandoc
             , MetaInlines
                 [ Str "https://github.com/kbeyls/pandoc_writing_tools" ]
             )
+          , ( "section-reference-style"
+            , MetaInlines [ Str "number-title" ]
+            )
           , ( "title"
             , MetaInlines
                 [ Str "pandoc_writing_tools"
@@ -143,34 +146,96 @@ Pandoc
   , Para
       [ Str "The"
       , Space
-      , Str "pandoc_writing_tools"
+      , Str "document-wide"
       , Space
-      , Str "lua"
+      , Str "setting"
       , Space
-      , Str "filters"
+      , Str "makes"
       , Space
-      , Str "enable"
+      , Str "an"
       , Space
-      , Str "referring"
+      , Str "ordinary"
       , Space
-      , Str "to"
+      , Str "reference"
       , Space
-      , Str "a"
+      , Str "show"
+      , Space
+      , Str "both"
+      , Space
+      , Str "the"
+      , Space
+      , Str "number"
+      , Space
+      , Str "and"
+      , SoftBreak
+      , Str "title,"
+      , Space
+      , Str "as"
+      , Space
+      , Str "in"
       , Space
       , Str "section"
       , Space
-      , Str "by"
+      , Link
+          ( "" , [] , [] )
+          [ Str "1"
+          , Space
+          , Str "(\8220"
+          , Str "feature"
+          , Space
+          , Str "overview"
+          , Str "\8221)"
+          ]
+          ( "#sec:overview" , "" )
+      , Str "."
+      , Space
+      , Str "A"
+      , Space
+      , Str "local"
+      , Space
+      , Str "override"
+      , Space
+      , Str "can"
+      , Space
+      , Str "show"
+      , Space
+      , Str "only"
+      , Space
+      , Str "the"
+      , Space
+      , Str "title,"
+      , SoftBreak
+      , Str "as"
+      , Space
+      , Str "in"
+      , Space
+      , Str "section"
+      , Space
+      , Link
+          ( "" , [] , [] )
+          [ Str "\8220"
+          , Str "feature"
+          , Space
+          , Str "overview"
+          , Str "\8221"
+          ]
+          ( "#sec:overview" , "" )
+      , Str ","
+      , Space
+      , Str "or"
+      , Space
+      , Str "retain"
+      , Space
+      , Str "only"
+      , Space
+      , Str "the"
       , Space
       , Str "number,"
+      , Space
+      , Str "as"
+      , Space
+      , Str "in"
       , SoftBreak
-      , Str "for"
-      , Space
-      , Str "example,"
-      , Space
-      , Str "this"
-      , Space
-      , Str "references"
-      , Space
       , Str "section"
       , Space
       , Link ( "" , [] , [] ) [ Str "1" ] ( "#sec:overview" , "" )

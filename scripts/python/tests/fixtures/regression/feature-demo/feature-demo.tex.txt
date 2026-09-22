@@ -164,8 +164,11 @@ This is what a citation looks like: (Doe 2020). The list of all cited
 references appears in the bibliography section at the end of the
 document.
 
-The pandoc\_writing\_tools lua filters enable referring to a section by
-number, for example, this references section \hyperref[sec:overview]{1}.
+The document-wide setting makes an ordinary reference show both the
+number and title, as in section \hyperref[sec:overview]{1 (``feature
+overview'')}. A local override can show only the title, as in section
+\hyperref[sec:overview]{``feature overview''}, or retain only the
+number, as in section \hyperref[sec:overview]{1}.
 
 \subsection{\texorpdfstring{Table of contents{
 \href{mailto:docs@example.com?subject=\%5BFeedback\%5D\%20pandoc\_writing\_tools\%20Feature\%20Demo\%20v<VER>\%20-\%20Section\%3A\%20Table\%20of\%20contents\&body=Hi\%2C\%0D\%0A\%0D\%0AI\%20have\%20some\%20feedback\%20regarding\%20the\%20section\%20\%27Table\%20of\%20contents\%27\%20in\%20\%27pandoc\_writing\_tools\%20Feature\%20Demo\%27\%20v<VER>.\%0D\%0A\%0D\%0A}{\scriptsize\texttt{[Give Feedback]}}}}{Table of contents }}\label{table-of-contents}

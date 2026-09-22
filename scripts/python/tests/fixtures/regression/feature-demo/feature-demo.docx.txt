@@ -5,7 +5,7 @@ Table of Contents
 This document demonstrates the functionality of the Lua filters in pandoc_writing_tools.
 1.1	Citations and section references
 This is what a citation looks like: (Doe 2020). The list of all cited references appears in the bibliography section at the end of the document.
-The pandoc_writing_tools lua filters enable referring to a section by number, for example, this references section 1.
+The document-wide setting makes an ordinary reference show both the number and title, as in section 1 (“feature overview”). A local override can show only the title, as in section “feature overview”, or retain only the number, as in section 1.
 1.2	Table of contents
 The table of contents is generated from the section headers. The toc-list-top-level and toc-list-entry-levels attributes control which headers are included and how they are nested. For example, the mini-TOC below includes level 2 and level 3 headers under the “Overview” section:
 1.1 Citations and section references
