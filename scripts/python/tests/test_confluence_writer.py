@@ -56,7 +56,17 @@ def docker_pandoc_image() -> str:
         pytest.skip("Docker is required for Confluence writer tests")
 
     root = repo_root()
-    run_checked(["docker", "build", "-t", DOCKER_IMAGE, str(root / "docker")])
+    run_checked(
+        [
+            "docker",
+            "build",
+            "-f",
+            str(root / "docker/Dockerfile"),
+            "-t",
+            DOCKER_IMAGE,
+            str(root),
+        ]
+    )
     return DOCKER_IMAGE
 
 
