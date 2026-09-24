@@ -12,6 +12,7 @@ be reusable for other content projects.
 <!--TOC-->
 
 - [Quick start](#quick-start)
+  - [Adding Python dependencies in a content repository](#adding-python-dependencies-in-a-content-repository)
 - [Output formats](#output-formats)
 - [Features, implemented as Lua filters](#features-implemented-as-lua-filters)
   - [Figures, examples, definitions, and section references (fignos.lua)](#figures-examples-definitions-and-section-references-fignoslua)
@@ -115,17 +116,15 @@ be reusable for other content projects.
    include $(TOOLS_ROOT)/Makefile
    ```
 
-   In the copied `build_with_docker.sh`, set the content root to the directory
-   containing the script:
+   Replace the copied `build_with_docker.sh` with this thin wrapper:
 
    ```shell
-   CONTENT_ROOT="$(cd "$(dirname "$0")" && pwd)"
-   TOOLS_ROOT="${CONTENT_ROOT}/pandoc_writing_tools"
+   #!/bin/sh
+   set -e
 
-   docker build -t pandoc_writing_tools_build "${TOOLS_ROOT}/docker" && \
-     docker run --rm --user="${uid}":"${gid}" \
-       --mount type=bind,source="${CONTENT_ROOT}",target=/src \
-       pandoc_writing_tools_build "$@"
+   CONTENT_ROOT="$(cd "$(dirname "$0")" && pwd)"
+   exec "${CONTENT_ROOT}/pandoc_writing_tools/docker/build_content_with_docker.sh" \
+     --content-root "${CONTENT_ROOT}" -- "$@"
    ```
 
    Git-derived metadata such as `VERSION` and `LAST_UPDATED` is computed from
@@ -143,6 +142,24 @@ be reusable for other content projects.
    `build/feature-demo.xhtml`, `build/feature-demo.docx`,
    `build/feature-demo.pptx`, and `build/feature-demo.eml`. If you renamed the
    markdown source, the output files use that new stem instead.
+
+### Adding Python dependencies in a content repository
+
+Repositories that use only the Python packages provided by
+`pandoc_writing_tools` need neither `pyproject.toml` nor `uv.lock`. If your
+content repository has Python helpers with additional dependencies, manage and
+commit both files, for example:
+
+```shell
+uv init --bare                 # only when starting a new Python project
+uv add <package>
+git add pyproject.toml uv.lock
+./build_with_docker.sh
+```
+
+The Docker helper detects the two files and builds the additional dependency
+layer automatically; no separate Dockerfile is needed in the content repo.  For
+more details, see [Docker builds and customization](docs/docker-builds.md).
 
 ## Output formats
 

@@ -88,12 +88,26 @@ RUN dnf -y --setopt=install_weak_deps=False update && \
         texlive-zref \
     && dnf clean all
 
-# The repo is bind-mounted at /src during Docker-backed builds. Keep uv's
-# project environment in /tmp so `uv run` does not replace a developer's host
-# .venv with a Linux virtualenv through the bind mount.
-ENV UV_PROJECT_ENVIRONMENT=/tmp/pandoc_writing_tools_venv \
+# Bake the uv dependencies locked by this tools repository into the image. The
+# project itself is not an installable Python package; its scripts are read from
+# the checkout that is bind-mounted at /src when the container runs.
+ENV UV_PROJECT_ENVIRONMENT=/opt/pandoc_writing_tools_venv \
     UV_CACHE_DIR=/tmp/uv-cache \
-    UV_LINK_MODE=copy
+    UV_LINK_MODE=copy \
+    UV_PYTHON=/usr/bin/python3 \
+    UV_PYTHON_DOWNLOADS=never
 
-COPY entrypoint.sh /entrypoint.sh
+WORKDIR /opt/pandoc_writing_tools_project
+COPY pyproject.toml uv.lock ./
+RUN --mount=type=cache,target=/root/.cache/uv \
+    UV_CACHE_DIR=/root/.cache/uv \
+    uv sync --locked --no-install-project
+
+# Runtime containers are short-lived and can run as a host user's numeric UID.
+# Keep the image-owned environment immutable instead of asking uv to sync it.
+ENV UV_NO_SYNC=1
+
+WORKDIR /src
+
+COPY docker/entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]

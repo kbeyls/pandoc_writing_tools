@@ -13,7 +13,8 @@ if [ "$#" -eq 0 ]; then
   set -- all
 fi
 
-docker build -t pandoc_writing_tools_build "${TOOLS_ROOT}/docker" && \
+docker build -f "${TOOLS_ROOT}/docker/Dockerfile" \
+  -t pandoc_writing_tools_build "${TOOLS_ROOT}" && \
   docker run --rm --user="${uid}":"${gid}" \
-  --mount type=bind,source="${TOOLS_ROOT}",target=/src \
-  pandoc_writing_tools_build -C examples/feature-demo "$@"
+    --mount type=bind,source="${TOOLS_ROOT}",target=/src \
+    pandoc_writing_tools_build -C examples/feature-demo "$@"
