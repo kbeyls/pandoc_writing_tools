@@ -88,6 +88,11 @@ RUN dnf -y --setopt=install_weak_deps=False update && \
         texlive-zref \
     && dnf clean all
 
+# Docker can expose the bind-mounted repository root as owned by root even
+# when Git runs as the host user's numeric UID. Trust only the build mount,
+# using system configuration so this also applies with HOME=/tmp at runtime.
+RUN git config --system --add safe.directory /src
+
 # Bake the uv dependencies locked by this tools repository into the image. The
 # project itself is not an installable Python package; its scripts are read from
 # the checkout that is bind-mounted at /src when the container runs.
