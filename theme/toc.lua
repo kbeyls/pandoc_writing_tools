@@ -16,6 +16,9 @@
 -- The div will be removed from the final output.
 -- The list will be formatted as a simple nested list in HTML and LaTeX output formats.
 -- Each list item will link to the corresponding section in the document.
+-- Missing heading levels are allowed: entries nest under the nearest included
+-- ancestor, or at the top level when there is none. Heading levels and section
+-- numbers in the document are not changed.
 local function add_tools_root_to_package_path()
   local script = PANDOC_SCRIPT_FILE
   if not script then
@@ -53,14 +56,40 @@ function record_headers(el)
     return el
 end
 
+local function add_header_to_toc(header, min_level, max_level, collected, ancestors)
+    -- Every heading ends sections at its own level or deeper, even when that
+    -- heading is outside the requested TOC entry levels.
+    while #ancestors > 0 and ancestors[#ancestors].level >= header.level do
+        table.remove(ancestors)
+    end
+    if header.level < min_level or header.level > max_level then
+        return
+    end
+
+    local entry = { level = header.level, header = header, children = {} }
+    local parent = ancestors[#ancestors]
+    -- Skipped levels need no placeholder entries. Without an included
+    -- ancestor, this heading starts a top-level entry.
+    if parent then
+        table.insert(parent.children, entry)
+    else
+        table.insert(collected, entry)
+    end
+    table.insert(ancestors, entry)
+end
+
+-- Walk headers in document order, selecting descendants of start_id (or all
+-- headers for an empty start_id). Stop at the selected section's boundary;
+-- add_header_to_toc applies min_level/max_level and builds the nested entries.
 local function collect_headers(start_id, min_level, max_level, headers)
-    -- create sub-lists based on header levels
-    -- entries in the variable "collected" have the following structure:
-    -- { level = 2, header = pandoc.Inlines, children = {}}
+    -- Root TOC entries, each containing level, header, and children.
     local collected = {}
+    -- Whether the scan has reached the requested section.
     local collecting = false
+    -- Selected root's heading level; 0 means the whole document.
     local start_level = nil
-    local last_header_seen_at_level = {}
+    -- Stack of included headings whose sections are still open.
+    local ancestors = {}
     if start_id == "" then
         -- an empty start_id means start from the beginning of the document
         collecting = true
@@ -72,29 +101,10 @@ local function collect_headers(start_id, min_level, max_level, headers)
             start_level = header.level
         elseif collecting then
             if header.level <= start_level then
-                -- stop collecting when we reach a header at the same or higher level than the start header
+                -- A heading at the same or a shallower level ends this section.
                 break
-            elseif header.level >= min_level and header.level <= max_level then
-                last_header_seen_at_level[header.level] = { level = header.level, header = header, children = {} }
-                -- attach to parent if exists
-                if header.level > min_level then
-                    -- there must be at least one header at some lower level
-                    -- find the nearest parent header at level-1
-                    -- and attach this header as a child
-                    local parent = nil
-                    for lvl = header.level-1,min_level,-1 do
-                        if last_header_seen_at_level[lvl] then
-                            parent = last_header_seen_at_level[lvl]
-                            break
-                        end
-                    end
-                    assert(parent, "No parent found for header level " .. header.level)
-                    table.insert(parent.children, last_header_seen_at_level[header.level])
-                else
-                    -- top-level header, add directly to collected
-                    table.insert(collected, last_header_seen_at_level[header.level])
-                end
             end
+            add_header_to_toc(header, min_level, max_level, collected, ancestors)
         end
     end
     return collected

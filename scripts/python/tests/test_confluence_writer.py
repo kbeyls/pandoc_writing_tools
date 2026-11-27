@@ -4,6 +4,7 @@
 
 import shutil
 import subprocess
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import pytest
@@ -263,3 +264,100 @@ def test_confluence_writer_indents_each_toc_header_level(
     assert indentation_at("grandchild") == 3
     assert indentation_at("sibling") == 1
     assert indentation_at("sibling-child") == 2
+
+
+@pytest.mark.parametrize(
+    ("start_id", "entry_levels", "headings", "expected_links"),
+    [
+        pytest.param(
+            "", "1-4",
+            "## Intro {#intro}\n\n#### Details {#details}\n\n"
+            "## Next {#next}\n\n# References {#references}\n",
+            [("intro", 1), ("details", 2), ("next", 1), ("references", 1)],
+            id="document-starts-below-minimum-level",
+        ),
+        pytest.param(
+            "#root", "2-4",
+            "# Root {#root}\n\n### First {#first}\n\n"
+            "#### Child {#child}\n\n## Sibling {#sibling}\n\n"
+            "# Outside {#outside}\n\n## After {#after}\n",
+            [("first", 1), ("child", 2), ("sibling", 1)],
+            id="subtree-starts-below-minimum-level",
+        ),
+        pytest.param(
+            "", "1-4",
+            "# Root {#root}\n\n### Child {#child}\n\n"
+            "#### Grandchild {#grandchild}\n\n## Sibling {#sibling}\n",
+            [("root", 1), ("child", 2), ("grandchild", 3), ("sibling", 2)],
+            id="skipped-intermediate-level",
+        ),
+        pytest.param(
+            "", "1-3",
+            "# First {#first}\n\n## Old child {#old-child}\n\n"
+            "# Second {#second}\n\n### New child {#new-child}\n",
+            [("first", 1), ("old-child", 2), ("second", 1), ("new-child", 2)],
+            id="previous-section-is-not-a-parent",
+        ),
+        pytest.param(
+            "", "1-4",
+            "# Root {#root}\n\n## First {#first}\n\n"
+            "### Old child {#old-child}\n\n## Second {#second}\n\n"
+            "#### New child {#new-child}\n",
+            [("root", 1), ("first", 2), ("old-child", 3),
+             ("second", 2), ("new-child", 3)],
+            id="previous-subsection-is-not-a-parent",
+        ),
+        pytest.param(
+            "", "2-4",
+            "# Excluded first {#excluded-first}\n\n## First {#first}\n\n"
+            "### Old child {#old-child}\n\n# Excluded second {#excluded-second}\n\n"
+            "### Second {#second}\n\n#### New child {#new-child}\n",
+            [("first", 1), ("old-child", 2), ("second", 1), ("new-child", 2)],
+            id="excluded-headings-end-previous-sections",
+        ),
+        pytest.param(
+            "", "1-3",
+            "### First {#first}\n\n### Second {#second}\n\n### Third {#third}\n",
+            [("first", 1), ("second", 1), ("third", 1)],
+            id="parentless-peers-remain-siblings",
+        ),
+    ],
+)
+def test_confluence_toc_handles_skipped_heading_levels(
+    docker_pandoc_image, start_id, entry_levels, headings, expected_links,
+):
+    output = render_confluence(
+        f'::: {{toc-list-top-level="{start_id}" '
+        f'toc-list-entry-levels={entry_levels}}}\n:::\n\n{headings}',
+        docker_pandoc_image,
+        lua_filters=("theme/toc.lua",),
+    )
+
+    # Read the rendered nesting and link order, not just the presence of links.
+    document = ET.fromstring(f'<document xmlns:ac="urn:confluence">{output}</document>')
+    links = []
+
+    def collect_links(element, depth=0):
+        if element.tag == "div" and element.get("style") == "margin-left: 40px;":
+            depth += 1
+        if element.tag == "{urn:confluence}link":
+            links.append((element.get("{urn:confluence}anchor"), depth))
+        for child in element:
+            collect_links(child, depth)
+
+    collect_links(document)
+    assert links == expected_links
+
+
+def test_confluence_toc_preserves_skipped_heading_levels_and_numbering(docker_pandoc_image):
+    output = render_confluence(
+        '::: {toc-list-top-level="" toc-list-entry-levels=1-4}\n:::\n\n'
+        "## Intro {#intro}\n\n#### Details {#details}\n",
+        docker_pandoc_image,
+        lua_filters=("theme/fignos.lua", "theme/toc.lua"),
+    )
+
+    assert '<h2 id="intro">0.1 Intro</h2>' in output
+    assert '<h4 id="details">0.1.0.1 Details</h4>' in output
+    assert '<ac:link-body>0.1 Intro</ac:link-body>' in output
+    assert '<ac:link-body>0.1.0.1 Details</ac:link-body>' in output

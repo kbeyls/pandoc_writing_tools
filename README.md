@@ -283,10 +283,11 @@ H2 and H3 headers under the "Overview" section:
 :::
 ```
 
-To insert a full table of contents for the entire document, use:
+For a table of contents covering the entire document, set `toc-list-top-level`
+to an empty string. This starts collection at the beginning of the document:
 
 ```markdown
-::: {toc-list-entry-levels=1-3}
+::: {toc-list-top-level="" toc-list-entry-levels=1-3}
 :::
 ```
 

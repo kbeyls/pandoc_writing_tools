@@ -315,11 +315,11 @@ Pandoc
       , Space
       , Str "2"
       , Space
-      , Str "and"
+      , Str "through"
       , Space
       , Str "level"
       , Space
-      , Str "3"
+      , Str "4"
       , Space
       , Str "headers"
       , Space
@@ -362,6 +362,23 @@ Pandoc
               ]
               ( "#table-of-contents" , "" )
           , LineBreak
+          ]
+      , Div
+          ( "" , [ "toc-list" ] , [] )
+          [ Plain
+              [ Link
+                  ( "" , [] , [] )
+                  [ Str "1.2.0.1"
+                  , Space
+                  , Str "Skipped"
+                  , Space
+                  , Str "heading"
+                  , Space
+                  , Str "level"
+                  ]
+                  ( "#sec:skipped-heading-level" , "" )
+              , LineBreak
+              ]
           ]
       , Plain
           [ Link
@@ -439,6 +456,81 @@ Pandoc
               ( "#sec:github-links" , "" )
           , LineBreak
           ]
+      ]
+  , Para
+      [ Str "This"
+      , Space
+      , Str "section\8217s"
+      , Space
+      , Str "mini-TOC"
+      , Space
+      , Str "includes"
+      , Space
+      , Str "the"
+      , Space
+      , Str "H4"
+      , Space
+      , Str "heading"
+      , Space
+      , Str "below:"
+      ]
+  , Div
+      ( "" , [ "toc-list" ] , [] )
+      [ Plain
+          [ Link
+              ( "" , [] , [] )
+              [ Str "1.2.0.1"
+              , Space
+              , Str "Skipped"
+              , Space
+              , Str "heading"
+              , Space
+              , Str "level"
+              ]
+              ( "#sec:skipped-heading-level" , "" )
+          , LineBreak
+          ]
+      ]
+  , Header
+      4
+      ( "sec:skipped-heading-level"
+      , []
+      , [ ( "section-number" , "1.2.0.1" ) ]
+      )
+      [ Str "Skipped"
+      , Space
+      , Str "heading"
+      , Space
+      , Str "level"
+      ]
+  , Para
+      [ Str "This"
+      , Space
+      , Str "H4"
+      , Space
+      , Str "heading"
+      , Space
+      , Str "follows"
+      , Space
+      , Str "an"
+      , Space
+      , Str "H2"
+      , Space
+      , Str "heading"
+      , Space
+      , Str "directly,"
+      , Space
+      , Str "with"
+      , Space
+      , Str "no"
+      , Space
+      , Str "H3"
+      , Space
+      , Str "heading"
+      , Space
+      , Str "in"
+      , Space
+      , Str "between."
       ]
   , Header
       2
