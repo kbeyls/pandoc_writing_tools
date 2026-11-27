@@ -33,10 +33,19 @@ section [@sec:overview]{ref-style=number}.
 The table of contents is generated from the section headers. The
 `toc-list-top-level` and `toc-list-entry-levels` attributes control which
 headers are included and how they are nested. For example, the mini-TOC below
-includes level 2 and level 3 headers under the "Overview" section:
+includes level 2 through level 4 headers under the "Overview" section:
 
-::: {toc-list-top-level=#sec:overview toc-list-entry-levels=2-3}
+::: {toc-list-top-level=#sec:overview toc-list-entry-levels=2-4}
 :::
+
+This section's mini-TOC includes the H4 heading below:
+
+::: {toc-list-top-level=#table-of-contents toc-list-entry-levels=3-4}
+:::
+
+#### Skipped heading level {#sec:skipped-heading-level}
+
+This H4 heading follows an H2 heading directly, with no H3 heading in between.
 
 ## Figures and references {#sec:figures}
 

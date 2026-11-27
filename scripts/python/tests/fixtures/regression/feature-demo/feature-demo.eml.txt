@@ -204,7 +204,7 @@ feedback]</a></span></h2>
 <p>The table of contents is generated from the section headers. The
 <code>toc-list-top-level</code> and <code>toc-list-entry-levels</code>
 attributes control which headers are included and how they are nested.
-For example, the mini-TOC below includes level 2 and level 3 headers
+For example, the mini-TOC below includes level 2 through level 4 headers
 under the “Overview” section:</p>
 <div class="toc-list">
 <a href="#sec:citations-and-refs">1.1 Citations and section references
@@ -213,6 +213,11 @@ under the “Overview” section:</p>
 <a href="#table-of-contents">1.2 Table of contents [give
 feedback]</a><br />
 
+<div class="toc-list">
+<a href="#sec:skipped-heading-level">1.2.0.1 Skipped heading
+level</a><br />
+
+</div>
 <a href="#sec:figures">1.3 Figures and references [give
 feedback]</a><br />
 
@@ -229,6 +234,18 @@ feedback]</a><br />
 [give feedback]</a><br />
 
 </div>
+<p>This section’s mini-TOC includes the H4 heading below:</p>
+<div class="toc-list">
+<a href="#sec:skipped-heading-level">1.2.0.1 Skipped heading
+level</a><br />
+
+</div>
+<h4 data-number="1.2.0.1" data-section-number="1.2.0.1"
+id="sec:skipped-heading-level"><span
+class="header-section-number">1.2.0.1</span> Skipped heading level<a
+href="#sec:skipped-heading-level" class="selflink"></a></h4>
+<p>This H4 heading follows an H2 heading directly, with no H3 heading in
+between.</p>
 <h2 data-number="1.3" data-section-number="1.3" id="sec:figures"><span
 class="header-section-number">1.3</span> Figures and references<a
 href="#sec:figures" class="selflink"></a><span class="feedback-button">

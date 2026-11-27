@@ -7,10 +7,12 @@ This document demonstrates the functionality of the Lua filters in pandoc_writin
 This is what a citation looks like: (Doe 2020). The list of all cited references appears in the bibliography section at the end of the document.
 The document-wide setting makes an ordinary reference show both the number and title, as in section 1 (“feature overview”). A local override can show only the title, as in section “feature overview”, or retain only the number, as in section 1.
 1.2	Table of contents
-The table of contents is generated from the section headers. The toc-list-top-level and toc-list-entry-levels attributes control which headers are included and how they are nested. For example, the mini-TOC below includes level 2 and level 3 headers under the “Overview” section:
+The table of contents is generated from the section headers. The toc-list-top-level and toc-list-entry-levels attributes control which headers are included and how they are nested. For example, the mini-TOC below includes level 2 through level 4 headers under the “Overview” section:
 1.1 Citations and section references
 
 1.2 Table of contents
+
+1.2.0.1 Skipped heading level
 
 1.3 Figures and references
 
@@ -24,6 +26,11 @@ The table of contents is generated from the section headers. The toc-list-top-le
 
 1.8 Linking to github issues and edit links
 
+This section’s mini-TOC includes the H4 heading below:
+1.2.0.1 Skipped heading level
+
+1.2.0.1	Skipped heading level
+This H4 heading follows an H2 heading directly, with no H3 heading in between.
 1.3	Figures and references
 
 Figure 1: A demo figure

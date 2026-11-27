@@ -24,11 +24,14 @@ SPDX-License-Identifier: MIT
 
 <ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">table-of-contents</ac:parameter></ac:structured-macro><h2 id="table-of-contents">1.2 Table of contents</h2>
 
-<p>The table of contents is generated from the section headers. The <code>toc-list-top-level</code> and <code>toc-list-entry-levels</code> attributes control which headers are included and how they are nested. For example, the mini-TOC below includes level 2 and level 3 headers under the “Overview” section:</p>
+<p>The table of contents is generated from the section headers. The <code>toc-list-top-level</code> and <code>toc-list-entry-levels</code> attributes control which headers are included and how they are nested. For example, the mini-TOC below includes level 2 through level 4 headers under the “Overview” section:</p>
 
 <div style="margin-left: 40px;"><ac:link ac:anchor="sec:citations-and-refs"><ac:link-body>1.1 Citations and section references</ac:link-body></ac:link><br/>
 
 <ac:link ac:anchor="table-of-contents"><ac:link-body>1.2 Table of contents</ac:link-body></ac:link><br/>
+
+<div style="margin-left: 40px;"><ac:link ac:anchor="sec:skipped-heading-level"><ac:link-body>1.2.0.1 Skipped heading level</ac:link-body></ac:link><br/>
+</div>
 
 <ac:link ac:anchor="sec:figures"><ac:link-body>1.3 Figures and references</ac:link-body></ac:link><br/>
 
@@ -42,6 +45,15 @@ SPDX-License-Identifier: MIT
 
 <ac:link ac:anchor="sec:github-links"><ac:link-body>1.8 Linking to github issues and edit links</ac:link-body></ac:link><br/>
 </div>
+
+<p>This section’s mini-TOC includes the H4 heading below:</p>
+
+<div style="margin-left: 40px;"><ac:link ac:anchor="sec:skipped-heading-level"><ac:link-body>1.2.0.1 Skipped heading level</ac:link-body></ac:link><br/>
+</div>
+
+<ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">sec:skipped-heading-level</ac:parameter></ac:structured-macro><h4 id="sec:skipped-heading-level">1.2.0.1 Skipped heading level</h4>
+
+<p>This H4 heading follows an H2 heading directly, with no H3 heading in between.</p>
 
 <ac:structured-macro ac:name="anchor" ac:schema-version="1"><ac:parameter ac:name="">sec:figures</ac:parameter></ac:structured-macro><h2 id="sec:figures">1.3 Figures and references</h2>
 
